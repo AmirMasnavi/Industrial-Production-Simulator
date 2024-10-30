@@ -1,0 +1,349 @@
+package org.example;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+/**
+ * This class represents the menu system for the application.
+ * It provides methods to display options to the user and handle user input for various functionalities,
+ * such as listing items, running simulations, and displaying statistics.
+ */
+public class MenuItem {
+
+    private static Simulator simulator;
+    private static SimulatorNoPriorities simulatorNoPriorites;
+    private static boolean lastSimulationWithPriorities;
+
+    /**
+     * Displays the main menu and handles user selections.
+     * <p>
+     * The menu options allow the user to list items and machines, run simulations,
+     * and view simulation statistics. It continues to prompt the user until they choose to exit.
+     * </p>
+     */
+    static void menu() {
+        Scanner scanner = new Scanner(System.in);
+        boolean running = true;
+        Visualiser visualiser = new Visualiser();
+
+        while (running) {
+            System.out.println("\n=== MENU ===\n");
+            System.out.println("1. List Items");
+            System.out.println("2. List Available Machines");
+            System.out.println("3. Run Simulation");
+            System.out.println("4. Run Simulation With Priorities");
+            System.out.println("5. Show Simulation Statistics");
+            /*
+            System.out.println("6. Product Structure");
+            System.out.println("7. List Products and View BOM (LAPR3)");
+            */
+            System.out.println("0. Exit");
+
+            System.out.print("\nChoose an option: ");
+            int option = scanner.nextInt();
+
+            switch (option) {
+                case 1:
+                    listItems();
+                    break;
+                case 2:
+                    listMachines();
+                    break;
+                case 3:
+                    runSimulationWithoutPriorities();
+                    break;
+                case 4:
+                    runSimulation();
+                    break;
+                case 5:
+                    showStatistics();
+                    break;
+                    /*
+                case 6:
+                    showProduct();
+                    break;
+                case 7:
+                    listAndShowProducts(visualiser);
+                    break;
+                    */
+                case 0:
+                    System.out.println("Exiting...");
+                    running = false;
+                    break;
+                default:
+                    System.out.println("Invalid option.");
+            }
+        }
+    }
+
+    /**
+     * Lists the items available in the system, allowing the user to filter by priority.
+     * <p>
+     * This method prompts the user to select a priority filter and displays the corresponding items.
+     * It continues to prompt the user until they choose to go back to the main menu.
+     * </p>
+     */
+    private static void listItems() {
+        Scanner scanner = new Scanner(System.in);
+        List<Item> originalItems = CSVReader.readItemsFromCSV("./articles.csv");
+
+        boolean backToMenu = false;
+
+        while (!backToMenu) {
+
+            List<Item> items = new ArrayList<>(originalItems);
+
+            System.out.println("\n=== Select Priority ===");
+            System.out.println("1. List all items (ordered by priority)");
+            System.out.println("2. List items with priority LOW");
+            System.out.println("3. List items with priority NORMAL");
+            System.out.println("4. List items with priority HIGH");
+            System.out.println("0. Go back to Menu");
+
+            System.out.print("\nChoose an option: ");
+            int priorityOption = scanner.nextInt();
+
+            switch (priorityOption) {
+                case 1:
+                    items.sort((i1, i2) -> {
+                        int p1 = new Task(i1, i1.getNextOperation()).getPriority();
+                        int p2 = new Task(i2, i2.getNextOperation()).getPriority();
+                        return Integer.compare(p2, p1); // Ordena por prioridade decrescente
+                    });
+                    break;
+                case 2:
+                    items = items.stream()
+                            .filter(item -> item.getPriority() == Item.Priority.LOW)
+                            .toList();
+                    break;
+                case 3:
+                    items = items.stream()
+                            .filter(item -> item.getPriority() == Item.Priority.NORMAL)
+                            .toList();
+                    break;
+                case 4:
+                    items = items.stream()
+                            .filter(item -> item.getPriority() == Item.Priority.HIGH)
+                            .toList();
+                    break;
+                case 0:
+                    backToMenu = true;
+                    continue;
+                default:
+                    System.out.println("Invalid option.");
+                    continue;
+            }
+
+            System.out.println("\n=== List of Items ===");
+            if (items.isEmpty()) {
+                System.out.println("No items found for the selected priority.");
+            } else {
+                for (Item item : items) {
+                    System.out.println(item);
+                }
+            }
+        }
+    }
+
+
+    /**
+     * Lists the available machines in the system.
+     * <p>
+     * This method retrieves and displays the machines read from a CSV file.
+     * It continues to prompt the user until they choose to go back to the main menu.
+     * </p>
+     */
+    private static void listMachines() {
+        Scanner scanner = new Scanner(System.in);
+        List<Machine> machines = CSVReader.readMachinesFromCSV("./workstations.csv");
+
+        boolean backToMenu = false;
+
+        while (!backToMenu) {
+            System.out.println("\n=== List of Machines ===");
+            for (Machine machine : machines) {
+                System.out.println(machine);
+            }
+
+            System.out.println("\nPress 0 to go back to the Menu.");
+            int backOption = scanner.nextInt();
+            if (backOption == 0) {
+                backToMenu = true;
+            }
+        }
+    }
+
+    /**
+     * Runs a simulation without considering item priorities.
+     * <p>
+     * This method initializes the simulator with items and machines read from CSV files
+     * and executes the simulation.
+     * </p>
+     */
+    private static void runSimulation() {
+        List<Item> items = CSVReader.readItemsFromCSV("./articles.csv");
+        List<Machine> machines = CSVReader.readMachinesFromCSV("./workstations.csv");
+
+        simulator = new Simulator(items, machines);
+        simulator.runSimulation();
+        lastSimulationWithPriorities = true;
+        System.out.println("\nSimulation with priorities completed.");
+    }
+
+    /**
+     * Runs a simulation considering item priorities.
+     * <p>
+     * This method initializes the simulator without priorities with items and machines read from CSV files
+     * and executes the simulation.
+     * </p>
+     */
+    private static void runSimulationWithoutPriorities() {
+        List<Item> items = CSVReader.readItemsFromCSV("./articles.csv");
+        List<Machine> machines = CSVReader.readMachinesFromCSV("./workstations.csv");
+
+        simulatorNoPriorites = new SimulatorNoPriorities(items, machines);
+        simulatorNoPriorites.runSimulation();
+        lastSimulationWithPriorities = false;
+        System.out.println("\nSimulation without priorities completed.");
+    }
+
+    /**
+     * Displays statistics from the last simulation run.
+     * <p>
+     * This method checks the type of the last simulation (with or without priorities)
+     * and calls the appropriate method to show statistics.
+     * </p>
+     */
+    private static void showStatistics() {
+        if (lastSimulationWithPriorities && simulator != null) {
+            showStatisticsWithPriorities();
+        } else if (!lastSimulationWithPriorities && simulatorNoPriorites != null) {
+            showStatisticsWithoutPriorities();
+        } else {
+            System.out.println("No simulation has been run yet. Please run a simulation first.");
+        }
+    }
+
+    /**
+     * Displays statistics for the last simulation that considered item priorities.
+     * <p>
+     * This method allows the user to select from various statistical reports related to the simulation with priorities.
+     * It continues to prompt the user until they choose to go back to the main menu.
+     * </p>
+     */
+    private static void showStatisticsWithPriorities() {
+        Scanner scanner = new Scanner(System.in);
+        boolean backToMenu = false;
+
+        while (!backToMenu) {
+            System.out.println("\n=== Simulation Statistics (With Priorities) ===");
+            System.out.println("1. Show Total Time Spent Per Item");
+            System.out.println("2. Show Total Time Spent Per Operation");
+            System.out.println("3. Show Machine Utilization Report");
+            System.out.println("4. Show Operation Execution and Waiting Times Report");
+            System.out.println("5. Show Workstation Flow Dependency Report");
+            System.out.println("6. Show Total Waiting Time Per Item");
+            System.out.println("0. Go back to Menu");
+            System.out.print("\nChoose an option: ");
+
+            int reportOption = scanner.nextInt();
+
+            switch (reportOption) {
+                case 1:
+                    simulator.presentTotalTimePerItem();
+                    break;
+                case 2:
+                    simulator.presentTotalTimePerOperation();
+                    break;
+                case 3:
+                    simulator.presentMachineUtilizationReport();
+                    break;
+                case 4:
+                    simulator.presentOperationTimesReport();
+                    break;
+                case 5:
+                    simulator.presentWorkstationFlowReport();
+                    break;
+                case 6:
+                    simulator.calculateTotalWaitingTimePerItem();
+                case 0:
+                    backToMenu = true;
+                    continue;
+                default:
+                    System.out.println("Invalid option. Please choose between 1 and 5.");
+                    continue;
+            }
+        }
+    }
+
+    /**
+     * Displays statistics for the last simulation that did not consider item priorities.
+     * <p>
+     * This method allows the user to select from various statistical reports related to the simulation without priorities.
+     * It continues to prompt the user until they choose to go back to the main menu.
+     * </p>
+     */
+    private static void showStatisticsWithoutPriorities() {
+        Scanner scanner = new Scanner(System.in);
+        boolean backToMenu = false;
+
+        while (!backToMenu) {
+            System.out.println("\n=== Simulation Statistics (Without Priorities) ===");
+            System.out.println("1. Show Total Time Spent Per Item");
+            System.out.println("2. Show Total Time Spent Per Operation");
+            System.out.println("3. Show Machine Utilization Report");
+            System.out.println("4. Show Operation Execution and Waiting Times Report");
+            System.out.println("5. Show Workstation Flow Dependency Report");
+            System.out.println("6. Show Total Waiting Time Per Item");
+            System.out.println("0. Go back to Menu");
+            System.out.print("\nChoose an option: ");
+
+            int reportOption = scanner.nextInt();
+
+            switch (reportOption) {
+                case 1:
+                    simulatorNoPriorites.presentTotalTimePerItem();
+                    break;
+                case 2:
+                    simulatorNoPriorites.presentTotalTimePerOperation();
+                    break;
+                case 3:
+                    simulatorNoPriorites.presentMachineUtilizationReport();
+                    break;
+                case 4:
+                    simulatorNoPriorites.presentOperationTimesReport();
+                    break;
+                case 5:
+                    simulatorNoPriorites.presentWorkstationFlowReport();
+                    break;
+                case 6:
+                    simulatorNoPriorites.presentTotalWaitTimePerItem();
+                    break;
+                case 0:
+                    backToMenu = true;
+                    continue;
+                default:
+                    System.out.println("Invalid option. Please choose between 1 and 5.");
+                    continue;
+            }
+        }
+    }
+
+    // only to be used for the next sprint
+
+    /*private static void listAndShowProducts(Visualiser visualiser) {
+        Scanner scanner = new Scanner(System.in);
+
+        // List all available products
+        visualiser.listProducts();
+
+        // Let the user select a product and view its BOM in tree format
+        Product selectedProduct = visualiser.selectProduct();
+
+        // Display the BOM tree for the selected product
+        visualiser.printBOM(selectedProduct);
+    }
+    */
+
+}

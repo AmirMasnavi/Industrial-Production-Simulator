@@ -1,0 +1,53 @@
+@startuml
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+skinparam classAttributeIconSize 0
+
+hide circle
+hide methods
+
+title Domain Model - Implementing a Simulator
+
+
+class ProductManager {
+    name
+    email
+    password
+    role
+    phone: String
+    createSimulation
+    manageUsers
+    viewReports
+    }
+
+class Article {
+    id
+    priority
+    operations
+}
+
+class Workstation {
+    id
+    operation
+    time
+}
+
+class OperationQueue {
+    operationName
+    queueItems
+}
+
+class SystemUser {
+    name
+    email
+    role
+}
+
+ProductManager "1" -- "0..*" OperationQueue : creates >
+OperationQueue "0..*" -- "0..*" Article : contains >
+OperationQueue "0..*" -- "1" Workstation : assigned to >
+Workstation "1" -- "0..*" Article : processes >
+SystemUser <|-- ProductManager
+@enduml
