@@ -3,138 +3,66 @@ package org.example;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
-
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * Unit tests for the {@link Item} class.
- *
- * This class contains a set of JUnit tests for verifying the behavior of the
- * {@link Item} class. It tests various functionalities including retrieving item
- * details, managing operations, and parsing CSV input.
- */
 public class ItemTest {
 
     private Item item;
 
-    /**
-     * Sets up the test environment before each test execution.
-     *
-     * Initializes a new {@link Item} instance with ID "Item1", priority NORMAL,
-     * and a list of operations: "Operation1", "Operation2", and "Operation3".
-     */
     @BeforeEach
-    public void setup() {
-        item = new Item("Item1", Item.Priority.NORMAL, Arrays.asList("Operation1", "Operation2", "Operation3"));
+    public void setUp() {
+        // This will run before each test, so we set up a new item here.
+        item = new Item(1001, "bench leg w/hole");
     }
 
-    /**
-     * Tests the {@link Item#getIdItem()} method.
-     *
-     * Verifies that the item ID is correctly returned as "Item1".
-     */
     @Test
-    public void testGetIdItem() {
-        assertEquals("Item1", item.getIdItem(), "Item ID should be 'Item1'");
+    public void testItemConstructorAndFields() {
+        // Test the constructor and field values.
+        assertEquals(1001, item.getId());
+        assertEquals("bench leg w/hole", item.getName());
     }
 
-    /**
-     * Tests the {@link Item#getPriority()} method.
-     *
-     * Verifies that the priority of the item is correctly returned as NORMAL.
-     */
     @Test
-    public void testGetPriority() {
-        assertEquals(Item.Priority.NORMAL, item.getPriority(), "Priority should be NORMAL");
+    public void testItemToString() {
+        // Test the toString method.
+        String expected = "Item{id=1001, name='bench leg w/hole'}";
+        assertEquals(expected, item.toString());
     }
 
-    /**
-     * Tests the {@link Item#getNextOperation()} method.
-     *
-     * Verifies that the next operation is correctly returned as "Operation1".
-     */
     @Test
-    public void testGetNextOperation() {
-        assertEquals("Operation1", item.getNextOperation(), "The next operation should be 'Operation1'");
+    public void testSettersAndGetters() {
+        // Test the setters and getters.
+        item.setId(2002);
+        item.setName("bench seat w/holes");
+
+        assertEquals(2002, item.getId());
+        assertEquals("bench seat w/holes", item.getName());
     }
 
-    /**
-     * Tests the {@link Item#moveToNextOperation()} method.
-     *
-     * Verifies that the item can successfully move to the next operation and that
-     * the next operation is updated to "Operation2".
-     */
     @Test
-    public void testMoveToNextOperation() {
-        assertTrue(item.moveToNextOperation(), "Should move to the next operation");
-        assertEquals("Operation2", item.getNextOperation(), "The next operation should be 'Operation2'");
+    public void testItemEquality() {
+        // Test equality between two different items.
+        Item anotherItem = new Item(1001, "bench leg w/hole");
+
+        // Since the IDs and names are the same, they should be equal.
+        assertEquals(item, anotherItem);
+
+        // Modify the second item's name to test inequality
+        anotherItem.setName("bench leg w/bolt");
+        assertNotEquals(item, anotherItem);
     }
 
-    /**
-     * Tests the {@link Item#moveToNextOperation()} method when all operations are completed.
-     *
-     * Moves the item through all available operations and verifies that the method
-     * returns false when there are no more operations left.
-     */
     @Test
-    public void testMoveToNextOperationWhenFinished() {
-        item.moveToNextOperation(); // Moves to Operation2
-        item.moveToNextOperation(); // Moves to Operation3
-        assertFalse(item.moveToNextOperation(), "There should be no more operations after the last one");
-    }
+    public void testItemHashCode() {
+        // Test hashCode consistency.
+        Item anotherItem = new Item(1001, "bench leg w/hole");
 
-    /**
-     * Tests the {@link Item#resetOperations()} method.
-     *
-     * Moves the item to the second operation and then resets the operations.
-     * Verifies that the next operation is set back to "Operation1".
-     */
-    @Test
-    public void testResetOperations() {
-        item.moveToNextOperation(); // Move to Operation2
-        item.resetOperations();
-        assertEquals("Operation1", item.getNextOperation(), "After resetting, the next operation should be 'Operation1'");
-    }
+        // Two equal items should have the same hashCode.
+        assertEquals(item.hashCode(), anotherItem.hashCode());
 
-    /**
-     * Tests the {@link Item#fromCSV(String)} method with an invalid priority.
-     *
-     * Verifies that an {@link IllegalArgumentException} is thrown when attempting
-     * to create an item from a CSV line with an invalid priority value.
-     */
-    @Test
-    public void testFromCSV_InvalidPriority() {
-        String csvLine = "Item3; InvalidPriority; OperationX";
-        assertThrows(IllegalArgumentException.class, () -> {
-            Item.fromCSV(csvLine);
-        }, "Expected IllegalArgumentException for invalid priority value");
-    }
-
-    /**
-     * Tests the {@link Item#fromCSV(String)} method with an invalid line format.
-     *
-     * Verifies that an {@link IllegalArgumentException} is thrown when attempting
-     * to create an item from a CSV line with an invalid format (missing fields).
-     */
-    @Test
-    public void testFromCSV_InvalidLineFormat() {
-        String csvLine = "Item4; HIGH";
-        assertThrows(IllegalArgumentException.class, () -> {
-            Item.fromCSV(csvLine);
-        }, "Expected IllegalArgumentException for invalid CSV line format");
-    }
-
-    /**
-     * Tests the {@link Item#toString()} method.
-     *
-     * Verifies that the string representation of the {@link Item} object matches
-     * the expected format, including ID, priority, list of operations, and the
-     * current operation index.
-     */
-    @Test
-    public void testToString() {
-        String expectedString = "Item{idItem='Item1', priority=NORMAL, operations=[Operation1, Operation2, Operation3]}";
-        assertEquals(expectedString, item.toString(), "toString method output should match expected string");
+        // Change the name of one item and check if the hash codes are different.
+        anotherItem.setName("bench leg w/bolt");
+        assertNotEquals(item.hashCode(), anotherItem.hashCode());
     }
 }
+

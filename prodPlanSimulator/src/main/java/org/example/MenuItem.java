@@ -2,6 +2,7 @@ package org.example;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 /**
@@ -34,6 +35,7 @@ public class MenuItem {
             System.out.println("3. Run Simulation");
             System.out.println("4. Run Simulation With Priorities");
             System.out.println("5. Show Simulation Statistics");
+            System.out.println("6. Build the complete production tree ");
             /*
             System.out.println("6. Product Structure");
             System.out.println("7. List Products and View BOM (LAPR3)");
@@ -58,6 +60,9 @@ public class MenuItem {
                     break;
                 case 5:
                     showStatistics();
+                    break;
+                case 6:
+                    productionTree();
                     break;
                     /*
                 case 6:
@@ -86,13 +91,13 @@ public class MenuItem {
      */
     private static void listItems() {
         Scanner scanner = new Scanner(System.in);
-        List<Item> originalItems = CSVReader.readItemsFromCSV("./articles.csv");
+        List<Article> originalArticles = CSVReader.readArticlesFromCSV("./articles.csv");
 
         boolean backToMenu = false;
 
         while (!backToMenu) {
 
-            List<Item> items = new ArrayList<>(originalItems);
+            List<Article> articles = new ArrayList<>(originalArticles);
 
             System.out.println("\n=== Select Priority ===");
             System.out.println("1. List all items (ordered by priority)");
@@ -106,25 +111,25 @@ public class MenuItem {
 
             switch (priorityOption) {
                 case 1:
-                    items.sort((i1, i2) -> {
+                    articles.sort((i1, i2) -> {
                         int p1 = new Task(i1, i1.getNextOperation()).getPriority();
                         int p2 = new Task(i2, i2.getNextOperation()).getPriority();
                         return Integer.compare(p2, p1); // Ordena por prioridade decrescente
                     });
                     break;
                 case 2:
-                    items = items.stream()
-                            .filter(item -> item.getPriority() == Item.Priority.LOW)
+                    articles = articles.stream()
+                            .filter(item -> item.getPriority() == Article.Priority.LOW)
                             .toList();
                     break;
                 case 3:
-                    items = items.stream()
-                            .filter(item -> item.getPriority() == Item.Priority.NORMAL)
+                    articles = articles.stream()
+                            .filter(item -> item.getPriority() == Article.Priority.NORMAL)
                             .toList();
                     break;
                 case 4:
-                    items = items.stream()
-                            .filter(item -> item.getPriority() == Item.Priority.HIGH)
+                    articles = articles.stream()
+                            .filter(item -> item.getPriority() == Article.Priority.HIGH)
                             .toList();
                     break;
                 case 0:
@@ -136,11 +141,11 @@ public class MenuItem {
             }
 
             System.out.println("\n=== List of Items ===");
-            if (items.isEmpty()) {
+            if (articles.isEmpty()) {
                 System.out.println("No items found for the selected priority.");
             } else {
-                for (Item item : items) {
-                    System.out.println(item);
+                for (Article article : articles) {
+                    System.out.println(article);
                 }
             }
         }
@@ -182,10 +187,10 @@ public class MenuItem {
      * </p>
      */
     private static void runSimulation() {
-        List<Item> items = CSVReader.readItemsFromCSV("./articles.csv");
+        List<Article> articles = CSVReader.readArticlesFromCSV("./articles.csv");
         List<Machine> machines = CSVReader.readMachinesFromCSV("./workstations.csv");
 
-        simulator = new Simulator(items, machines);
+        simulator = new Simulator(articles, machines);
         simulator.runSimulation();
         lastSimulationWithPriorities = true;
         System.out.println("\nSimulation with priorities completed.");
@@ -199,10 +204,10 @@ public class MenuItem {
      * </p>
      */
     private static void runSimulationWithoutPriorities() {
-        List<Item> items = CSVReader.readItemsFromCSV("./articles.csv");
+        List<Article> articles = CSVReader.readArticlesFromCSV("./articles.csv");
         List<Machine> machines = CSVReader.readMachinesFromCSV("./workstations.csv");
 
-        simulatorNoPriorites = new SimulatorNoPriorities(items, machines);
+        simulatorNoPriorites = new SimulatorNoPriorities(articles, machines);
         simulatorNoPriorites.runSimulation();
         lastSimulationWithPriorities = false;
         System.out.println("\nSimulation without priorities completed.");
@@ -223,6 +228,39 @@ public class MenuItem {
         } else {
             System.out.println("No simulation has been run yet. Please run a simulation first.");
         }
+    }
+
+    private static void productionTree() {
+            // Load data from CSV files
+            List<Item> items = CSVReader.readItemsFromCSV("./items.csv");
+            List<Operation> operations = CSVReader.readOperationsFromCSV("./operations.csv");
+            Map<Integer, List<int[]>> booData = CSVReader.readBooFromCSV("./boo.csv");
+
+            // Test: Print items
+            System.out.println("Items:");
+            items.forEach(item -> System.out.println("ID: " + item.getId() + ", Name: " + item.getName()));
+
+            // Test: Print operations
+            System.out.println("\nOperations:");
+            operations.forEach(operation -> System.out.println("ID: " + operation.getId() + ", Name: " + operation.getName()));
+
+            // Test: Print boo data
+            System.out.println("\nBoo Data:");
+            booData.forEach((itemId, subcomponents) -> {
+                System.out.println("Item ID: " + itemId);
+                subcomponents.forEach(subcomponent ->
+                        System.out.println("  SubItem ID: " + subcomponent[0] + ", Quantity: " + (subcomponent[1] / 1000.0))
+                );
+            });
+
+//            // Create the simulator with the loaded data
+//            ProductionTreeBuilder treeBuilder = new ProductionTreeBuilder(items, operations, booData);
+//            ProductionTreeNode root = treeBuilder.buildProductionTree(1006); // Example product ID
+//
+//            ProductionTreePrinter printer = new ProductionTreePrinter();
+//            printer.printProductionTree(root, "");
+//
+//            System.out.println("\nProduction tree completed.");
     }
 
     /**
@@ -333,7 +371,7 @@ public class MenuItem {
     // only to be used for the next sprint
 
     /*private static void listAndShowProducts(Visualiser visualiser) {
-        Scanner scanner = new Scanner(System.in);
+        Scanner = new Scanner(System.in);
 
         // List all available products
         visualiser.listProducts();

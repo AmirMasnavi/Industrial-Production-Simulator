@@ -4,7 +4,9 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Utility class for reading data from CSV files and converting them into lists of Java objects.
@@ -20,7 +22,7 @@ public class CSVReader {
     /**
      * Reads a list of items from a CSV file.
      * This method opens the specified CSV file, skips the header line, and processes each subsequent line
-     * to create an Item object. Each Item is instantiated by calling the {@link Item#fromCSV(String)} method.
+     * to create an Item object. Each Item is instantiated by calling the {@link Article#fromCSV(String)} method.
      *
      * <p>
      * If an error occurs while parsing a line, an error message is printed to standard error, indicating
@@ -31,13 +33,13 @@ public class CSVReader {
      * @param filePath the path to the CSV file from which to read items
      * @return a List of Item objects created from the CSV file
      */
-    public static List<Item> readItemsFromCSV(String filePath) {
-        List<Item> items = new ArrayList<>();
+    public static List<Article> readArticlesFromCSV(String filePath) {
+        List<Article> articles = new ArrayList<>();
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             br.readLine(); // Skip header
             br.lines().forEach(line -> {
                 try {
-                    items.add(Item.fromCSV(line));
+                    articles.add(Article.fromCSV(line));
                 } catch (IllegalArgumentException e) {
                     System.err.println("Error parsing line: " + line + ". " + e.getMessage());
                 }
@@ -45,7 +47,7 @@ public class CSVReader {
         } catch (IOException e) {
             System.err.println("Error reading file: " + e.getMessage());
         }
-        return items;
+        return articles;
     }
 
     /**
@@ -77,5 +79,74 @@ public class CSVReader {
             System.err.println("Error reading file: " + e.getMessage());
         }
         return machines;
+    }
+
+    public static List<Item> readItemsFromCSV(String filePath) {
+        List<Item> items = new ArrayList<>();
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+            br.readLine(); // Skip header
+            br.lines().forEach(line -> {
+                try {
+                    String[] fields = line.split(";");
+                    int id = Integer.parseInt(fields[0]);
+                    String name = fields[1];
+                    items.add(new Item(id, name));
+                } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
+                    System.err.println("Error parsing line: " + line + ". " + e.getMessage());
+                }
+            });
+        } catch (IOException e) {
+            System.err.println("Error reading file: " + e.getMessage());
+        }
+        return items;
+    }
+
+    public static List<Operation> readOperationsFromCSV(String filePath) {
+        List<Operation> operations = new ArrayList<>();
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+            br.readLine(); // Skip header
+            br.lines().forEach(line -> {
+                try {
+                    String[] fields = line.split(";");
+                    int id = Integer.parseInt(fields[0]);
+                    String name = fields[1];
+                    operations.add(new Operation(id, name));
+                } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
+                    System.err.println("Error parsing line: " + line + ". " + e.getMessage());
+                }
+            });
+        } catch (IOException e) {
+            System.err.println("Error reading file: " + e.getMessage());
+        }
+        return operations;
+    }
+
+
+    public static Map<Integer, List<int[]>> readBooFromCSV(String filePath) {
+        Map<Integer, List<int[]>> booData = new HashMap<>();
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+            br.readLine(); // Skip header
+            br.lines().forEach(line -> {
+                try {
+                    String[] fields = line.split(";");
+                    int itemId = Integer.parseInt(fields[0]);
+                    int opId = Integer.parseInt(fields[1]);
+
+                    List<int[]> subcomponents = new ArrayList<>();
+                    for (int i = 2; i < fields.length; i += 2) {
+                        int subItemId = Integer.parseInt(fields[i]);
+                        double quantity = Double.parseDouble(fields[i + 1].replace(",", "."));
+                        subcomponents.add(new int[]{subItemId, (int)(quantity * 1000)}); // Store as integer
+                    }
+
+                    booData.put(itemId, subcomponents);
+                } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
+                    System.err.println("Error parsing line: " + line + ". " + e.getMessage());
+                }
+            });
+        } catch (IOException e) {
+            System.err.println("Error reading file: " + e.getMessage());
+        }
+        return booData;
     }
 }
