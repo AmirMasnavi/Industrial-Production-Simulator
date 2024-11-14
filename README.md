@@ -1,5 +1,5 @@
 # sem3-p2-2024_25_GXXX
-Template Repository for Integrative Project LEI-ISEP 3.Semester test
+Template Repository for Integrative Project LEI-ISEP 3.Semester 
 
 plantFloorManager - application to manage Plant Floor - PL/SQL scripts for Oracle
 
