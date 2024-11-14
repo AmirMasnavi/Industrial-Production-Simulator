@@ -314,7 +314,7 @@ FROM
     Orders o
     -- Join the Product_Orders table to the Orders table on OrderID, linking each order to its products
     JOIN Product_Orders po ON o.OrderID = po.OrderID
-    -- Join the Product table to Product_Orders on ProductID, linking each order item to its product details
+    -- Join the Product table to Product_Orders on ProductID, linking each order article to its product details
     JOIN Product p ON po.ProductID = p.ProductID
     -- Join the Client table to Orders on ClientID, linking each order to the client information
     JOIN Client c ON o.ClientID = c.ClientID
@@ -348,11 +348,11 @@ FROM
     JOIN Product_Family pf ON p.FamilyID = pf.FamilyID
     -- Join BOO (Bill of Operations) to determine operations for each product family
     JOIN BOO boo ON pf.FamilyID = boo.FamilyID
-    -- Join Operation to retrieve details of each operation in the BOO
+    -- Join Operation to retrieve details of each operationTest in the BOO
     JOIN Operation op ON boo.OPID = op.OPID
-    -- Join WorkstationTypes_Operation to associate each operation with compatible workstation types
+    -- Join WorkstationTypes_Operation to associate each operationTest with compatible workstation types
     JOIN WorkstationTypes_Operation wto ON op.OPID = wto.OPID
-    -- Join WorkstationTypes to get the names and IDs of workstation types required by each operation
+    -- Join WorkstationTypes to get the names and IDs of workstation types required by each operationTest
     JOIN WorkstationTypes wst ON wto.WTID = wst.WTID
 WHERE
     -- Specify the target OrderID (1 in this example) to focus on a specific order
@@ -394,8 +394,8 @@ WHERE
 -- USBD08: As a Plant Floor Manager, I want to know the different operations the factory supports.
 
 SELECT 
-    OPID,                    -- Retrieve the unique identifier for each operation
-    Description              -- Retrieve a description of each operation for easy identification
+    OPID,                    -- Retrieve the unique identifier for each operationTest
+    Description              -- Retrieve a description of each operationTest for easy identification
 FROM 
     Operation                -- Access the Operation table, which lists all available operations
 ORDER BY 
@@ -412,14 +412,14 @@ ORDER BY
     
     
     WITH RankedWorkstations AS (
-        -- Define a Common Table Expression (CTE) to rank workstations associated with each operation.
+        -- Define a Common Table Expression (CTE) to rank workstations associated with each operationTest.
         SELECT 
             p.ProductID,                            -- Select the Product ID to identify the specific product
-            wst.WTID AS WorkstationID,              -- Select the Workstation ID for each workstation type associated with the operation
+            wst.WTID AS WorkstationID,              -- Select the Workstation ID for each workstation type associated with the operationTest
             wst.Name AS WorkstationType,            -- Select the name of the workstation type for readability
-            op.OPID,                                -- Select the Operation ID to link each workstation type with the operation
-            ROW_NUMBER() OVER (                     -- Rank workstation types for each operation ID 
-                PARTITION BY op.OPID                -- Partition ranking by Operation ID, ensuring each operation's workstations are ranked independently
+            op.OPID,                                -- Select the Operation ID to link each workstation type with the operationTest
+            ROW_NUMBER() OVER (                     -- Rank workstation types for each operationTest ID 
+                PARTITION BY op.OPID                -- Partition ranking by Operation ID, ensuring each operationTest's workstations are ranked independently
                 ORDER BY wto.WTID                   -- Order by Workstation ID, ensuring consistency in selecting the primary workstation type
             ) AS rn                                 -- Assign a row number to each workstation type based on rank for filtering
         FROM 
@@ -433,21 +433,21 @@ ORDER BY
         JOIN 
             WorkstationTypes_Operation wto ON op.OPID = wto.OPID -- Connect operations to workstation types via WorkstationTypes_Operation
         JOIN 
-            WorkstationTypes wst ON wto.WTID = wst.WTID         -- Link each operation’s workstation type with WorkstationTypes for details
+            WorkstationTypes wst ON wto.WTID = wst.WTID         -- Link each operationTest’s workstation type with WorkstationTypes for details
         WHERE 
             p.ProductID = 'AS12945S17'                          -- Filter by specific Product ID to retrieve its operations and workstations
     )
     
-    -- Select final results from the CTE, limiting to primary workstation type for each operation.
+    -- Select final results from the CTE, limiting to primary workstation type for each operationTest.
     SELECT 
         ProductID,                  -- Display the Product ID for identification
-        WorkstationID,              -- Display the Workstation ID associated with each operation
+        WorkstationID,              -- Display the Workstation ID associated with each operationTest
         WorkstationType,            -- Show the name/type of each workstation for clear understanding of the station's role
-        OPID                        -- Display the Operation ID for linking each workstation with the correct operation
+        OPID                        -- Display the Operation ID for linking each workstation with the correct operationTest
     FROM 
         RankedWorkstations          -- Query the CTE to access ranked workstations
     WHERE 
-        rn = 1                      -- Filter to retrieve only the primary (first) workstation type for each operation
+        rn = 1                      -- Filter to retrieve only the primary (first) workstation type for each operationTest
     ORDER BY 
         OPID                       -- Order results by Operation ID for a logical sequence of operations
     

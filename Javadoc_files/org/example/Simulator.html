@@ -89,11 +89,11 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">Simulator</span>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></span></div>
-<div class="block">The Simulator class simulates the processing of items through multiple machines.
- Each item has a sequence of operations that need to be completed, and machines
+<div class="block">The Simulator class simulates the processing of article through multiple machines.
+ Each article has a sequence of operations that need to be completed, and machines
  have different capabilities and availability to perform these operations. The
  class manages task assignment, machine utilization, and keeps track of various
- metrics such as operation times and machine usage.</div>
+ metrics such as operationTest times and machine usage.</div>
 </div>
 </section>
 <section class="summary">
@@ -106,10 +106,10 @@ loadScripts(document, 'script');</script>
 <div class="summary-table two-column-summary">
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
-<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(java.util.List,java.util.List)" class="member-name-link">Simulator</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="Item.html" title="class in org.example">Item</a>&gt;&nbsp;items,
+<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(java.util.List,java.util.List)" class="member-name-link">Simulator</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="Item.html" title="class in org.example">Item</a>&gt;&nbsp;article,
  <a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="Machine.html" title="class in org.example">Machine</a>&gt;&nbsp;machines)</code></div>
 <div class="col-last even-row-color">
-<div class="block">Constructor to initialize the simulator with a list of items and machines.</div>
+<div class="block">Constructor to initialize the simulator with a list of article and machines.</div>
 </div>
 </div>
 </section>
@@ -128,7 +128,7 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#initializeTasks()" class="member-name-link">initializeTasks</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Initializes the task queue with the first operation of each item.</div>
+<div class="block">Initializes the task queue with the first operationTest of each article.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#runSimulation()" class="member-name-link">runSimulation</a>()</code></div>
@@ -156,12 +156,12 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="&lt;init&gt;(java.util.List,java.util.List)">
 <h3>Simulator</h3>
 <div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">Simulator</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="Item.html" title="class in org.example">Item</a>&gt;&nbsp;items,
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">Simulator</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="Item.html" title="class in org.example">Item</a>&gt;&nbsp;article,
  <a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="Machine.html" title="class in org.example">Machine</a>&gt;&nbsp;machines)</span></div>
-<div class="block">Constructor to initialize the simulator with a list of items and machines.</div>
+<div class="block">Constructor to initialize the simulator with a list of article and machines.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>items</code> - The list of items to be processed.</dd>
+<dd><code>article</code> - The list of article to be processed.</dd>
 <dd><code>machines</code> - The list of machines available for processing.</dd>
 </dl>
 </div>
@@ -180,7 +180,7 @@ loadScripts(document, 'script');</script>
 <h3>initializeTasks</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">initializeTasks</span>()</div>
-<div class="block">Initializes the task queue with the first operation of each item.</div>
+<div class="block">Initializes the task queue with the first operationTest of each article.</div>
 </div>
 </section>
 </li>

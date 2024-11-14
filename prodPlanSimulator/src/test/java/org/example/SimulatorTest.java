@@ -17,13 +17,13 @@ import java.util.List;
 public class SimulatorTest {
 
     private Simulator simulator;
-    private List<Item> items;
+    private List<Article> articles;
     private List<Machine> machines;
 
     /**
      * Sets up the test environment before each test execution.
      *
-     * Initializes lists of {@link Item} and {@link Machine} objects and adds
+     * Initializes lists of {@link Article} and {@link Machine} objects and adds
      * instances to these lists. Two machines with different operation types and
      * two items with different priority levels are created. The {@link Simulator}
      * instance is then initialized with these lists.
@@ -31,7 +31,7 @@ public class SimulatorTest {
     @BeforeEach
     public void setup() {
 
-        items = new ArrayList<>();
+        articles = new ArrayList<>();
         machines = new ArrayList<>();
 
         // Adding machines with specific operations and processing times
@@ -39,11 +39,11 @@ public class SimulatorTest {
         machines.add(new Machine("M2", "Operation2", 10));
 
         // Adding items with different priorities and lists of operations
-        items.add(new Item("Item1", Item.Priority.NORMAL, List.of("Operation1", "Operation2")));
-        items.add(new Item("Item2", Item.Priority.HIGH, List.of("Operation2", "Operation1")));
+        articles.add(new Article("Item1", Article.Priority.NORMAL, List.of("Operation1", "Operation2")));
+        articles.add(new Article("Item2", Article.Priority.HIGH, List.of("Operation2", "Operation1")));
 
         // Initializing the simulator with the items and machines
-        simulator = new Simulator(items, machines);
+        simulator = new Simulator(articles, machines);
     }
 
     /**

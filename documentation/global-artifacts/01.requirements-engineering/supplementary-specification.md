@@ -19,7 +19,7 @@ _Specifies functionalities that:
 _Business Rules:_
 
 * Customer orders must include delivery dates, product variants, and customer details (e.g., NIF).
-* Each item in a customer order must generate unique production orders.
+* Each article in a customer order must generate unique production orders.
 * BOM and BOO must be respected for production sequences and material requirements.
 
 

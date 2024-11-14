@@ -10,8 +10,8 @@ As a Product Manager I want to define the appropriate data structures to store t
 
 **From the specifications document:**
 
->The information will be imported from two files: articles.csv and workstations.csv.
->>Format of articles.csv: <id_item, priority, name_oper1, name_oper2, ..., name_operN>.
+>The information will be imported from two files: article.csv and workstations.csv.
+>>Format of article.csv: <id_item, priority, name_oper1, name_oper2, ..., name_operN>.
 >
 >>Format of workstations.csv: <id_workstation, name_oper, time>.
 
@@ -19,7 +19,7 @@ As a Product Manager I want to define the appropriate data structures to store t
 
 >Priority defines the production priority (high, normal, low) for each article.
 
->Workstations have an identifier (id_workstation), a specific operation they perform (name_oper), and the execution time (time) for each operation.
+>Workstations have an identifier (id_workstation), a specific operationTest they perform (name_oper), and the execution time (time) for each operationTest.
 
 **From the client clarifications:**
 
@@ -43,11 +43,11 @@ As a Product Manager I want to define the appropriate data structures to store t
 
 * Uploaded File:
     * workstations.csv
-    * articles.csv
+    * article.csv
 
 **Output Data:**
 
-* Confirmation of (in)success of the operation
+* Confirmation of (in)success of the operationTest
 
 ### 1.6. System Sequence Diagram (SSD)
 

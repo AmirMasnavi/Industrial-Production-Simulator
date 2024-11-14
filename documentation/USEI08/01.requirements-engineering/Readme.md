@@ -20,9 +20,9 @@ As a Product Manager, I want to make an improvement to the simulator developed i
 
 ### 1.3. Acceptance Criteria
 
-* **AC1:** The items in the queue should be assigned, according to their priority
+* **AC1:** The article in the queue should be assigned, according to their priority
   (high, normal, low) to the available machine that can perform the required
-  operation in the shortest time.
+  operationTest in the shortest time.
 * **AC2:** Statistical measures should be produced similarly for this variant of
   the simulator.
 
@@ -37,7 +37,7 @@ As a Product Manager, I want to make an improvement to the simulator developed i
 
 * Uploaded File:
   * workstations.csv
-  * articles.csv
+  * article.csv
 
 **Output Data:**
 

@@ -4,7 +4,7 @@
 
 ### 1.1. User Story Description
 
-As a Product Manager I want to present a list of machines with total time of operation, and percentages relative to the operation time and total execution time.
+As a Product Manager I want to present a list of machines with total time of operationTest, and percentages relative to the operationTest time and total execution time.
 
 ### 1.2. Customer Specifications and Clarifications
 
@@ -20,7 +20,7 @@ As a Product Manager I want to present a list of machines with total time of ope
 
 **From the client clarifications:**
 
-> **Question:** As our group is 2 members in ESINF, we were told not to do USEI02, USEI03, USEI04, and USEI06. In USEI05, will we still have to create a simulator that processes the articles to obtain the execution times? What are the criteria in this case? Thanks.
+> **Question:** As our group is 2 members in ESINF, we were told not to do USEI02, USEI03, USEI04, and USEI06. In USEI05, will we still have to create a simulator that processes the article to obtain the execution times? What are the criteria in this case? Thanks.
 >
 > **Answer:** I believe you should ask this question to the professors who defined these US for implementation. In any case, I don't understand how you can do USEI05 without doing USEI02, in fact I don't even understand what's left of the application if you don't do USEI02.
 
@@ -36,14 +36,14 @@ As a Product Manager I want to present a list of machines with total time of ope
 
 ### 1.4. Found out Dependencies
 
-* **USEI01-** Properly imported and structured data from workstations.csv and articles.csv (USEI01).
+* **USEI01-** Properly imported and structured data from workstations.csv and article.csv (USEI01).
 * **USEI04-** Calculated execution times for individual operations and workstations (USEI04).
 
 ### 1.5 Input and Output Data
 
 * Uploaded File:
     * workstations.csv
-    * articles.csv
+    * article.csv
 
 
 **Output Data:**

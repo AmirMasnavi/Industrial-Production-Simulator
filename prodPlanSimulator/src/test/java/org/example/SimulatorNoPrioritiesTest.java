@@ -17,24 +17,24 @@ import static org.junit.jupiter.api.Assertions.*;
 public class SimulatorNoPrioritiesTest {
 
     private SimulatorNoPriorities simulator;
-    private List<Item> items;
+    private List<Article> articles;
     private List<Machine> machines;
 
     /**
      * Sets up the test environment before each test execution.
      *
-     * Initializes a list of {@link Item} objects and a list of {@link Machine}
+     * Initializes a list of {@link Article} objects and a list of {@link Machine}
      * objects. Two items and two machines are added to these lists, respectively,
      * with the appropriate constructors. Then, a new {@link SimulatorNoPriorities}
      * instance is created using these lists.
      */
     @BeforeEach
     public void setup() {
-        items = new ArrayList<>();
+        articles = new ArrayList<>();
 
         // Adding items with various priorities and operations
-        items.add(new Item("Item1", Item.Priority.HIGH, Arrays.asList("Operation1", "Operation2")));
-        items.add(new Item("Item2", Item.Priority.LOW, Arrays.asList("Operation1", "Operation3")));
+        articles.add(new Article("Item1", Article.Priority.HIGH, Arrays.asList("Operation1", "Operation2")));
+        articles.add(new Article("Item2", Article.Priority.LOW, Arrays.asList("Operation1", "Operation3")));
 
         machines = new ArrayList<>();
 
@@ -43,7 +43,7 @@ public class SimulatorNoPrioritiesTest {
         machines.add(new Machine("Machine2", "Operation3", 5));
 
         // Initializing the simulator with the given items and machines
-        simulator = new SimulatorNoPriorities(items, machines);
+        simulator = new SimulatorNoPriorities(articles, machines);
     }
 
     /**
@@ -57,7 +57,7 @@ public class SimulatorNoPrioritiesTest {
     public void testInitialization() {
         assertNotNull(simulator, "Simulator should be initialized");
         // Checks that the correct number of items and machines are initialized
-        assertEquals(2, items.size(), "There should be 2 items initialized");
+        assertEquals(2, articles.size(), "There should be 2 items initialized");
         assertEquals(2, machines.size(), "There should be 2 machines initialized");
     }
 

@@ -11,28 +11,28 @@ As a Product Manager, I want to calculate the total production time that all Ite
 
 **From the specifications document:**
 
->Each item is subject to a series of sequential operations (e.g., cutting, drilling, polishing) which are carried out by specific workstations.
+>Each article is subject to a series of sequential operations (e.g., cutting, drilling, polishing) which are carried out by specific workstations.
 
->The production time of an item is the sum of the execution times for all operations performed on that item.
+>The production time of an article is the sum of the execution times for all operations performed on that article.
 
->Each workstation has an operation it performs (from workstations.csv), and a specific execution time for that operation.
+>Each workstation has an operationTest it performs (from workstations.csv), and a specific execution time for that operationTest.
 
 **From the client clarifications:**
 
-> **Question:** Should the output be the time that passes since the beggining of production until the end of the last operation of the last item, or the time that each item takes since its first operation to it's last to be processed?
+> **Question:** Should the output be the time that passes since the beggining of production until the end of the last operationTest of the last article, or the time that each article takes since its first operationTest to it's last to be processed?
 >
 > **Answer:** The time diference between the start instant and the end instant of the simulation.
 
 
 ### 1.3. Acceptance Criteria
 
-* **AC1:** The total production time must be related to the whole time it took for all the items.
-* **AC2:** The system must correctly handle items that require multiple operations and aggregate the times.
+* **AC1:** The total production time must be related to the whole time it took for all the article.
+* **AC2:** The system must correctly handle article that require multiple operations and aggregate the times.
 
 ### 1.4. Found out Dependencies
 
-* **USEI01** The data structures are essential for storing item and workstation information
-* **USEI02** depends on the simulator to obtain the production flow of items and, therefore, calculate the total production time.
+* **USEI01** The data structures are essential for storing article and workstation information
+* **USEI02** depends on the simulator to obtain the production flow of article and, therefore, calculate the total production time.
 
 ### 1.5 Input and Output Data
 
@@ -40,7 +40,7 @@ As a Product Manager, I want to calculate the total production time that all Ite
 
 * Uploaded File:
   * workstations.csv
-  * articles.csv
+  * article.csv
 
 
 

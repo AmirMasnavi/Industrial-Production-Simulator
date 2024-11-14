@@ -8,7 +8,7 @@ package org.example;
  * Each operation on an Item becomes its own "task" in the simulation queue.
  */
 public class Task {
-    private final Item item;
+    private final Article article;
     private final String operation;
     private final int priority;
 
@@ -19,14 +19,14 @@ public class Task {
      * - NORMAL priority corresponds to 2
      * - LOW priority corresponds to 1
      *
-     * @param item      the Item associated with the task
+     * @param article      the Item associated with the task
      * @param operation the name of the operation to be performed
      */
-    public Task(Item item, String operation) {
-        this.item = item;
+    public Task(Article article, String operation) {
+        this.article = article;
         this.operation = operation;
-        this.priority = item.getPriority() == Item.Priority.HIGH ? 3 :
-                item.getPriority() == Item.Priority.NORMAL ? 2 : 1;
+        this.priority = article.getPriority() == Article.Priority.HIGH ? 3 :
+                article.getPriority() == Article.Priority.NORMAL ? 2 : 1;
     }
 
     /**
@@ -34,8 +34,8 @@ public class Task {
      *
      * @return the Item object linked to this task
      */
-    public Item getItem() {
-        return item;
+    public Article getItem() {
+        return article;
     }
 
     /**
@@ -64,7 +64,7 @@ public class Task {
     @Override
     public String toString() {
         return "Task{" +
-                "item=" + item +
+                "item=" + article +
                 ", operation='" + operation + '\'' +
                 ", priority=" + priority +
                 '}';

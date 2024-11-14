@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
  * on machine utilization and operational dependencies.
  */
 public class SimulatorNoPriorities {
-    private final List<Item> items;  // List of items to be processed
+    private final List<Article> articles;  // List of items to be processed
     private final List<Machine> machines;  // List of available machines
     private final Queue<Task> taskQueue;  // Queue of tasks to be processed
     private final Map<String, Task> busyMachines;  // Map to track tasks currently being processed by machines
@@ -21,7 +21,7 @@ public class SimulatorNoPriorities {
     private final Map<String, Integer> operationTaskCounts;  // Track the number of tasks for each operation
 
     private final Map<String, Map<String, Integer>> flowDependencyMap;  // Map to track the flow dependencies between workstations
-    private final Map<Item, List<String>> itemWorkstationHistory;  // History of workstations visited by each item
+    private final Map<Article, List<String>> itemWorkstationHistory;  // History of workstations visited by each item
     private final Map<String, Integer> totalTimePerItem;  // Total time spent processing each item
     private final Map<String, Integer> itemWaitingTimes;  // Waiting times for each item
     private final Map<String, Integer> itemWaitingStartTime;  // Start time of the waiting period for each item
@@ -29,11 +29,11 @@ public class SimulatorNoPriorities {
     /**
      * Constructor for SimulatorNoPriorities.
      *
-     * @param items    List of items to process.
+     * @param articles    List of items to process.
      * @param machines List of machines available for processing.
      */
-    public SimulatorNoPriorities(List<Item> items, List<Machine> machines) {
-        this.items = items;
+    public SimulatorNoPriorities(List<Article> articles, List<Machine> machines) {
+        this.articles = articles;
         this.machines = machines;
         this.taskQueue = new LinkedList<>();  // Simple queue for tasks
         this.busyMachines = new HashMap<>();
@@ -59,11 +59,11 @@ public class SimulatorNoPriorities {
      * Initialize the task queue with the first operation of each item.
      */
     private void initializeTasks() {
-        for (Item item : items) {
-            if (item.hasMoreOperations()) {
-                taskQueue.add(new Task(item, item.getNextOperation()));
-                itemWorkstationHistory.put(item, new ArrayList<>());
-                itemWaitingTimes.put(item.getIdItem(), 0); // Initialize waiting time for each item
+        for (Article article : this.articles) {
+            if (article.hasMoreOperations()) {
+                taskQueue.add(new Task(article, article.getNextOperation()));
+                itemWorkstationHistory.put(article, new ArrayList<>());
+                itemWaitingTimes.put(article.getIdItem(), 0); // Initialize waiting time for each item
             }
         }
     }
@@ -72,11 +72,11 @@ public class SimulatorNoPriorities {
      * Display the list of items and their operations before the simulation starts.
      */
     void presentInitialItemList() {
-        for (Item item : items) {
-            System.out.printf("Item ID: %s, Priority: %s\n", item.getIdItem(), item.getPriority());
+        for (Article article : this.articles) {
+            System.out.printf("Item ID: %s, Priority: %s\n", article.getIdItem(), article.getPriority());
 
             // Display the list of operations directly
-            List<String> operations = item.operations; // Access the list of operations directly
+            List<String> operations = article.operations; // Access the list of operations directly
             for (int i = 0; i < operations.size(); i++) {
                 System.out.printf("   Operation %d: %s\n", i + 1, operations.get(i));
             }
@@ -212,15 +212,15 @@ public class SimulatorNoPriorities {
     private void handleFinishedTask(Machine machine, Task finishedTask) {
         System.out.printf("Time: %d - Machine %s has finished its task and is now available.\n", currentTime, machine.getIdMachine());
 
-        Item processedItem = finishedTask.getItem();
-        if (processedItem.moveToNextOperation()) {
-            String nextOperation = processedItem.getNextOperation();
-            taskQueue.add(new Task(processedItem, nextOperation));
+        Article processedArticle = finishedTask.getItem();
+        if (processedArticle.moveToNextOperation()) {
+            String nextOperation = processedArticle.getNextOperation();
+            taskQueue.add(new Task(processedArticle, nextOperation));
             System.out.printf("Time: %d - Added %s of item %s to the queue\n",
-                    currentTime, nextOperation, processedItem.getIdItem());
+                    currentTime, nextOperation, processedArticle.getIdItem());
         } else {
-            updateFlowDependency(itemWorkstationHistory.get(processedItem));
-            System.out.printf("Time: %d - Item %s has completed all its operations!\n", currentTime, processedItem.getIdItem());
+            updateFlowDependency(itemWorkstationHistory.get(processedArticle));
+            System.out.printf("Time: %d - Item %s has completed all its operations!\n", currentTime, processedArticle.getIdItem());
         }
     }
 
