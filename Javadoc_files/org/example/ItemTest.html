@@ -90,7 +90,7 @@ loadScripts(document, 'script');</script>
 <h1 title="Class ItemTest" class="title">Class ItemTest</h1>
 </div>
 <div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">java.lang.Object</a>
-<div class="inheritance">org.example.ItemTest</div>
+<div class="inheritance">org.example.ArticleTest</div>
 </div>
 <section class="class-description" id="class-description">
 <div class="horizontal-scroll">
@@ -100,7 +100,7 @@ loadScripts(document, 'script');</script>
 <div class="block">Unit tests for the <a href="Item.html" title="class in org.example"><code>Item</code></a> class.
 
  This class contains a set of JUnit tests for verifying the behavior of the
- <a href="Item.html" title="class in org.example"><code>Item</code></a> class. It tests various functionalities including retrieving item
+ <a href="Item.html" title="class in org.example"><code>Item</code></a> class. It tests various functionalities including retrieving article
  details, managing operations, and parsing CSV input.</div>
 </div>
 </section>
@@ -234,7 +234,7 @@ loadScripts(document, 'script');</script>
 </span><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">testGetIdItem</span>()</div>
 <div class="block">Tests the <a href="Item.html#getIdItem()"><code>Item.getIdItem()</code></a> method.
 
- Verifies that the item ID is correctly returned as "Item1".</div>
+ Verifies that the article ID is correctly returned as "Item1".</div>
 </div>
 </section>
 </li>
@@ -246,7 +246,7 @@ loadScripts(document, 'script');</script>
 </span><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">testGetPriority</span>()</div>
 <div class="block">Tests the <a href="Item.html#getPriority()"><code>Item.getPriority()</code></a> method.
 
- Verifies that the priority of the item is correctly returned as NORMAL.</div>
+ Verifies that the priority of the article is correctly returned as NORMAL.</div>
 </div>
 </section>
 </li>
@@ -258,7 +258,7 @@ loadScripts(document, 'script');</script>
 </span><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">testGetNextOperation</span>()</div>
 <div class="block">Tests the <a href="Item.html#getNextOperation()"><code>Item.getNextOperation()</code></a> method.
 
- Verifies that the next operation is correctly returned as "Operation1".</div>
+ Verifies that the next operationTest is correctly returned as "Operation1".</div>
 </div>
 </section>
 </li>
@@ -270,8 +270,8 @@ loadScripts(document, 'script');</script>
 </span><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">testMoveToNextOperation</span>()</div>
 <div class="block">Tests the <a href="Item.html#moveToNextOperation()"><code>Item.moveToNextOperation()</code></a> method.
 
- Verifies that the item can successfully move to the next operation and that
- the next operation is updated to "Operation2".</div>
+ Verifies that the article can successfully move to the next operationTest and that
+ the next operationTest is updated to "Operation2".</div>
 </div>
 </section>
 </li>
@@ -283,7 +283,7 @@ loadScripts(document, 'script');</script>
 </span><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">testMoveToNextOperationWhenFinished</span>()</div>
 <div class="block">Tests the <a href="Item.html#moveToNextOperation()"><code>Item.moveToNextOperation()</code></a> method when all operations are completed.
 
- Moves the item through all available operations and verifies that the method
+ Moves the article through all available operations and verifies that the method
  returns false when there are no more operations left.</div>
 </div>
 </section>
@@ -296,8 +296,8 @@ loadScripts(document, 'script');</script>
 </span><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">testResetOperations</span>()</div>
 <div class="block">Tests the <a href="Item.html#resetOperations()"><code>Item.resetOperations()</code></a> method.
 
- Moves the item to the second operation and then resets the operations.
- Verifies that the next operation is set back to "Operation1".</div>
+ Moves the article to the second operationTest and then resets the operations.
+ Verifies that the next operationTest is set back to "Operation1".</div>
 </div>
 </section>
 </li>
@@ -310,7 +310,7 @@ loadScripts(document, 'script');</script>
 <div class="block">Tests the <a href="Item.html#fromCSV(java.lang.String)"><code>Item.fromCSV(String)</code></a> method with an invalid priority.
 
  Verifies that an <a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/IllegalArgumentException.html" title="class or interface in java.lang" class="external-link"><code>IllegalArgumentException</code></a> is thrown when attempting
- to create an item from a CSV line with an invalid priority value.</div>
+ to create an article from a CSV line with an invalid priority value.</div>
 </div>
 </section>
 </li>
@@ -323,7 +323,7 @@ loadScripts(document, 'script');</script>
 <div class="block">Tests the <a href="Item.html#fromCSV(java.lang.String)"><code>Item.fromCSV(String)</code></a> method with an invalid line format.
 
  Verifies that an <a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/IllegalArgumentException.html" title="class or interface in java.lang" class="external-link"><code>IllegalArgumentException</code></a> is thrown when attempting
- to create an item from a CSV line with an invalid format (missing fields).</div>
+ to create an article from a CSV line with an invalid format (missing fields).</div>
 </div>
 </section>
 </li>
@@ -337,7 +337,7 @@ loadScripts(document, 'script');</script>
 
  Verifies that the string representation of the <a href="Item.html" title="class in org.example"><code>Item</code></a> object matches
  the expected format, including ID, priority, list of operations, and the
- current operation index.</div>
+ current operationTest index.</div>
 </div>
 </section>
 </li>

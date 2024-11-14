@@ -92,7 +92,7 @@ loadScripts(document, 'script');</script>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">MachineUtilization</span>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></span></div>
 <div class="block">Represents the utilization statistics of a machine, including its total operational time,
- utilization percentage, and percentage of time spent on a specific type of operation.</div>
+ utilization percentage, and percentage of time spent on a specific type of operationTest.</div>
 </div>
 </section>
 <section class="summary">
@@ -111,7 +111,7 @@ loadScripts(document, 'script');</script>
  double&nbsp;operationTypePercentage)</code></div>
 <div class="col-last even-row-color">
 <div class="block">Constructor to create a new MachineUtilization instance with the specified machine ID, total time,
- utilization percentage, and operation type percentage.</div>
+ utilization percentage, and operationTest type percentage.</div>
 </div>
 </div>
 </section>
@@ -135,7 +135,7 @@ loadScripts(document, 'script');</script>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>double</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getOperationTypeUsage()" class="member-name-link">getOperationTypeUsage</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Gets the percentage of time the machine was used for a specific operation type.</div>
+<div class="block">Gets the percentage of time the machine was used for a specific operationTest type.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getTotalTime()" class="member-name-link">getTotalTime</a>()</code></div>
@@ -173,13 +173,13 @@ loadScripts(document, 'script');</script>
  double&nbsp;utilizationPercentage,
  double&nbsp;operationTypePercentage)</span></div>
 <div class="block">Constructor to create a new MachineUtilization instance with the specified machine ID, total time,
- utilization percentage, and operation type percentage.</div>
+ utilization percentage, and operationTest type percentage.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>idMachine</code> - the unique identifier for the machine</dd>
 <dd><code>totalTime</code> - the total time the machine has been operational</dd>
 <dd><code>utilizationPercentage</code> - the percentage of time the machine was utilized</dd>
-<dd><code>operationTypePercentage</code> - the percentage of time the machine was used for a specific operation type</dd>
+<dd><code>operationTypePercentage</code> - the percentage of time the machine was used for a specific operationTest type</dd>
 </dl>
 </div>
 </section>
@@ -237,10 +237,10 @@ loadScripts(document, 'script');</script>
 <h3>getOperationTypeUsage</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">double</span>&nbsp;<span class="element-name">getOperationTypeUsage</span>()</div>
-<div class="block">Gets the percentage of time the machine was used for a specific operation type.</div>
+<div class="block">Gets the percentage of time the machine was used for a specific operationTest type.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>the operation type usage percentage as a double</dd>
+<dd>the operationTest type usage percentage as a double</dd>
 </dl>
 </div>
 </section>

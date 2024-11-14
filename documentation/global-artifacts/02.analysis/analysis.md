@@ -128,7 +128,7 @@ An association is a relationship between instances of objects that indicates a r
 - **_A_** is a description for **_B_**
 - **_A_** known/logged/recorded/reported/captured in **_B_**
 - **_A_** uses or manages or owns **_B_**
-- **_A_** is related with a transaction (item) of **_B_**
+- **_A_** is related with a transaction (article) of **_B_**
 - etc.
 
 

@@ -1,11 +1,11 @@
 package org.example;
 
-public class Item {
+public class Operation {
     private int id;
     private String name;
 
     // Constructor
-    public Item(int id, String name) {
+    public Operation(int id, String name) {
         this.id = id;
         this.name = name;
     }
@@ -30,19 +30,16 @@ public class Item {
     // toString method for easier printing
     @Override
     public String toString() {
-        return "Item{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                '}';
+        return "Operation{id=" + id + ", name='" + name + "'}";
     }
 
-    // Equals and hashCode for comparison (optional, but good practice)
+    // Equals and hashCode methods
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Item item = (Item) o;
-        return id == item.id && name.equals(item.name);
+        Operation operation = (Operation) o;
+        return id == operation.id && name.equals(operation.name);
     }
 
     @Override
@@ -50,5 +47,4 @@ public class Item {
         return 31 * id + name.hashCode();
     }
 }
-
 

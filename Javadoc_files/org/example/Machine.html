@@ -94,9 +94,9 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">Machine</span>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></span></div>
-<div class="block">Represents a machine that performs a specific operation for a given amount of time.
- Each machine has a unique identifier, an operation name, and the time it takes to complete that operation.
- The machine also tracks when it will be available to perform the next operation.</div>
+<div class="block">Represents a machine that performs a specific operationTest for a given amount of time.
+ Each machine has a unique identifier, an operationTest name, and the time it takes to complete that operationTest.
+ The machine also tracks when it will be available to perform the next operationTest.</div>
 </div>
 </section>
 <section class="summary">
@@ -113,7 +113,7 @@ loadScripts(document, 'script');</script>
  <a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;operationName,
  int&nbsp;time)</code></div>
 <div class="col-last even-row-color">
-<div class="block">Constructor to create a new Machine instance with a specified ID, operation name, and operation time.</div>
+<div class="block">Constructor to create a new Machine instance with a specified ID, operationTest name, and operationTest time.</div>
 </div>
 </div>
 </section>
@@ -137,7 +137,7 @@ loadScripts(document, 'script');</script>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getAvailableTime()" class="member-name-link">getAvailableTime</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Gets the available time of the machine, indicating when it will be free to perform another operation.</div>
+<div class="block">Gets the available time of the machine, indicating when it will be free to perform another operationTest.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getIdMachine()" class="member-name-link">getIdMachine</a>()</code></div>
@@ -147,12 +147,12 @@ loadScripts(document, 'script');</script>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getOperationName()" class="member-name-link">getOperationName</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Gets the name of the operation performed by the machine.</div>
+<div class="block">Gets the name of the operationTest performed by the machine.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getTime()" class="member-name-link">getTime</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Gets the time taken by the machine to perform the operation.</div>
+<div class="block">Gets the time taken by the machine to perform the operationTest.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setBusyUntil(int)" class="member-name-link">setBusyUntil</a><wbr>(int&nbsp;busyUntil)</code></div>
@@ -188,12 +188,12 @@ loadScripts(document, 'script');</script>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">Machine</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;idMachine,
  <a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;operationName,
  int&nbsp;time)</span></div>
-<div class="block">Constructor to create a new Machine instance with a specified ID, operation name, and operation time.</div>
+<div class="block">Constructor to create a new Machine instance with a specified ID, operationTest name, and operationTest time.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>idMachine</code> - the unique identifier for the machine</dd>
-<dd><code>operationName</code> - the name of the operation performed by the machine</dd>
-<dd><code>time</code> - the time taken by the machine to complete the operation</dd>
+<dd><code>operationName</code> - the name of the operationTest performed by the machine</dd>
+<dd><code>time</code> - the time taken by the machine to complete the operationTest</dd>
 </dl>
 </div>
 </section>
@@ -246,7 +246,7 @@ loadScripts(document, 'script');</script>
 <h3>getOperationName</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">getOperationName</span>()</div>
-<div class="block">Gets the name of the operation performed by the machine.</div>
+<div class="block">Gets the name of the operationTest performed by the machine.</div>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>the operationName</dd>
@@ -259,7 +259,7 @@ loadScripts(document, 'script');</script>
 <h3>getTime</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">getTime</span>()</div>
-<div class="block">Gets the time taken by the machine to perform the operation.</div>
+<div class="block">Gets the time taken by the machine to perform the operationTest.</div>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>the time in units (e.g., minutes or seconds)</dd>
@@ -272,7 +272,7 @@ loadScripts(document, 'script');</script>
 <h3>getAvailableTime</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">getAvailableTime</span>()</div>
-<div class="block">Gets the available time of the machine, indicating when it will be free to perform another operation.</div>
+<div class="block">Gets the available time of the machine, indicating when it will be free to perform another operationTest.</div>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>the availableTime in time units</dd>
@@ -303,7 +303,7 @@ loadScripts(document, 'script');</script>
 <dt>Overrides:</dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/Object.html#toString()" title="class or interface in java.lang" class="external-link">toString</a></code>&nbsp;in class&nbsp;<code><a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></code></dd>
 <dt>Returns:</dt>
-<dd>a string describing the Machine's id, operation name, operation time, and available time</dd>
+<dd>a string describing the Machine's id, operationTest name, operationTest time, and available time</dd>
 </dl>
 </div>
 </section>
