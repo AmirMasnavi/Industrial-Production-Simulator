@@ -5,52 +5,34 @@ import java.util.Map;
 
 public class ProductionTreePrinter {
 
-    private final Map<Integer, List<int[]>> booData;
+    private Map<Integer, List<int[]>> booData;
 
+    // Constructor to initialize with booData
     public ProductionTreePrinter(Map<Integer, List<int[]>> booData) {
         this.booData = booData;
     }
 
-    public void printTree(ProductionTreeNode root) {
-        System.out.println("Production Tree for Item ID " + root.getItem().getId() + ":");
-        printNode(root, 0, true);
+    // Method to print the production tree starting from the root node
+    public void printTree(ProductionTreeNode rootNode) {
+        printNode(rootNode, "", true);
     }
 
-    private void printNode(ProductionTreeNode node, int level, boolean isLast) {
-        String indentation = "  ".repeat(level);
-        String branchSymbol = isLast ? "└── " : "├── ";
-
-        // Format the node based on whether it's an item or an operation
-        String nodeRepresentation = formatNode(node);
-        System.out.println(indentation + branchSymbol + nodeRepresentation);
-
-        // Recursively print the children, adjusting the level and branch symbols
-        List<ProductionTreeNode> children = node.getChildren();
-        int childCount = children.size();
-        for (int i = 0; i < childCount; i++) {
-            boolean isChildLast = (i == childCount - 1);
-            printNode(children.get(i), level + 1, isChildLast);
-        }
-    }
-
-    private String formatNode(ProductionTreeNode node) {
-        StringBuilder nodeRepresentation = new StringBuilder();
-
-        // Handle item nodes
+    // Helper method to print a single node with the correct indentation
+    private void printNode(ProductionTreeNode node, String indent, boolean isLast) {
+        // Print item
         if (node.getItem() != null) {
-            nodeRepresentation.append("<Item> ").append(node.getItem().getName());
+            System.out.println(indent + (isLast ? "└── " : "├── ") + "<Item> " + node.getItem().getName() + " (Quantity: " + node.getQuantity() + ")");
         }
 
-        // Handle operation nodes
-        else if (node.getOperation() != null) {
-            nodeRepresentation.append("[Operation] ").append(node.getOperation().getName());
+        // Print operation
+        if (node.getOperation() != null) {
+            System.out.println(indent + (isLast ? "└── " : "├── ") + "[Operation] " + node.getOperation().getName());
         }
 
-        // Display quantity if available
-        if (node.getQuantity() != 0) {
-            nodeRepresentation.append(" (Quantity: ").append(node.getQuantity()).append(")");
+        // Recurse through children
+        for (int i = 0; i < node.getChildren().size(); i++) {
+            printNode(node.getChildren().get(i), indent + (isLast ? "    " : "│   "), i == node.getChildren().size() - 1);
         }
-
-        return nodeRepresentation.toString();
     }
 }
+

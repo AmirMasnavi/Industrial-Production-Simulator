@@ -1,122 +1,92 @@
 package org.example;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class ProductionTreeBuilder {
-    private final List<Item> items;
-    private final List<Operation> operations;
-    private final Map<Integer, List<int[]>> booData;
 
-    // A set to keep track of visited nodes to prevent cycles (to avoid infinite recursion)
-    private Set<Integer> visitedItems;
-    private Set<Integer> visitedOperations;
+    private List<Item> items;
+    private List<Operation> operations;
+    private Map<Integer, List<int[]>> booData;
 
+    // Constructor to initialize the builder with data
     public ProductionTreeBuilder(List<Item> items, List<Operation> operations, Map<Integer, List<int[]>> booData) {
         this.items = items;
         this.operations = operations;
         this.booData = booData;
     }
 
-    // Builds the production tree for a specific item ID
-    public ProductionTreeNode buildTree(int rootItemId) {
-        Item rootItem = findItemById(rootItemId);
-        if (rootItem == null) {
-            throw new IllegalArgumentException("Item with ID " + rootItemId + " not found.");
-        }
-
-        // Create the root node
+    // Method to build the production tree for a specific item ID
+    public ProductionTreeNode buildTree(int itemId) {
+        // Get the item and its operation
+        Item rootItem = findItemById(itemId);
         ProductionTreeNode rootNode = new ProductionTreeNode(rootItem);
 
-        // Initialize visited sets
-        visitedItems = new HashSet<>();
-        visitedOperations = new HashSet<>();
-
-        // Recursively build the tree
-        buildProductionTree(rootNode);
+        // Use a Set to track visited items and avoid infinite recursion
+        Set<Integer> visitedItems = new HashSet<>();
+        buildSubTree(rootNode, visitedItems);
 
         return rootNode;
     }
 
-    private void buildProductionTree(ProductionTreeNode node) {
-        // Handle operations first, if they are part of this node
-        if (node.getItem() != null) {
-            Integer itemId = node.getItem().getId();
+    // Method to build the subtree for a given node (recursively)
+    private void buildSubTree(ProductionTreeNode node, Set<Integer> visitedItems) {
+        Item item = node.getItem();
 
-            if (visitedItems.contains(itemId)) {
-                return;  // Skip if the item has already been processed
-            }
-
-            visitedItems.add(itemId);  // Mark the item as visited
-
-            // Check if the item has subcomponents (either operations or items)
-            if (booData.containsKey(itemId)) {
-                List<int[]> subcomponents = booData.get(itemId);
-                for (int[] component : subcomponents) {
-                    int componentId = component[0];
-                    double quantity = component[1] / 1000.0;  // Convert to decimal (if necessary)
-
-                    // Check if the component is an operation
-                    Operation operation = findOperationById(componentId);
-                    if (operation != null) {
-                        // First, add the operation node
-                        ProductionTreeNode operationNode = new ProductionTreeNode(operation);
-                        node.addChild(operationNode);
-
-                        // Recursively build the tree for the operation
-                        buildProductionTree(operationNode);
-                    } else {
-                        // If it's an item, add the item node
-                        Item subItem = findItemById(componentId);
-                        if (subItem != null) {
-                            ProductionTreeNode subItemNode = new ProductionTreeNode(subItem);
-                            subItemNode.setQuantity(quantity);
-                            node.addChild(subItemNode);
-
-                            // Recursively build the tree for the sub-item
-                            buildProductionTree(subItemNode);
-                        } else {
-                            System.err.println("Item or operation with ID " + componentId + " not found.");
-                        }
-                    }
-                }
-            }
+        // If this item has been visited, return immediately to prevent infinite recursion
+        if (visitedItems.contains(item.getId())) {
+            return;
         }
 
-        // Handle operations: check if this node is an operation
-        if (node.getOperation() != null) {
-            Integer operationId = node.getOperation().getId();
+        // Mark the current item as visited
+        visitedItems.add(item.getId());
 
-            if (visitedOperations.contains(operationId)) {
-                return;  // Skip if the operation has already been processed
+        // Check if this item has any subcomponents or operations
+        if (booData.containsKey(item.getId())) {
+            List<int[]> subcomponents = booData.get(item.getId());
+
+            for (int[] subcomponent : subcomponents) {
+                int subItemId = subcomponent[0];
+                double quantity = subcomponent[1] / 1000.0;
+
+                Item subItem = findItemById(subItemId);
+                Operation operation = findOperationByItemId(item.getId());
+
+                // Create a new production tree node for the subcomponent
+                ProductionTreeNode subNode = new ProductionTreeNode(subItem);
+                subNode.setQuantity(quantity);
+
+                // Add the operation if needed
+                if (operation != null) {
+                    ProductionTreeNode operationNode = new ProductionTreeNode(operation);
+                    subNode.addChild(operationNode);
+                }
+
+                // Add subcomponent node to the current node
+                node.addChild(subNode);
+
+                // Recurse to build the subtree for the subcomponent
+                buildSubTree(subNode, visitedItems);
             }
-
-            visitedOperations.add(operationId);  // Mark the operation as visited
-
-            // Operations don't have children, but we may want to handle them here if necessary
         }
     }
-
-
-
-
 
     // Helper method to find an item by its ID
-    private Item findItemById(int itemId) {
-        for (Item item : items) {
-            if (item.getId() == itemId) {
-                return item;
-            }
-        }
-        return null;
+    private Item findItemById(int id) {
+        return items.stream()
+                .filter(item -> item.getId() == id)
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Item not found for ID: " + id));
     }
 
-    // Helper method to find an operation by its ID
-    private Operation findOperationById(int operationId) {
-        for (Operation operation : operations) {
-            if (operation.getId() == operationId) {
-                return operation;
-            }
-        }
-        return null;
+    // Helper method to find an operation by item ID
+    private Operation findOperationByItemId(int itemId) {
+        // Find the corresponding operation for the item from the operations list
+        return operations.stream()
+                .filter(operation -> booData.containsKey(itemId))
+                .findFirst()
+                .orElse(null);  // Or handle a case where no operation is found
     }
 }
