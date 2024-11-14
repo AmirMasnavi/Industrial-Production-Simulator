@@ -236,31 +236,32 @@ public class MenuItem {
             List<Operation> operations = CSVReader.readOperationsFromCSV("./operations.csv");
             Map<Integer, List<int[]>> booData = CSVReader.readBooFromCSV("./boo.csv");
 
-            // Test: Print items
-            System.out.println("Items:");
-            items.forEach(item -> System.out.println("ID: " + item.getId() + ", Name: " + item.getName()));
-
-            // Test: Print operations
-            System.out.println("\nOperations:");
-            operations.forEach(operation -> System.out.println("ID: " + operation.getId() + ", Name: " + operation.getName()));
-
-            // Test: Print boo data
-            System.out.println("\nBoo Data:");
-            booData.forEach((itemId, subcomponents) -> {
-                System.out.println("Item ID: " + itemId);
-                subcomponents.forEach(subcomponent ->
-                        System.out.println("  SubItem ID: " + subcomponent[0] + ", Quantity: " + (subcomponent[1] / 1000.0))
-                );
-            });
-
-//            // Create the simulator with the loaded data
-//            ProductionTreeBuilder treeBuilder = new ProductionTreeBuilder(items, operations, booData);
-//            ProductionTreeNode root = treeBuilder.buildProductionTree(1006); // Example product ID
+//            // Test: Print items
+//            System.out.println("Items:");
+//            items.forEach(item -> System.out.println("ID: " + item.getId() + ", Name: " + item.getName()));
 //
-//            ProductionTreePrinter printer = new ProductionTreePrinter();
-//            printer.printProductionTree(root, "");
+//            // Test: Print operations
+//            System.out.println("\nOperations:");
+//            operations.forEach(operation -> System.out.println("ID: " + operation.getId() + ", Name: " + operation.getName()));
 //
-//            System.out.println("\nProduction tree completed.");
+//            // Test: Print boo data
+//            System.out.println("\nBoo Data:");
+//            booData.forEach((itemId, subcomponents) -> {
+//                System.out.println("Item ID: " + itemId);
+//                subcomponents.forEach(subcomponent ->
+//                        System.out.println("  SubItem ID: " + subcomponent[0] + ", Quantity: " + (subcomponent[1] / 1000.0))
+//                );
+//            });
+
+        // Create a ProductionTreeBuilder with the read data
+        ProductionTreeBuilder treeBuilder = new ProductionTreeBuilder(items, operations, booData);
+
+        // Build the production tree for item ID 1001
+        ProductionTreeNode rootNode = treeBuilder.buildTree(1001);
+
+        // Print the production tree
+        ProductionTreePrinter printer = new ProductionTreePrinter(booData);
+        printer.printTree(rootNode);
     }
 
     /**
