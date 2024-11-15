@@ -33,7 +33,7 @@ public class ProductionTreeSearcher {
             idMap.put(String.valueOf(node.getItem().getId()), node);
         } else if (node.getOperation() != null) {
             nameMap.put(node.getOperation().getName(), node);
-            idMap.put("" + node.getOperation().getId(), node);
+            idMap.put(String.valueOf(node.getOperation().getId()), node);
         }
 
         // Update the node's parent operation reference
