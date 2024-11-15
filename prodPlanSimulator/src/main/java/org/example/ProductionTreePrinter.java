@@ -4,35 +4,49 @@ import java.util.List;
 import java.util.Map;
 
 public class ProductionTreePrinter {
+    private final Map<Integer, List<int[]>> booData;
 
-    private Map<Integer, List<int[]>> booData;
-
-    // Constructor to initialize with booData
+    // Constructor
     public ProductionTreePrinter(Map<Integer, List<int[]>> booData) {
         this.booData = booData;
     }
 
-    // Method to print the production tree starting from the root node
+    // Entry point to print the tree with title and quantity
     public void printTree(ProductionTreeNode rootNode) {
+        System.out.println("Production Tree:");
         printNode(rootNode, "", true);
     }
 
-    // Helper method to print a single node with the correct indentation
-    private void printNode(ProductionTreeNode node, String indent, boolean isLast) {
-        // Print item
-        if (node.getItem() != null) {
-            System.out.println(indent + (isLast ? "└── " : "├── ") + "<Item> " + node.getItem().getName() + " (Quantity: " + node.getQuantity() + ")");
-        }
-
-        // Print operation
+    // Recursive method to print each node with quantity and formatting
+    private void printNode(ProductionTreeNode node, String prefix, boolean isLast) {
+        // Format for Operation first, before Item
         if (node.getOperation() != null) {
-            System.out.println(indent + (isLast ? "└── " : "├── ") + "[Operation] " + node.getOperation().getName());
+            System.out.print(prefix);
+            System.out.print(isLast ? "└── " : "├── ");
+            System.out.println("[Op" + node.getOperation().getId() + "]: " + node.getOperation().getName());
         }
 
-        // Recurse through children
-        for (int i = 0; i < node.getChildren().size(); i++) {
-            printNode(node.getChildren().get(i), indent + (isLast ? "    " : "│   "), i == node.getChildren().size() - 1);
+        // Format for Item with quantity
+        if (node.getItem() != null) {
+            System.out.print(prefix);
+            System.out.print(isLast ? "└── " : "├── ");
+            System.out.print(node.getItem().getName() + " (Item " + node.getItem().getId() + ")");
+            if (node.getQuantity() > 0) {
+                System.out.print(" - Quantity: " + node.getQuantity());
+            }
+            System.out.println();
+        }
+
+        // Handle subcomponents or material
+        if (node.getChildren().isEmpty() && node.getItem() != null && booData.get(node.getItem().getId()) == null) {
+            System.out.print(prefix);
+            System.out.println(isLast ? "    └─ Material: " + node.getItem().getName() : "    ├─ Material: " + node.getItem().getName());
+        } else {
+            // Recurse for children
+            List<ProductionTreeNode> children = node.getChildren();
+            for (int i = 0; i < children.size(); i++) {
+                printNode(children.get(i), prefix + (isLast ? "    " : "│   "), i == children.size() - 1);
+            }
         }
     }
 }
-

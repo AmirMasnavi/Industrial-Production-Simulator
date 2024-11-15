@@ -122,7 +122,10 @@ public class CSVReader {
     }
 
 
-    public static Map<Integer, List<int[]>> readBooFromCSV(String filePath) {
+    public static Map<Integer, List<int[]>> readBooFromCSV(
+            String filePath,
+            Map<Integer, Integer> operationToItemMap // Pass this map to populate
+    ) {
         Map<Integer, List<int[]>> booData = new HashMap<>();
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             br.readLine(); // Skip header
@@ -132,11 +135,14 @@ public class CSVReader {
                     int itemId = Integer.parseInt(fields[0]);
                     int opId = Integer.parseInt(fields[1]);
 
+                    // Map op_id to item_id for future lookup
+                    operationToItemMap.put(opId, itemId);
+
                     List<int[]> subcomponents = new ArrayList<>();
                     for (int i = 2; i < fields.length; i += 2) {
                         int subItemId = Integer.parseInt(fields[i]);
                         double quantity = Double.parseDouble(fields[i + 1].replace(",", "."));
-                        subcomponents.add(new int[]{subItemId, (int)(quantity * 1000)}); // Store as integer
+                        subcomponents.add(new int[]{subItemId, (int) (quantity * 1000)});
                     }
 
                     booData.put(itemId, subcomponents);
@@ -149,4 +155,5 @@ public class CSVReader {
         }
         return booData;
     }
+
 }

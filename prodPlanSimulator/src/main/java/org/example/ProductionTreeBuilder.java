@@ -18,57 +18,48 @@ public class ProductionTreeBuilder {
         this.booData = booData;
     }
 
-    // Method to build the production tree for a specific item ID
-    public ProductionTreeNode buildTree(int itemId) {
-        // Get the item and its operation
+    public ProductionTreeNode buildTree(int itemId, Map<Integer, Integer> operationToItemMap) {
         Item rootItem = findItemById(itemId);
         ProductionTreeNode rootNode = new ProductionTreeNode(rootItem);
 
-        // Use a Set to track visited items and avoid infinite recursion
         Set<Integer> visitedItems = new HashSet<>();
-        buildSubTree(rootNode, visitedItems);
+        buildSubTree(rootNode, visitedItems, operationToItemMap);
 
         return rootNode;
     }
 
     // Method to build the subtree for a given node (recursively)
-    private void buildSubTree(ProductionTreeNode node, Set<Integer> visitedItems) {
+    private void buildSubTree(ProductionTreeNode node, Set<Integer> visitedItems, Map<Integer, Integer> operationToItemMap) {
         Item item = node.getItem();
 
-        // If this item has been visited, return immediately to prevent infinite recursion
         if (visitedItems.contains(item.getId())) {
             return;
         }
 
-        // Mark the current item as visited
         visitedItems.add(item.getId());
 
-        // Check if this item has any subcomponents or operations
         if (booData.containsKey(item.getId())) {
             List<int[]> subcomponents = booData.get(item.getId());
 
+            // Find and add the operation directly under the item node
+            Operation operation = findOperationByItemId(item.getId(), operationToItemMap);
+            if (operation != null) {
+                ProductionTreeNode operationNode = new ProductionTreeNode(operation);
+                node.addChild(operationNode); // Add operation as a direct child of the item
+            }
+
+            // Add subcomponents recursively
             for (int[] subcomponent : subcomponents) {
                 int subItemId = subcomponent[0];
                 double quantity = subcomponent[1] / 1000.0;
 
                 Item subItem = findItemById(subItemId);
-                Operation operation = findOperationByItemId(item.getId());
 
-                // Create a new production tree node for the subcomponent
                 ProductionTreeNode subNode = new ProductionTreeNode(subItem);
                 subNode.setQuantity(quantity);
 
-                // Add the operation if needed
-                if (operation != null) {
-                    ProductionTreeNode operationNode = new ProductionTreeNode(operation);
-                    subNode.addChild(operationNode);
-                }
-
-                // Add subcomponent node to the current node
                 node.addChild(subNode);
-
-                // Recurse to build the subtree for the subcomponent
-                buildSubTree(subNode, visitedItems);
+                buildSubTree(subNode, visitedItems, operationToItemMap);
             }
         }
     }
@@ -82,11 +73,11 @@ public class ProductionTreeBuilder {
     }
 
     // Helper method to find an operation by item ID
-    private Operation findOperationByItemId(int itemId) {
-        // Find the corresponding operation for the item from the operations list
+    private Operation findOperationByItemId(int itemId, Map<Integer, Integer> operationToItemMap) {
         return operations.stream()
-                .filter(operation -> booData.containsKey(itemId))
+                .filter(operation -> operationToItemMap.get(operation.getId()) != null
+                        && operationToItemMap.get(operation.getId()) == itemId)
                 .findFirst()
-                .orElse(null);  // Or handle a case where no operation is found
+                .orElse(null); // Return null if no operation is found
     }
 }
