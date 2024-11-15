@@ -240,7 +240,7 @@ public class MenuItem {
         ProductionTreeBuilder treeBuilder = new ProductionTreeBuilder(items, operations, booData);
 
         // Build the production tree for item ID 1001
-        ProductionTreeNode rootNode = treeBuilder.buildTree(1004, operationToItemMap);
+        ProductionTreeNode rootNode = treeBuilder.buildTree(1001, operationToItemMap);
 
         // Print the production tree
         ProductionTreePrinter printer = new ProductionTreePrinter(booData);
