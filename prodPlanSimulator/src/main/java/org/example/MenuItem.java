@@ -1,9 +1,6 @@
 package org.example;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 
 /**
  * This class represents the menu system for the application.
@@ -231,36 +228,23 @@ public class MenuItem {
     }
 
     private static void productionTree() {
-            // Load data from CSV files
-            List<Item> items = CSVReader.readItemsFromCSV("./items.csv");
-            List<Operation> operations = CSVReader.readOperationsFromCSV("./operations.csv");
-            Map<Integer, List<int[]>> booData = CSVReader.readBooFromCSV("./boo.csv");
+        // Load data from CSV files
+        List<Item> items = CSVReader.readItemsFromCSV("./items.csv");
+        List<Operation> operations = CSVReader.readOperationsFromCSV("./operations.csv");
 
-            // Test: Print items
-            System.out.println("Items:");
-            items.forEach(item -> System.out.println("ID: " + item.getId() + ", Name: " + item.getName()));
+        // Create a map to store the mapping between op_id and item_id
+        Map<Integer, Integer> operationToItemMap = new HashMap<>();
+        Map<Integer, List<int[]>> booData = CSVReader.readBooFromCSV("./boo.csv", operationToItemMap);
 
-            // Test: Print operations
-            System.out.println("\nOperations:");
-            operations.forEach(operation -> System.out.println("ID: " + operation.getId() + ", Name: " + operation.getName()));
+        // Create a ProductionTreeBuilder with the read data
+        ProductionTreeBuilder treeBuilder = new ProductionTreeBuilder(items, operations, booData);
 
-            // Test: Print boo data
-            System.out.println("\nBoo Data:");
-            booData.forEach((itemId, subcomponents) -> {
-                System.out.println("Item ID: " + itemId);
-                subcomponents.forEach(subcomponent ->
-                        System.out.println("  SubItem ID: " + subcomponent[0] + ", Quantity: " + (subcomponent[1] / 1000.0))
-                );
-            });
+        // Build the production tree for item ID 1001
+        ProductionTreeNode rootNode = treeBuilder.buildTree(1004, operationToItemMap);
 
-//            // Create the simulator with the loaded data
-//            ProductionTreeBuilder treeBuilder = new ProductionTreeBuilder(items, operations, booData);
-//            ProductionTreeNode root = treeBuilder.buildProductionTree(1006); // Example product ID
-//
-//            ProductionTreePrinter printer = new ProductionTreePrinter();
-//            printer.printProductionTree(root, "");
-//
-//            System.out.println("\nProduction tree completed.");
+        // Print the production tree
+        ProductionTreePrinter printer = new ProductionTreePrinter(booData);
+        printer.printTree(rootNode);
     }
 
     /**

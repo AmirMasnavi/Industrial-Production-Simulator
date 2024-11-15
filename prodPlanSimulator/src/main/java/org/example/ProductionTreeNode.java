@@ -4,28 +4,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ProductionTreeNode {
-    private Item item;          // The item at this node
-    private Operation operation; // The operation at this node
-    private List<ProductionTreeNode> children; // List of child nodes
+    private Item item;
+    private Operation operation;
+    private List<ProductionTreeNode> children = new ArrayList<>();
+    private double quantity; // Store quantity as a field
 
-    // Constructor for an item node
+    // Constructor for Item
     public ProductionTreeNode(Item item) {
         this.item = item;
-        this.children = new ArrayList<>();
     }
 
-    // Constructor for an operation node
+    // Constructor for Operation
     public ProductionTreeNode(Operation operation) {
         this.operation = operation;
-        this.children = new ArrayList<>();
     }
 
-    // Add child node
-    public void addChild(ProductionTreeNode child) {
-        this.children.add(child);
-    }
-
-    // Getters and Setters
+    // Getter and setter for item
     public Item getItem() {
         return item;
     }
@@ -34,6 +28,7 @@ public class ProductionTreeNode {
         this.item = item;
     }
 
+    // Getter and setter for operation
     public Operation getOperation() {
         return operation;
     }
@@ -42,37 +37,39 @@ public class ProductionTreeNode {
         this.operation = operation;
     }
 
-    public List<ProductionTreeNode> getChildren() {
-        return children;
+    // Getter and setter for quantity
+    public double getQuantity() {
+        return quantity;
     }
 
-    public void setChildren(List<ProductionTreeNode> children) {
-        this.children = children;
+    public void setQuantity(double quantity) {
+        this.quantity = quantity;
+    }
+
+    // Add child node
+    public void addChild(ProductionTreeNode child) {
+        children.add(child);
+    }
+
+    // Get children nodes
+    public List<ProductionTreeNode> getChildren() {
+        return children;
     }
 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("ProductionTreeNode{");
-        boolean hasItem = item != null;
-        boolean hasOperation = operation != null;
-
-        if (hasItem) {
+        if (item != null) {
             sb.append("item=").append(item);
         }
-
-        if (hasItem && hasOperation) {
-            sb.append(", ");
-        }
-
-        if (hasOperation) {
+        if (operation != null) {
             sb.append("operation=").append(operation);
         }
-
+        if (quantity != 0) {
+            sb.append(", quantity=").append(quantity); // Display quantity if present
+        }
         sb.append("}");
         return sb.toString();
     }
-
 }
-
-
