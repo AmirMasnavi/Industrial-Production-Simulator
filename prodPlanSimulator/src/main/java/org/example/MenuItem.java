@@ -245,6 +245,14 @@ public class MenuItem {
         // Print the production tree
         ProductionTreePrinter printer = new ProductionTreePrinter(booData);
         printer.printTree(rootNode);
+
+        // Create and use the searcher
+        ProductionTreeSearcher searcher = new ProductionTreeSearcher();
+        searcher.indexTree(rootNode); // Index the tree for searching
+        // Search examples
+        System.out.println(searcher.search("bench seat w/nut")); // Search by name
+        System.out.println(searcher.search("1004")); // Search by ID
+        System.out.println(searcher.search("17")); // Search for operation
     }
 
     /**

@@ -8,6 +8,7 @@ public class ProductionTreeNode {
     private Operation operation;
     private List<ProductionTreeNode> children = new ArrayList<>();
     private double quantity; // Store quantity as a field
+    private Operation parentOperation;
 
     // Constructor for Item
     public ProductionTreeNode(Item item) {
@@ -54,6 +55,14 @@ public class ProductionTreeNode {
     // Get children nodes
     public List<ProductionTreeNode> getChildren() {
         return children;
+    }
+
+    public Operation getParentOperation() {
+        return parentOperation;
+    }
+
+    public void setParentOperation(Operation parentOperation) {
+        this.parentOperation = parentOperation;
     }
 
     @Override
