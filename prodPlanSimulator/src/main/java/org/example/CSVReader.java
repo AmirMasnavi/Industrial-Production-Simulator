@@ -132,10 +132,11 @@ public class CSVReader {
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             br.readLine(); // Skip header
             br.lines().forEach(line -> {
+//                System.out.println("Processing line: " + line); // Debugging: Print current line
                 try {
                     String[] fields = line.split(";");
-                    int itemId = Integer.parseInt(fields[0]);
-                    int opId = Integer.parseInt(fields[1]);
+                    int opId = Integer.parseInt(fields[0]);
+                    int itemId = Integer.parseInt(fields[1]);
                     double itemQty = Double.parseDouble(fields[2].replace(",", "."));
 
                     // Store the item quantity
@@ -145,13 +146,38 @@ public class CSVReader {
                     operationToItemMap.put(opId, itemId);
 
                     List<int[]> subcomponents = new ArrayList<>();
-                    for (int i = 3; i < fields.length; i += 2) {
-                        int subItemId = Integer.parseInt(fields[i]);
-                        double quantity = Double.parseDouble(fields[i + 1].replace(",", "."));
-                        subcomponents.add(new int[]{subItemId, (int) (quantity * 1000)});
+                    boolean insideGroup = false;
+
+                    for (int i = 3; i < fields.length; i++) {
+                        String field = fields[i];
+
+                        if (field.equals("(")) {
+                            insideGroup = true;
+//                            System.out.println("Entering group at index " + i); // Debugging
+                            continue;
+                        }
+                        if (field.equals(")")) {
+                            insideGroup = false;
+//                            System.out.println("Exiting group at index " + i); // Debugging
+                            continue;
+                        }
+                        if (field.isEmpty()) {
+//                            System.out.println("Skipping empty field at index " + i); // Debugging
+                            continue;
+                        }
+
+                        try {
+                            int subItemId = Integer.parseInt(field);
+                            double quantity = Double.parseDouble(fields[++i].replace(",", "."));
+                            subcomponents.add(new int[]{subItemId, (int) (quantity * 1000)});
+//                            System.out.println("Parsed subcomponent: " + subItemId + " with quantity " + quantity); // Debugging
+                        } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
+                            System.err.println("Error parsing subcomponent at index " + i + ": " + e.getMessage());
+                        }
                     }
 
                     booData.put(itemId, subcomponents);
+//                    System.out.println("Parsed subcomponents for item " + itemId + ": " + subcomponents); // Debugging
                 } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
                     System.err.println("Error parsing line: " + line + ". " + e.getMessage());
                 }
@@ -162,5 +188,6 @@ public class CSVReader {
 
         return new BooDataResult(booData, itemQuantities);
     }
+
 
 }
