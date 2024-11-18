@@ -65,6 +65,15 @@ public class ProductionTreeNode {
         this.parentOperation = parentOperation;
     }
 
+    // Methods to get item ID and item name
+    public int getItemId() {
+        return item != null ? item.getId() : -1; // Return -1 if item is null
+    }
+
+    public String getItemName() {
+        return item != null ? item.getName() : "Unknown Item"; // Return "Unknown Item" if item is null
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();

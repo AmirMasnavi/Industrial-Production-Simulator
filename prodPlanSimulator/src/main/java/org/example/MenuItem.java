@@ -285,6 +285,17 @@ public class MenuItem {
 
         System.out.println("\nMaterials Sorted by Quantity (Decreasing Order):");
         materialBST.displayInReverseOrder();
+
+        // Initialize the QualityCheckManager
+        QualityCheckManager qualityCheckManager = new QualityCheckManager();
+
+        // Start adding quality checks to the queue based on their depth in the production tree
+        qualityCheckManager.addQualityCheckBasedOnDepth(rootNode, 1); // Start from the root with depth 0
+
+
+        // Perform quality checks one by one in priority order
+        System.out.println("\nPerforming Quality Checks in Priority Order:");
+        qualityCheckManager.processQualityChecksInReverse();
     }
 
     /**
