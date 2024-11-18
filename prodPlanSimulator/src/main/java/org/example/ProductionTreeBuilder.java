@@ -7,10 +7,10 @@ import java.util.Set;
 
 public class ProductionTreeBuilder {
 
-    private List<Item> items;
-    private List<Operation> operations;
-    private Map<Integer, List<int[]>> booData;
-    private Map<Integer, Integer> itemQuantities;
+    private final List<Item> items;
+    private final List<Operation> operations;
+    private final Map<Integer, List<int[]>> booData;
+    private final Map<Integer, Integer> itemQuantities;
 
     // Constructor to initialize the builder with data
     public ProductionTreeBuilder(List<Item> items, List<Operation> operations, Map<Integer, List<int[]>> booData, Map<Integer, Integer> itemQuantities) {
