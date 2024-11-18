@@ -234,16 +234,16 @@ public class MenuItem {
 
         // Create a map to store the mapping between op_id and item_id
         Map<Integer, Integer> operationToItemMap = new HashMap<>();
-        Map<Integer, List<int[]>> booData = CSVReader.readBooFromCSV("./boo.csv", operationToItemMap);
+        BooDataResult booDataResult = CSVReader.readBooFromCSV("./boo.csv", operationToItemMap);
 
         // Create a ProductionTreeBuilder with the read data
-        ProductionTreeBuilder treeBuilder = new ProductionTreeBuilder(items, operations, booData);
+        ProductionTreeBuilder treeBuilder = new ProductionTreeBuilder(items, operations, booDataResult.booData, booDataResult.itemQuantities);
 
         // Build the production tree for item ID 1001
-        ProductionTreeNode rootNode = treeBuilder.buildTree(1001, operationToItemMap);
+        ProductionTreeNode rootNode = treeBuilder.buildTree(1011, operationToItemMap);
 
         // Print the production tree
-        ProductionTreePrinter printer = new ProductionTreePrinter(booData);
+        ProductionTreePrinter printer = new ProductionTreePrinter(booDataResult.booData);
         printer.printTree(rootNode);
 
         // Create and use the searcher

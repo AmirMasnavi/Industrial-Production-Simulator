@@ -122,11 +122,13 @@ public class CSVReader {
     }
 
 
-    public static Map<Integer, List<int[]>> readBooFromCSV(
+    public static BooDataResult readBooFromCSV(
             String filePath,
             Map<Integer, Integer> operationToItemMap // Pass this map to populate
     ) {
         Map<Integer, List<int[]>> booData = new HashMap<>();
+        Map<Integer, Integer> itemQuantities = new HashMap<>();
+
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             br.readLine(); // Skip header
             br.lines().forEach(line -> {
@@ -134,12 +136,16 @@ public class CSVReader {
                     String[] fields = line.split(";");
                     int itemId = Integer.parseInt(fields[0]);
                     int opId = Integer.parseInt(fields[1]);
+                    double itemQty = Double.parseDouble(fields[2].replace(",", "."));
+
+                    // Store the item quantity
+                    itemQuantities.put(itemId, (int) (itemQty * 1000));
 
                     // Map op_id to item_id for future lookup
                     operationToItemMap.put(opId, itemId);
 
                     List<int[]> subcomponents = new ArrayList<>();
-                    for (int i = 2; i < fields.length; i += 2) {
+                    for (int i = 3; i < fields.length; i += 2) {
                         int subItemId = Integer.parseInt(fields[i]);
                         double quantity = Double.parseDouble(fields[i + 1].replace(",", "."));
                         subcomponents.add(new int[]{subItemId, (int) (quantity * 1000)});
@@ -153,7 +159,8 @@ public class CSVReader {
         } catch (IOException e) {
             System.err.println("Error reading file: " + e.getMessage());
         }
-        return booData;
+
+        return new BooDataResult(booData, itemQuantities);
     }
 
 }
