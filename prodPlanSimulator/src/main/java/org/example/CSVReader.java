@@ -146,23 +146,18 @@ public class CSVReader {
                     operationToItemMap.put(opId, itemId);
 
                     List<int[]> subcomponents = new ArrayList<>();
-                    boolean insideGroup = false;
+//                    boolean insideGroup = false;
 
                     for (int i = 3; i < fields.length; i++) {
                         String field = fields[i];
 
                         if (field.equals("(")) {
-                            insideGroup = true;
-//                            System.out.println("Entering group at index " + i); // Debugging
                             continue;
                         }
                         if (field.equals(")")) {
-                            insideGroup = false;
-//                            System.out.println("Exiting group at index " + i); // Debugging
                             continue;
                         }
                         if (field.isEmpty()) {
-//                            System.out.println("Skipping empty field at index " + i); // Debugging
                             continue;
                         }
 
@@ -170,14 +165,12 @@ public class CSVReader {
                             int subItemId = Integer.parseInt(field);
                             double quantity = Double.parseDouble(fields[++i].replace(",", "."));
                             subcomponents.add(new int[]{subItemId, (int) (quantity * 1000)});
-//                            System.out.println("Parsed subcomponent: " + subItemId + " with quantity " + quantity); // Debugging
                         } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
                             System.err.println("Error parsing subcomponent at index " + i + ": " + e.getMessage());
                         }
                     }
 
                     booData.put(itemId, subcomponents);
-//                    System.out.println("Parsed subcomponents for item " + itemId + ": " + subcomponents); // Debugging
                 } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
                     System.err.println("Error parsing line: " + line + ". " + e.getMessage());
                 }

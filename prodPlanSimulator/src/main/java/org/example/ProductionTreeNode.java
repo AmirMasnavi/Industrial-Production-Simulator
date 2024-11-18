@@ -6,7 +6,7 @@ import java.util.List;
 public class ProductionTreeNode {
     private Item item;
     private Operation operation;
-    private List<ProductionTreeNode> children = new ArrayList<>();
+    private final List<ProductionTreeNode> children = new ArrayList<>();
     private double quantity; // Store quantity as a field
     private Operation parentOperation;
 
