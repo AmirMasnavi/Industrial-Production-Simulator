@@ -165,6 +165,11 @@ public class CSVReader {
                             int subItemId = Integer.parseInt(field);
                             double quantity = Double.parseDouble(fields[++i].replace(",", "."));
                             subcomponents.add(new int[]{subItemId, (int) (quantity * 1000)});
+                            if (subItemId > 999) {
+                                itemQuantities.put(subItemId, (int) (quantity * 1000));
+                            }
+
+
                         } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
                             System.err.println("Error parsing subcomponent at index " + i + ": " + e.getMessage());
                         }

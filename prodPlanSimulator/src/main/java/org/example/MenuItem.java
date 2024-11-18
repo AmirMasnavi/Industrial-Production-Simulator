@@ -253,6 +253,38 @@ public class MenuItem {
         System.out.println(searcher.search("bench seat w/nut")); // Search by name
         System.out.println(searcher.search("1004")); // Search by ID
         System.out.println(searcher.search("17")); // Search for operation
+
+        System.out.println("Item Quantities:");
+        booDataResult.itemQuantities.forEach((itemId, quantity) -> {
+            System.out.println("Item ID: " + itemId + ", Quantity: " + quantity);
+        });
+
+
+        // Create a MaterialBST to track materials by quantity
+        MaterialBST materialBST = new MaterialBST();
+
+        // Populate the MaterialBST with item quantities from booDataResult
+        for (Map.Entry<Integer, Integer> entry : booDataResult.itemQuantities.entrySet()) {
+            int itemId = entry.getKey();
+            int quantity = entry.getValue();
+
+            // Find the item name from the items list
+            String itemName = items.stream()
+                    .filter(item -> item.getId() == itemId)
+                    .map(Item::getName)
+                    .findFirst()
+                    .orElse("Unknown Item");
+
+            // Insert the item name and quantity into the MaterialBST
+            materialBST.insert(quantity, itemName);
+        }
+
+        // Display materials sorted by quantities
+        System.out.println("\nMaterials Sorted by Quantity (Increasing Order):");
+        materialBST.displayInOrder();
+
+        System.out.println("\nMaterials Sorted by Quantity (Decreasing Order):");
+        materialBST.displayInReverseOrder();
     }
 
     /**
