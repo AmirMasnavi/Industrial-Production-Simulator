@@ -1,60 +1,67 @@
 package org.example;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
 
-public class ProductionTreeBuilderTest {
+import static org.junit.jupiter.api.Assertions.*;
 
-    private ProductionTreeBuilder builder;
+class ProductionTreeBuilderTest {
+
     private List<Item> items;
     private List<Operation> operations;
     private Map<Integer, List<int[]>> booData;
-    private Map<Integer, Integer> operationToItemMap;
+    private Map<Integer, Integer> itemQuantities;
+    private ProductionTreeBuilder builder;
 
     @BeforeEach
     void setUp() {
-        // Setup mock data for items
-        items = new ArrayList<>();
-        Item item1 = new Item(1, "Item1");
-        Item item2 = new Item(2, "Item2");
-        Item item3 = new Item(3, "Item3");
-        items.add(item1);
-        items.add(item2);
-        items.add(item3);
+        items = Arrays.asList(
+                new Item(1, "Root Item"),
+                new Item(2, "Sub Item 1"),
+                new Item(3, "Sub Item 2")
+        );
 
-        // Setup mock data for operations
-        operations = new ArrayList<>();
-        Operation op1 = new Operation(1, "Operation1");
-        operations.add(op1);
+        operations = Arrays.asList(
+                new Operation(10, "Operation 1"),
+                new Operation(11, "Operation 2")
+        );
 
-        // Setup BOO data (subcomponents)
         booData = new HashMap<>();
-        booData.put(1, Arrays.asList(new int[]{2, 5000}, new int[]{3, 3000}));
+        booData.put(1, Arrays.asList(new int[]{2, 1000}, new int[]{10, 500}));
+        booData.put(2, Arrays.asList(new int[]{3, 2000}));
 
-        // Setup operation to item map
-        operationToItemMap = new HashMap<>();
-        operationToItemMap.put(op1.getId(), item1.getId());
+        itemQuantities = new HashMap<>();
+        itemQuantities.put(1, 2000);
+        itemQuantities.put(2, 3000);
 
-        builder = new ProductionTreeBuilder(items, operations, booData);
+        builder = new ProductionTreeBuilder(items, operations, booData, itemQuantities);
     }
 
+
     @Test
-    void testBuildTree() {
-        ProductionTreeNode rootNode = builder.buildTree(1, operationToItemMap);
+    void testBuildTreeWithNonExistentItem() {
+        Map<Integer, Integer> operationToItemMap = new HashMap<>();
 
-        // Check if the root node is the expected item
-        assertEquals("Item1", rootNode.getItem().getName());
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            builder.buildTree(99, operationToItemMap);
+        });
 
-        // Check if the child nodes exist as expected
-        List<ProductionTreeNode> children = rootNode.getChildren();
-        assertEquals(3, children.size());  // One operation node and two subcomponent nodes
+        assertEquals("Item not found for ID: 99", exception.getMessage());
+    }
 
-        assertEquals("Operation1", children.get(0).getOperation().getName());  // Operation node
-        assertEquals("Item2", children.get(1).getItem().getName());  // Subcomponent 1
-        assertEquals("Item3", children.get(2).getItem().getName());  // Subcomponent 2
+
+    @Test
+    void testBuildTreeWithNoSubComponents() {
+        booData.clear(); // No subcomponents for any item
+
+        Map<Integer, Integer> operationToItemMap = new HashMap<>();
+        ProductionTreeNode root = builder.buildTree(1, operationToItemMap);
+
+        // Verify the tree contains only the root item
+        assertEquals("Root Item", root.getItem().getName());
+        assertEquals(2.0, root.getQuantity());
+        assertTrue(root.getChildren().isEmpty());
     }
 }
