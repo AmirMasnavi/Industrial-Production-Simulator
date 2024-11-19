@@ -1,0 +1,27 @@
+@startuml
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+title System Sequence Diagram (SSD) - Identify and Prioritize Critical Path Operations
+
+autonumber
+
+actor "Production Manager" as ProductionManager
+participant ":System" as System
+
+activate ProductionManager
+
+    ProductionManager -> System : Request critical path identification
+    activate System
+
+        System -> System : Traverse production tree
+        System -> System : Identify operations with highest dependencies (depth)
+        System -> System : Prioritize operations using heap-based priority queue
+
+        System --> ProductionManager : Returns prioritized critical path
+
+    deactivate System
+deactivate ProductionManager
+
+@enduml
