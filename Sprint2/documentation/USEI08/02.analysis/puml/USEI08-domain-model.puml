@@ -2,61 +2,25 @@
 skinparam monochrome true
 skinparam packageStyle rectangle
 skinparam shadowing false
-skinparam classAttributeIconSize 0
 
-hide circle
-hide methods
+title System Sequence Diagram (SSD) - Search for Specific Operation or Material
 
-title Domain Model - Build Production Tree
+autonumber
 
-class ProductionManager {
-    name
-    email
-    password
-    role
-    phone: String
-    buildProductionTree
-    manageProducts
-    viewProductionDetails
-}
+actor "Production Manager" as ProductionManager
+participant ":System" as System
 
-class ProductionTree {
-    id
-    itemName
-    operations
-    components
-    materials
-}
+activate ProductionManager
 
-class Operation {
-    id
-    name
-    time
-    dependencies
-}
+    ProductionManager -> System : Search for operation/material by ID or name
+    activate System
 
-class Component {
-    id
-    name
-    quantity
-}
+        System -> System : Look up operation/material in map
+        System -> System : Retrieve node details (type, quantity, parent operation)
 
-class Material {
-    id
-    name
-    quantity
-}
+        System --> ProductionManager : Returns node details (type, quantity, parent)
 
-class CSVImporter {
-    importOperations
-    importComponents
-    importMaterials
-}
+    deactivate System
+deactivate ProductionManager
 
-ProductionManager "1" - "1" CSVImporter : uses >
-CSVImporter "1" - "1" ProductionTree : creates >
-ProductionTree "1" - "*" Operation : contains >
-ProductionTree "1" - "*" Component : contains >
-ProductionTree "1" - "*" Material : contains >
-Operation "1" - "*" Operation : depends on >
 @enduml

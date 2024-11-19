@@ -1,0 +1,58 @@
+@startuml
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+
+hide circle
+hide methods
+
+title Domain Model - Search for Specific Operation or Material
+
+class ProductionManager {
+    name
+    email
+    password
+    role
+    phone: String
+    searchOperationOrMaterial
+}
+
+class ProductionTree {
+    id
+    itemName
+    operations
+    components
+    materials
+    findNodeByNameOrId
+}
+
+class Operation {
+    id
+    name
+    time
+    parentOperation
+}
+
+class Material {
+    id
+    name
+    quantity
+    parentOperation
+}
+
+class SearchMap {
+    map<id, Node>
+    addToMap
+    retrieveNode
+}
+
+ProductionManager "1" - "1" ProductionTree : searches in >
+ProductionTree "1" - "*" Operation : contains >
+ProductionTree "1" - "*" Material : contains >
+ProductionTree "1" - "1" SearchMap : maintains >
+SearchMap "1" - "*" Operation : maps >
+SearchMap "1" - "*" Material : maps >
+Operation "1" - "1" Operation : depends on >
+Material "1" - "1" Operation : linked to >
+@enduml
