@@ -6,7 +6,7 @@ skinparam classAttributeIconSize 0
 hide circle
 hide methods
 
-class SystemUser   {
+class SystemUser {
     name
     email
     password
@@ -20,8 +20,7 @@ class ProductionManager {
     role
     phone
     managerID
-
-    }
+}
 
 class PlantFloorManager {
     name
@@ -29,7 +28,6 @@ class PlantFloorManager {
     password
     phone
     managerID
-
 }
 
 class Administrator {
@@ -46,7 +44,7 @@ class Item {
     operations
 }
 
-class Customer{
+class Customer {
     idClient
     name
     address
@@ -54,7 +52,7 @@ class Customer{
     phoneNumber
 }
 
-class ProductionOrder{
+class ProductionOrder {
     idOrder
     date
     status
@@ -86,38 +84,38 @@ class RawMaterial {
     quantity
 }
 
-class Factory{
+class Factory {
     idFactory
     factoryName
     idType
 }
 
-class Company{
+class Company {
     name
     address
     email
     phoneNumber
 }
 
-class Component{
+class Component {
     idComponent
     name
     quantity
 }
 
-class Operation{
+class Operation {
     idOperation
     name
     executionTime
     waitingTime
 }
 
-class Station{
+class Station {
     idStation
     name
 }
 
-class ProductLine{
+class ProductLine {
     idProductLine
     name
 }
@@ -136,6 +134,26 @@ class BillOfOperations {
     sequence
 }
 
+class QualityCheck {
+    idCheck
+    priority
+    description
+}
+
+class Workstation {
+    idWorkstation
+    name
+    operation
+    time
+}
+
+class ProductionTree {
+    idTree
+    itemID
+    operations
+    materials
+}
+
 SystemUser   <|--- ProductionManager
 SystemUser   <|--- PlantFloorManager
 SystemUser   <|--- Administrator
@@ -143,13 +161,12 @@ SystemUser   <|--- Administrator
 ProductionManager "*" -- "1" ProductionOrder : manage >
 ProductionManager "*" --- "1" RawMaterial : maintain information >
 ProductionManager "*" -- "1" Item : maintain information >
-PlantFloorManager "*" --"1" Machine : specify >
+PlantFloorManager "*" -- "1" Machine : specify >
 PlantFloorManager "*" -- "1" ProductLine : specify >
 Company "1" -- "*" Factory : has >
-Company "1" -- "*" SystemUser   : has >
+Company "1" -- "*" SystemUser : has >
 Customer "1" -- "*" CustomerOrder : has >
 CustomerOrder "1" -- "*" Item : has >
-
 
 Item "1" -- "*" ProductionOrder: has >
 Item "*" -- "1" Operation : has >
@@ -161,5 +178,9 @@ Item "1" --"*" Variant : has >
 Component "*" --"*" RawMaterial : has >
 Item "*" -- "1" BillOfOperations : has >
 BillOfMaterials "*" -- "1" Component : has >
-BillOfOperations "*" -- "1" Operation : has >
+BillOfOperations "*" -- "1" Operation : has
+QualityCheck "*" -- "1" Operation : checks >
+Workstation "*" -- "1" Station : belongs to >
+ProductionTree "1" -- "*" Item : represents >
+
 @enduml
