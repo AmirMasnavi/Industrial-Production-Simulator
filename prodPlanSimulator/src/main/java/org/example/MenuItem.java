@@ -238,13 +238,15 @@ public class MenuItem {
 
         // Create a ProductionTreeBuilder with the read data
         ProductionTreeBuilder treeBuilder = new ProductionTreeBuilder(items, operations, booDataResult.booData, booDataResult.itemQuantities);
-
+        ProductionTreeBuilderOpID treeBuilder2 = new ProductionTreeBuilderOpID(items, operations, booDataResult.booData, booDataResult.itemQuantities);
+        // Create and index the production tree
         // Build the production tree for item ID 1001
         ProductionTreeNode rootNode = treeBuilder.buildTree(1006, operationToItemMap);
+        ProductionTreeNode root2Node = treeBuilder2.buildTree(20, operationToItemMap);
 
         // Print the production tree
         ProductionTreePrinter printer = new ProductionTreePrinter(booDataResult.booData);
-        printer.printTree(rootNode);
+        printer.printTree(root2Node);
 
         // Create and use the searcher
         ProductionTreeSearcher searcher = new ProductionTreeSearcher();
