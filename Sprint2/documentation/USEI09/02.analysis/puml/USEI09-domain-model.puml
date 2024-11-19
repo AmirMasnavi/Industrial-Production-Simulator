@@ -48,8 +48,7 @@ class SearchMap {
 }
 
 ProductionManager "1" - "1" ProductionTree : searches in >
-ProductionTree "1" - "*" Operation : contains >
-ProductionTree "1" - "*" Material : contains >
+
 ProductionTree "1" - "1" SearchMap : maintains >
 SearchMap "1" - "*" Operation : maps >
 SearchMap "1" - "*" Material : maps >
