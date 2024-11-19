@@ -2,52 +2,37 @@
 skinparam monochrome true
 skinparam packageStyle rectangle
 skinparam shadowing false
-
 skinparam classAttributeIconSize 0
 
 hide circle
 hide methods
 
-title Domain Model - Calculation of Total Production Time for Items
+title Domain Model - Track Material Quantities
 
-class ProductManager {
+class ProductionManager {
     name
     email
     password
     role
     phone: String
-    createSimulation
-    manageUsers
-    viewReports
-    }
-
-class Simulator {
-    currentTime
-    calculateTotalProductionTime
+    trackMaterialQuantities
 }
 
-class Item {
-    id
-    priority
-    operations
-    totalProductionTime
+class MaterialTree {
+    root: MaterialNode
+    addMaterial
+    retrieveMaterialsSorted
 }
 
-class Operation {
-    name
-    time
-    workstation
-}
-
-class Workstation {
+class MaterialNode {
     id
     name
-    operationTime
+    quantity
+    leftChild
+    rightChild
 }
 
-ProductManager "1" - "1" Simulator : asks for >
-Simulator "1" - "*" Item : calculates >
-Item "1" - "*" Operation : requires >
-Operation "1" - "1" Workstation : performed by >
+ProductionManager "1" - "1" MaterialTree : tracks in >
+MaterialTree "1" - "*" MaterialNode : contains >
 
 @enduml

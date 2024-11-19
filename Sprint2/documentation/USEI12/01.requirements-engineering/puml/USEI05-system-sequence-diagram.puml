@@ -3,22 +3,25 @@ skinparam monochrome true
 skinparam packageStyle rectangle
 skinparam shadowing false
 
-title System Sequence Diagram (SSD) - Execution Times and Percentages by Workstation
+title System Sequence Diagram (SSD) - Update Material Quantities
 
 autonumber
 
-actor "Product Manager" as ProductManager
+actor "Production Manager" as ProductionManager
 participant ":System" as System
 
-activate ProductManager
+activate ProductionManager
 
-    ProductManager -> System : Requests execution time and percentages by workstation
+    ProductionManager -> System : Request update of material quantity
     activate System
 
-        System -> System : Calculate total time for each workstation and percentages
-        System --> ProductManager : Returns list with execution times and percentages by workstation
+        System -> System : Locate material in production tree
+        System -> System : Update material quantity
+        System -> System : Apply cascading updates to dependencies
+
+        System --> ProductionManager : Confirms quantity update
 
     deactivate System
-deactivate ProductManager
+deactivate ProductionManager
 
 @enduml
