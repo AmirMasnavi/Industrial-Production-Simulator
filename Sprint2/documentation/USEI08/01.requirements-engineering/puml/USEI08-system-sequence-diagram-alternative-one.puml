@@ -3,24 +3,26 @@ skinparam monochrome true
 skinparam packageStyle rectangle
 skinparam shadowing false
 
-title System Sequence Diagram (SSD) - Process Items by Priority
+title System Sequence Diagram (SSD) - Build Production Tree
 
 autonumber
 
-actor "Product Manager" as ProductManager
+actor "Production Manager" as ProductionManager
 participant ":System" as System
 
-activate ProductManager
+activate ProductionManager
 
-    ProductManager -> System : Requests processing of items by priority
+    ProductionManager -> System : Request to build the production tree
     activate System
 
-        System -> System : Sort items by priority (high, normal, low)
-        System -> System : Process items in priority order
+        System -> System : Import data from CSV (operations, components, materials)
+        System -> System : Create the production tree structure
+        System -> System : Validate and link subcomponents and materials
+        System -> System : Store production tree in memory
 
-        System --> ProductManager : Returns processed items sorted by priority
+        System --> ProductionManager : Returns production tree successfully built
 
     deactivate System
-deactivate ProductManager
+deactivate ProductionManager
 
 @enduml

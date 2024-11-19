@@ -7,43 +7,56 @@ skinparam classAttributeIconSize 0
 hide circle
 hide methods
 
-title Domain Model - Process Items by Priority
+title Domain Model - Build Production Tree
 
-class Simulator {
-    processItemsByPriority
-}
-class ProductManager {
+class ProductionManager {
     name
     email
     password
     role
     phone: String
-    createSimulation
-    manageUsers
-    viewReports
-    }
+    buildProductionTree
+    manageProducts
+    viewProductionDetails
+}
 
-
-class Item {
+class ProductionTree {
     id
-    priority
+    itemName
     operations
+    components
+    materials
 }
 
 class Operation {
-    name
-    time
-    workstation
-}
-
-class Workstation {
     id
     name
+    time
+    dependencies
 }
 
-ProductManager "1" - "1" Simulator : requests processing from >
-Simulator "1" - "*" Item : processes >
-Item "1" - "*" Operation : contains >
-Operation "1" - "1" Workstation : performed on >
+class Component {
+    id
+    name
+    quantity
+}
 
+class Material {
+    id
+    name
+    quantity
+}
+
+class CSVImporter {
+    importOperations
+    importComponents
+    importMaterials
+}
+
+ProductionManager "1" - "1" CSVImporter : uses >
+CSVImporter "1" - "1" ProductionTree : creates >
+ProductionTree "1" - "*" Operation : contains >
+ProductionTree "1" - "*" Component : contains >
+ProductionTree "1" - "*" Material : contains >
+Operation "1" - "*" Operation : depends on >
 @enduml
