@@ -25,6 +25,38 @@ public class MenuItem {
         boolean running = true;
         Visualiser visualiser = new Visualiser();
 
+        List<Item> items = CSVReader.readItemsFromCSV("./items.csv");
+        List<Operation> operations = CSVReader.readOperationsFromCSV("./operations.csv");
+        Map<Integer, Integer> operationToItemMap = new HashMap<>();
+        BooDataResult booDataResult = CSVReader.readBooFromCSV("./boo_v2.csv", operationToItemMap);
+
+        ProductionTreeBuilder treeBuilder = new ProductionTreeBuilder(items, operations, booDataResult.booData, booDataResult.itemQuantities);
+        ProductionTreeNode rootNode = treeBuilder.buildTree(1006, operationToItemMap);
+
+        // Inicializar o ProductionTreeSearcher e indexar a árvore
+        ProductionTreeSearcher searcher = new ProductionTreeSearcher();
+        searcher.indexTree(rootNode);
+
+        // Inicializar o MaterialBST e adicionar materiais pela quantidade
+        MaterialBST materialBST = new MaterialBST();
+        for (Map.Entry<Integer, Double> entry : booDataResult.itemQuantities.entrySet()) {
+            int itemId = entry.getKey();
+            Double quantity = entry.getValue();
+
+            String itemName = items.stream()
+                    .filter(item -> item.getId() == itemId)
+                    .map(Item::getName)
+                    .findFirst()
+                    .orElse("Unknown Item");
+
+            materialBST.insert(quantity, itemName);
+        }
+
+        // Inicializar o QualityCheckManager e adicionar verificações de qualidade
+        QualityCheckManager qualityCheckManager = new QualityCheckManager();
+        qualityCheckManager.addQualityCheckBasedOnDepth(rootNode, 1); // Adicionar verificações de qualidade com profundidade inicial
+
+
         while (running) {
             System.out.println("\n=== MENU ===\n");
             System.out.println("1. List Items");
@@ -33,6 +65,10 @@ public class MenuItem {
             System.out.println("4. Run Simulation With Priorities");
             System.out.println("5. Show Simulation Statistics");
             System.out.println("6. Build the complete production tree ");
+            System.out.println("7. Search for Specific Operation or Material");
+            System.out.println("8. Display Materials by Quantity");
+            System.out.println("9. Perform Quality Checks by Priority");
+
             /*
             System.out.println("6. Product Structure");
             System.out.println("7. List Products and View BOM (LAPR3)");
@@ -60,6 +96,15 @@ public class MenuItem {
                     break;
                 case 6:
                     productionTree();
+                    break;
+                case 7:
+                    searchOperationOrMaterial(searcher);
+                    break;
+                case 8:
+                    displayMaterialsByQuantity(materialBST);
+                    break;
+                case 9:
+                    performQualityChecks(qualityCheckManager);
                     break;
                     /*
                 case 6:
@@ -351,6 +396,44 @@ public class MenuItem {
             }
         }
     }
+
+    private static void searchOperationOrMaterial(ProductionTreeSearcher searcher) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Enter the name or ID of the operation/material to search:");
+        String searchQuery = scanner.nextLine();
+
+        // Execute search and display the formatted output
+        String result = searcher.search(searchQuery);
+        System.out.println(result);
+    }
+
+
+    private static void displayMaterialsByQuantity(MaterialBST materialBST) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("\nChoose the order to display materials:");
+        System.out.println("1. Increasing order of quantity");
+        System.out.println("2. Decreasing order of quantity");
+
+        int orderChoice = scanner.nextInt();
+
+        if (orderChoice == 1) {
+            System.out.println("\nMaterials Sorted by Quantity (Increasing Order):");
+            materialBST.displayInOrder();
+        } else if (orderChoice == 2) {
+            System.out.println("\nMaterials Sorted by Quantity (Decreasing Order):");
+            materialBST.displayInReverseOrder();
+        } else {
+            System.out.println("Invalid choice.");
+        }
+    }
+
+    private static void performQualityChecks(QualityCheckManager qualityCheckManager) {
+        System.out.println("\nPerforming Quality Checks in Priority Order:");
+        qualityCheckManager.processQualityChecksInReverse();
+    }
+
+
+
 
     /**
      * Displays statistics for the last simulation that did not consider item priorities.
