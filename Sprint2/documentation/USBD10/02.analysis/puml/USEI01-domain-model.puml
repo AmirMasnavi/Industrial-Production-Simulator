@@ -1,0 +1,44 @@
+@startuml
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+skinparam classAttributeIconSize 0
+
+hide circle
+hide methods
+
+title Domain Model - Save data in a data structure
+
+class SystemUser {
+    name
+    email
+    role
+}
+
+class Article {
+    id
+    priority
+    operations
+}
+
+class Workstation {
+    id
+    operation
+    time
+}
+
+class ProductManager {
+    name
+    email
+    password
+    role
+    phone: String
+    createSimulation
+    manageUsers
+    viewReports
+    }
+ProductManager "1" -- "1" Article : storage >
+ProductManager "1" -- "1" Workstation : storage >
+SystemUser <|-- ProductManager
+@enduml

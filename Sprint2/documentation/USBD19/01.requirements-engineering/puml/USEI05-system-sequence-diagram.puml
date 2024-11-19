@@ -1,0 +1,24 @@
+@startuml
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+title System Sequence Diagram (SSD) - Execution Times and Percentages by Workstation
+
+autonumber
+
+actor "Product Manager" as ProductManager
+participant ":System" as System
+
+activate ProductManager
+
+    ProductManager -> System : Requests execution time and percentages by workstation
+    activate System
+
+        System -> System : Calculate total time for each workstation and percentages
+        System --> ProductManager : Returns list with execution times and percentages by workstation
+
+    deactivate System
+deactivate ProductManager
+
+@enduml

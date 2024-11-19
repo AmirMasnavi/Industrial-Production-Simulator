@@ -1,0 +1,25 @@
+@startuml
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+title System Sequence Diagram (SSD) - Prioritize Quality Checks
+
+autonumber
+
+actor "Production Manager" as ProductionManager
+participant ":System" as System
+
+activate ProductionManager
+
+    ProductionManager -> System : Request prioritized quality checks
+    activate System
+
+        System -> System : Insert quality checks into heap priority queue
+        System -> System : Retrieve quality checks by priority
+        System --> ProductionManager : Returns prioritized list of quality checks
+
+    deactivate System
+deactivate ProductionManager
+
+@enduml

@@ -1,0 +1,46 @@
+@startuml
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+
+hide circle
+hide methods
+
+title Domain Model - Identify and Prioritize Critical Path Operations
+
+class ProductionManager {
+    name
+    email
+    password
+    role
+    phone: String
+    identifyCriticalPath
+}
+
+class ProductionTree {
+    id
+    itemName
+    operations
+    calculateCriticalPath
+}
+
+class Operation {
+    id
+    name
+    depth
+    dependencies
+}
+
+class CriticalPathQueue {
+    heap: List<Operation>
+    addOperation
+    retrieveNextOperation
+}
+
+ProductionManager "1" - "1" ProductionTree : identifies in >
+ProductionTree "1" - "*" Operation : contains >
+ProductionTree "1" - "1" CriticalPathQueue : prioritizes using >
+CriticalPathQueue "1" - "*" Operation : manages >
+Operation "1" - "*" Operation : depends on >
+@enduml

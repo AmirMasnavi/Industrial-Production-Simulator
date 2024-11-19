@@ -1,0 +1,27 @@
+@startuml
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+title System Sequence Diagram (SSD) - Calculate Total Quantities and Time
+
+autonumber
+
+actor "Production Manager" as ProductionManager
+participant ":System" as System
+
+activate ProductionManager
+
+    ProductionManager -> System : Request total quantities and time calculation
+    activate System
+
+        System -> System : Traverse production tree
+        System -> System : Sum quantities of materials
+        System -> System : Calculate total time using operation averages
+
+        System --> ProductionManager : Returns total quantities and time
+
+    deactivate System
+deactivate ProductionManager
+
+@enduml

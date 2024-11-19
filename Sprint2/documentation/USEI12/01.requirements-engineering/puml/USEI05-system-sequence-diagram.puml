@@ -1,0 +1,27 @@
+@startuml
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+title System Sequence Diagram (SSD) - Update Material Quantities
+
+autonumber
+
+actor "Production Manager" as ProductionManager
+participant ":System" as System
+
+activate ProductionManager
+
+    ProductionManager -> System : Request update of material quantity
+    activate System
+
+        System -> System : Locate material in production tree
+        System -> System : Update material quantity
+        System -> System : Apply cascading updates to dependencies
+
+        System --> ProductionManager : Confirms quantity update
+
+    deactivate System
+deactivate ProductionManager
+
+@enduml

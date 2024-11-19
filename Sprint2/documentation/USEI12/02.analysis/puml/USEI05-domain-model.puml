@@ -1,0 +1,42 @@
+@startuml
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+
+hide circle
+hide methods
+
+title Domain Model - Update Material Quantities
+
+class ProductionManager {
+    name
+    email
+    password
+    role
+    phone: String
+    updateMaterialQuantity
+}
+
+class ProductionTree {
+    id
+    itemName
+    operations
+    components
+    materials
+    findMaterial
+    updateQuantity
+    cascadeUpdate
+}
+
+class Material {
+    id
+    name
+    quantity
+    dependencies
+}
+
+ProductionManager "1" - "1" ProductionTree : updates in >
+ProductionTree "1" - "*" Material : contains >
+Material "1" - "*" Material : depends on >
+@enduml

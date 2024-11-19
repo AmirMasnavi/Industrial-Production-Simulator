@@ -1,0 +1,51 @@
+@startuml
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+
+hide circle
+hide methods
+
+title Domain Model - USEI04: Calculation of Execution Times by Each Operation
+
+class Simulator {
+    currentTime
+    calculateExecutionTimePerOperation
+}
+
+class ProductManager {
+    name
+    email
+    password
+    role
+    phone: String
+    createSimulation
+    manageUsers
+    viewReports
+    }
+
+class Item {
+    id
+    priority
+    operations
+}
+
+class Operation {
+    name
+    executionTime
+    workstation
+}
+
+class Workstation {
+    id
+    operationName
+    time
+}
+
+ProductManager "1" - "1" Simulator : asks for >
+Simulator "1" - "*" Item : calculates for >
+Item "1" - "*" Operation : consists of >
+Operation "1" - "1" Workstation : performed by >
+
+@enduml
