@@ -4,10 +4,10 @@ import java.util.List;
 import java.util.Map;
 
 public class ProductionTreePrinter {
-    private final Map<Integer, List<int[]>> booData;
+    private final Map<Integer, Map<Integer, Double>> booData;
 
     // Constructor
-    public ProductionTreePrinter(Map<Integer, List<int[]>> booData) {
+    public ProductionTreePrinter(Map<Integer, Map<Integer, Double>> booData) {
         this.booData = booData;
     }
 

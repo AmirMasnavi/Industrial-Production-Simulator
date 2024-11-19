@@ -6,11 +6,11 @@ import java.util.List;
 class MaterialBST {
     // Node class to represent each node in the BST
     private static class Node {
-        int quantity;
+        Double quantity;
         List<String> materials; // List of materials associated with this quantity
         Node left, right;
 
-        Node(int quantity, String material) {
+        Node(Double quantity, String material) {
             this.quantity = quantity;
             this.materials = new ArrayList<>();
             this.materials.add(material);
@@ -21,11 +21,11 @@ class MaterialBST {
     private Node root; // Root node of the BST
 
     // Insert a material with its quantity into the BST
-    public void insert(int quantity, String material) {
+    public void insert(Double quantity, String material) {
         root = insertRecursive(root, quantity, material);
     }
 
-    private Node insertRecursive(Node node, int quantity, String material) {
+    private Node insertRecursive(Node node, Double quantity, String material) {
         if (node == null) {
             return new Node(quantity, material);
         }
@@ -70,21 +70,4 @@ class MaterialBST {
         }
     }
 
-    public static void main(String[] args) {
-        MaterialBST bst = new MaterialBST();
-
-        // Sample data
-        bst.insert(10, "Steel");
-        bst.insert(5, "Plastic");
-        bst.insert(20, "Aluminum");
-        bst.insert(10, "Iron");
-        bst.insert(15, "Copper");
-        bst.insert(5, "Rubber");
-
-        // Display materials in increasing order
-        bst.displayInOrder();
-
-        // Display materials in decreasing order
-        bst.displayInReverseOrder();
-    }
 }

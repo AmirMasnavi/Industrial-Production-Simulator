@@ -4,8 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ProductionTreeSearcher {
-    private Map<String, ProductionTreeNode> nameMap; // Map to search by name
-    private Map<String, ProductionTreeNode> idMap;   // Map to search by ID
+    private final Map<String, ProductionTreeNode> nameMap; // Map to search by name
+    private final Map<String, ProductionTreeNode> idMap;   // Map to search by ID
 
     // Constructor
     public ProductionTreeSearcher() {

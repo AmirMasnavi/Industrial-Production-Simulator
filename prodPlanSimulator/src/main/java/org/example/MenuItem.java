@@ -264,9 +264,9 @@ public class MenuItem {
         MaterialBST materialBST = new MaterialBST();
 
         // Populate the MaterialBST with item quantities from booDataResult
-        for (Map.Entry<Integer, Integer> entry : booDataResult.itemQuantities.entrySet()) {
+        for (Map.Entry<Integer, Double> entry : booDataResult.itemQuantities.entrySet()) {
             int itemId = entry.getKey();
-            int quantity = entry.getValue();
+            Double quantity = entry.getValue();
 
             // Find the item name from the items list
             String itemName = items.stream()
