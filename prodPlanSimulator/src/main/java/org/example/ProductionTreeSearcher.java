@@ -98,4 +98,22 @@ public class ProductionTreeSearcher {
 
         return details.toString();
     }
+
+    public ProductionTreeNode getNodeByNameOrId(String searchTerm) {
+        ProductionTreeNode nodeByName = nameMap.get(searchTerm);
+        if (nodeByName != null) {
+            return nodeByName;
+        }
+
+        try {
+            ProductionTreeNode nodeById = idMap.get(searchTerm);
+            if (nodeById != null) {
+                return nodeById;
+            }
+        } catch (NumberFormatException e) {
+
+        }
+
+        return null;
+    }
 }
