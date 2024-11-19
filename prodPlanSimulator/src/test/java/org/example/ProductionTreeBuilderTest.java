@@ -12,7 +12,7 @@ class ProductionTreeBuilderTest {
     private List<Item> items;
     private List<Operation> operations;
     private Map<Integer, List<int[]>> booData;
-    private Map<Integer, Integer> itemQuantities;
+    private Map<Integer, Double> itemQuantities;
     private ProductionTreeBuilder builder;
 
     @BeforeEach
@@ -33,8 +33,8 @@ class ProductionTreeBuilderTest {
         booData.put(2, Arrays.asList(new int[]{3, 2000}));
 
         itemQuantities = new HashMap<>();
-        itemQuantities.put(1, 2000);
-        itemQuantities.put(2, 3000);
+        itemQuantities.put(1, 2000.0);
+        itemQuantities.put(2, 3000.0);
 
         builder = new ProductionTreeBuilder(items, operations, booData, itemQuantities);
     }

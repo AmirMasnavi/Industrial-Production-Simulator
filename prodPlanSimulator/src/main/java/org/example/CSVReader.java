@@ -126,8 +126,8 @@ public class CSVReader {
             String filePath,
             Map<Integer, Integer> operationToItemMap // Pass this map to populate
     ) {
-        Map<Integer, List<int[]>> booData = new HashMap<>();
-        Map<Integer, Integer> itemQuantities = new HashMap<>();
+        Map<Integer, Map<Integer, Double>> booData = new HashMap<>();
+        Map<Integer, Double> itemQuantities = new HashMap<>();
 
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             br.readLine(); // Skip header
@@ -140,12 +140,12 @@ public class CSVReader {
                     double itemQty = Double.parseDouble(fields[2].replace(",", "."));
 
                     // Store the item quantity
-                    itemQuantities.put(itemId, (int) (itemQty * 1000));
+                    itemQuantities.put(itemId, itemQty);
 
                     // Map op_id to item_id for future lookup
                     operationToItemMap.put(opId, itemId);
 
-                    List<int[]> subcomponents = new ArrayList<>();
+                    Map<Integer, Double> subcomponents = new HashMap<>();
 //                    boolean insideGroup = false;
 
                     for (int i = 3; i < fields.length; i++) {
@@ -164,9 +164,9 @@ public class CSVReader {
                         try {
                             int subItemId = Integer.parseInt(field);
                             double quantity = Double.parseDouble(fields[++i].replace(",", "."));
-                            subcomponents.add(new int[]{subItemId, (int) (quantity * 1000)});
+                            subcomponents.put(subItemId, quantity);
                             if (subItemId > 999) {
-                                itemQuantities.put(subItemId, (int) (quantity * 1000));
+                                itemQuantities.put(subItemId, quantity);
                             }
 
 

@@ -9,11 +9,11 @@ public class ProductionTreeBuilder {
 
     private final List<Item> items;
     private final List<Operation> operations;
-    private final Map<Integer, List<int[]>> booData;
-    private final Map<Integer, Integer> itemQuantities;
+    private final Map<Integer, Map<Integer, Double>> booData;
+    private final Map<Integer, Double> itemQuantities;
 
     // Constructor to initialize the builder with data
-    public ProductionTreeBuilder(List<Item> items, List<Operation> operations, Map<Integer, List<int[]>> booData, Map<Integer, Integer> itemQuantities) {
+    public ProductionTreeBuilder(List<Item> items, List<Operation> operations, Map<Integer, Map<Integer, Double>> booData, Map<Integer, Double> itemQuantities) {
         this.items = items;
         this.operations = operations;
         this.booData = booData;
@@ -26,7 +26,7 @@ public class ProductionTreeBuilder {
 
         // Set root node quantity using itemQuantities
         if (itemQuantities.containsKey(itemId)) {
-            rootNode.setQuantity(itemQuantities.get(itemId) / 1000.0);
+            rootNode.setQuantity(itemQuantities.get(itemId));
         }
 
         Set<Integer> visitedItems = new HashSet<>();
@@ -48,7 +48,7 @@ public class ProductionTreeBuilder {
 
         // Check if this item has any subcomponents
         if (booData.containsKey(item.getId())) {
-            List<int[]> subcomponents = booData.get(item.getId());
+            Map<Integer, Double> subcomponents = booData.get(item.getId());
 
             // Add operation node if it exists for this item
             Operation operation = findOperationByItemId(item.getId(), operationToItemMap);
@@ -58,9 +58,9 @@ public class ProductionTreeBuilder {
             }
 
             // Process subcomponents
-            for (int[] subcomponent : subcomponents) {
-                int subId = subcomponent[0];
-                double quantity = subcomponent[1] / 1000.0;
+            for (Map.Entry<Integer, Double> subcomponent : subcomponents.entrySet()) {
+                int subId = subcomponent.getKey();
+                double quantity = subcomponent.getValue();
 
                 if (operationToItemMap.containsKey(subId)) {
                     // Subcomponent is an operation; resolve its associated item

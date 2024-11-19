@@ -240,7 +240,7 @@ public class MenuItem {
         ProductionTreeBuilder treeBuilder = new ProductionTreeBuilder(items, operations, booDataResult.booData, booDataResult.itemQuantities);
 
         // Build the production tree for item ID 1001
-        ProductionTreeNode rootNode = treeBuilder.buildTree(1006, operationToItemMap);
+        ProductionTreeNode rootNode = treeBuilder.buildTree(1004, operationToItemMap);
 
         // Print the production tree
         ProductionTreePrinter printer = new ProductionTreePrinter(booDataResult.booData);
@@ -264,9 +264,9 @@ public class MenuItem {
         MaterialBST materialBST = new MaterialBST();
 
         // Populate the MaterialBST with item quantities from booDataResult
-        for (Map.Entry<Integer, Integer> entry : booDataResult.itemQuantities.entrySet()) {
+        for (Map.Entry<Integer, Double> entry : booDataResult.itemQuantities.entrySet()) {
             int itemId = entry.getKey();
-            int quantity = entry.getValue();
+            Double quantity = entry.getValue();
 
             // Find the item name from the items list
             String itemName = items.stream()
