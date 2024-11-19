@@ -1,0 +1,26 @@
+@startuml
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+title System Sequence Diagram (SSD) - Process Items by Priority
+
+autonumber
+
+actor "Product Manager" as ProductManager
+participant ":System" as System
+
+activate ProductManager
+
+    ProductManager -> System : Requests processing of items by priority
+    activate System
+
+        System -> System : Sort items by priority (high, normal, low)
+        System -> System : Process items in priority order
+
+        System --> ProductManager : Returns processed items sorted by priority
+
+    deactivate System
+deactivate ProductManager
+
+@enduml

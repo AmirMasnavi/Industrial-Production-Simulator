@@ -1,0 +1,49 @@
+@startuml
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+
+hide circle
+hide methods
+
+title Domain Model - Process Items by Priority
+
+class Simulator {
+    processItemsByPriority
+}
+class ProductManager {
+    name
+    email
+    password
+    role
+    phone: String
+    createSimulation
+    manageUsers
+    viewReports
+    }
+
+
+class Item {
+    id
+    priority
+    operations
+}
+
+class Operation {
+    name
+    time
+    workstation
+}
+
+class Workstation {
+    id
+    name
+}
+
+ProductManager "1" - "1" Simulator : requests processing from >
+Simulator "1" - "*" Item : processes >
+Item "1" - "*" Operation : contains >
+Operation "1" - "1" Workstation : performed on >
+
+@enduml

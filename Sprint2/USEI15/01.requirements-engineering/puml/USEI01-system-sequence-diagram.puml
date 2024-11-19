@@ -1,0 +1,24 @@
+@startuml
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+title System Sequence Diagram (SSD) - Save data in a data structure
+
+autonumber
+actor "Product Manager" as System
+participant ":System" as Employee
+
+activate Employee
+
+    System --> Employee : asks to import files
+    activate System
+
+       Employee -> Employee : imports files(ie: "articles.csv" "workstations.csv")
+
+        Employee -> Employee : store the data in the adequate data stuctures
+
+
+        Employee -> System : successful operation
+
+@enduml

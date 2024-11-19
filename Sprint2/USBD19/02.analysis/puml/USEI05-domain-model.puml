@@ -1,0 +1,54 @@
+@startuml
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+
+hide circle
+hide methods
+
+title Domain Model - USEI05: Execution Times and Percentages by Workstation
+
+class Simulator {
+    totalExecutionTime : int
+    calculateExecutionTimeByWorkstation() : void
+    calculatePercentageByWorkstation() : void
+}
+
+class ProductManager {
+    name
+    email
+    password
+    role
+    phone: String
+    createSimulation
+    manageUsers
+    viewReports
+    }
+
+class Workstation {
+    id
+    name
+    totalOperationTime
+    executionPercentage
+}
+
+class Operation {
+    name
+    time
+    workstation
+}
+
+class Item {
+    id
+    priority
+    operations
+}
+
+ProductManager "1" - "1" Simulator : requests data from >
+Simulator "1" - "*" Workstation : calculates for >
+Workstation "1" - "*" Operation : performs >
+Item "1" - "*" Operation : consists of >
+
+@enduml
+

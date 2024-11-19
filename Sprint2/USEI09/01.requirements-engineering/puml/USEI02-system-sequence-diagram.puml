@@ -1,0 +1,26 @@
+@startuml
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+title System Sequence Diagram (SSD) - USEI02: Implementing a Simulator
+
+autonumber
+actor "Product Manager" as Admin
+participant ":System" as Simulation
+
+activate Admin
+
+    Admin --> Simulation : Start simulation with data (articles.csv, workstations.csv)
+    activate Simulation
+
+        Simulation -> Simulation : Create queues for each operation
+        Simulation -> Simulation : Assign items to available workstations based on priority
+
+        Simulation -> Simulation : Process items at workstations
+
+        Simulation -> Admin : Display simulation results (total production time, workstation usage)
+
+    deactivate Simulation
+
+@enduml

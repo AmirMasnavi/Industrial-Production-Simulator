@@ -1,0 +1,165 @@
+@startuml
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+hide methods
+
+class SystemUser   {
+    name
+    email
+    password
+    phone
+}
+
+class ProductionManager {
+    name
+    email
+    password
+    role
+    phone
+    managerID
+
+    }
+
+class PlantFloorManager {
+    name
+    email
+    password
+    phone
+    managerID
+
+}
+
+class Administrator {
+    birthdate
+    admissionDate
+    address
+    idDocumentType
+    idDocumentNumber
+}
+
+class Item {
+    idItem
+    priority
+    operations
+}
+
+class Customer{
+    idClient
+    name
+    address
+    email
+    phoneNumber
+}
+
+class ProductionOrder{
+    idOrder
+    date
+    status
+}
+
+class Machine {
+    idMachine
+    operationName
+    executionTime
+    waitingTime
+}
+
+class CustomerOrder {
+    idOrder
+    idClient
+    date
+    status
+}
+
+class Variant {
+    idVariant
+    idProduct
+    name
+}
+
+class RawMaterial {
+    idRawMaterial
+    name
+    quantity
+}
+
+class Factory{
+    idFactory
+    factoryName
+    idType
+}
+
+class Company{
+    name
+    address
+    email
+    phoneNumber
+}
+
+class Component{
+    idComponent
+    name
+    quantity
+}
+
+class Operation{
+    idOperation
+    name
+    executionTime
+    waitingTime
+}
+
+class Station{
+    idStation
+    name
+}
+
+class ProductLine{
+    idProductLine
+    name
+}
+
+class BillOfMaterials {
+    idBOM
+    idProduct
+    idComponent
+    quantity
+}
+
+class BillOfOperations {
+    idBOO
+    idProduct
+    idOperation
+    sequence
+}
+
+SystemUser   <|--- ProductionManager
+SystemUser   <|--- PlantFloorManager
+SystemUser   <|--- Administrator
+
+ProductionManager "*" -- "1" ProductionOrder : manage >
+ProductionManager "*" --- "1" RawMaterial : maintain information >
+ProductionManager "*" -- "1" Item : maintain information >
+PlantFloorManager "*" --"1" Machine : specify >
+PlantFloorManager "*" -- "1" ProductLine : specify >
+Company "1" -- "*" Factory : has >
+Company "1" -- "*" SystemUser   : has >
+Customer "1" -- "*" CustomerOrder : has >
+CustomerOrder "1" -- "*" Item : has >
+
+
+Item "1" -- "*" ProductionOrder: has >
+Item "*" -- "1" Operation : has >
+Operation "*" -- "1" Station : has >
+Factory "1" - "*" Machine : has >
+Station "1" -- "*" Machine : has >
+Item "*" --"1" BillOfMaterials : has >
+Item "1" --"*" Variant : has >
+Component "*" --"*" RawMaterial : has >
+Item "*" -- "1" BillOfOperations : has >
+BillOfMaterials "*" -- "1" Component : has >
+BillOfOperations "*" -- "1" Operation : has >
+@enduml
