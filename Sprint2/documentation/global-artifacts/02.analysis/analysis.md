@@ -5,123 +5,89 @@ The construction process of the domain model is based on the client specificatio
 ## Rationale to identify domain conceptual classes
 To identify domain conceptual classes, start by making a list of candidate conceptual classes inspired by the list of categories suggested in the book "Applying UML and Patterns: An Introduction to Object-Oriented Analysis and Design and Iterative Development".
 
-
 ### _Conceptual Class Category List_
 
 **Business Transactions**
 
-* n/a
+* ProductionOrder
+* CustomerOrder
 
 ---
 
 **Transaction Line Items**
 
-* n/a
+* BOM/Materials
+* BOO/Operations
 
 ---
 
 **Product/Service related to a Transaction or Transaction Line Item**
 
-* n/a
+* Item
+* Variant
 
 ---
 
 **Transaction Records**
 
-* n/a
+* QualityCheck
 
----  
+---
 
 **Roles of People or Organizations**
 
-* Role: HRM
-* Role: VFM
-* Role: Collaborator
-* Role: GSM
-* Role: GSU
+* ProductionManager
+* PlantFloorManager
+* Administrator
+* Customer
+* SystemUser
 
 ---
 
 **Places**
 
-* Garden
-* Medium-sized park
-* Large-sized park
+* Factory
+* Station
+* Workstation
 
 ---
 
 **Noteworthy Events**
 
-* n/a
+* QualityCheck Event (Derived)
 
 ---
 
 **Physical Objects**
 
-* Vehicles
-* Machines
-* Equipment
+* Machine
+* Component
+* RawMaterial
 
 ---
 
 **Descriptions of Things**
 
-* n/a
+* Operation
+* ProductionTree
 
 ---
 
 **Catalogs**
 
-* n/a
-
----
-
-**Containers**
-
-* n/a
-
----
-
-**Elements of Containers**
-
-* n/a
+* ProductLine
 
 ---
 
 **Organizations**
 
-* MS
+* Company
 
 ---
-
-**Other External/Collaborating Systems**
-
-* n/a
-
----
-
-**Records of finance, work, contracts, legal matters**
-
-* n/a
-
----
-
-**Financial Instruments**
-
-* n/a
-
----
-
-**Documents mentioned/used to perform some work/**
-
-* n/a
-
----
-
 
 ## Rationale to identify associations between conceptual classes
 
-An association is a relationship between instances of objects that indicates a relevant connection and that is worth of remembering, or it is derivable from the List of Common Associations:
+An association is a relationship between instances of objects that indicates a relevant connection and that is worth remembering, or it is derivable from the List of Common Associations:
 
 - **_A_** is physically or logically part of **_B_**
 - **_A_** is physically or logically contained in/on **_B_**
@@ -129,56 +95,31 @@ An association is a relationship between instances of objects that indicates a r
 - **_A_** known/logged/recorded/reported/captured in **_B_**
 - **_A_** uses or manages or owns **_B_**
 - **_A_** is related with a transaction (item) of **_B_**
-- etc.
 
+---
 
-| Concept (A) 		          | Association   	 |                  Concept (B) |
-|-------------------------|:---------------:|-----------------------------:|
-| HRM                     |  inherits from  |                   SystemUser |
-| HRM                     |     creates     |                        Skill |
-| HRM                     |     creates     |                          Job |
-| HRM                     |     creates     |                 Collaborator |
-| HRM                     |    requests     |                 TeamProposal |
-| VFM                     |  inherits from  |                   SystemUser |
-| VFM                     |    registers    |                      Vehicle |
-| VFM                     |    registers    |               VehicleCheckUp |
-| VFM                     |    requests     | ListOfVehiclesNeedingCheckUp |
-| VFM                     |     manages     |                      Machine |
-| VFM                     |     manages     |                    Equipment |
-| Collaborator            |  inherits from  |                   SystemUser |
-| Collaborator            |       has       |                          Job |
-| Skill                   | is atributed to |                 Collaborator |
-| TeamProposal            |       has       |                         Team |
-| VehiclesNeedingCheck-Up |       has       |                      Vehicle |
-| Task                    |  occures in a   |                   GreenSpace |
-| Task                    | carried out by  |                         Team |
-| Agenda                  |       has       |                  AgendaEntry |
-| AgendaEntry             |     defines     |                         Task |
-| AgendaEntry             |     defines     |                         Team |
-| ToDoList                |    contains     |                         Task |
-| VFM                     |  inherits from  |                   SystemUser |
-| VFM                     |     manages     |                      Machine |
-| VFM                     |     manages     |                    Equipment |
-| Vehicle                 |       has       |              VehicleCheck-up |
-| GSU                     |  inherits from  |                   SystemUser |
-| GSU                     |      makes      |                       Report |
-| GSU                     |      makes      |                      Comment |
-| GSU                     |      uses       |        GreenSpacesUserPortal |
-| GSU                     |      uses       |                   GreenSpace |
-| GreenSpacesUserPortal   |       has       |                       Report |
-| GSM                     |  inherits from  |                   SystemUser |
-| GSM                     |     manages     |                   GreenSpace |
-| MS                      |       has       |                   SystemUser |
-| MS                      |       has       |                      Machine |
-| MS                      |       has       |                      Vehicle |
-| MS                      |       has       |                    Equipment |
-| MS                      |       has       |                       Agenda |
-| MS                      |       has       |                    Equipment |
-| MS                      |     manages     |                   GreenSpace |
-| Garden                  |  inherits from  |                   GreenSpace |
-| MediumSizedPark         |  inherits from  |                   GreenSpace |
-| LargeSizedPark          |  inherits from  |                   GreenSpace |
-
+| Concept (A)              | Association       | Concept (B)                |
+|--------------------------|-------------------|----------------------------|
+| Company                  | owns              | Factory                    |
+| SystemUser               | has role          | ProductionManager          |
+| SystemUser               | has role          | PlantFloorManager          |
+| SystemUser               | has role          | Administrator              |
+| ProductionManager        | manages           | ProductionOrder            |
+| ProductionManager        | manages           | BOM/Materials              |
+| PlantFloorManager        | specifies         | Station                    |
+| PlantFloorManager        | specifies         | Workstation                |
+| Administrator            | manages users     | SystemUser                 |
+| Customer                 | places            | CustomerOrder              |
+| CustomerOrder            | linked to         | ProductionOrder            |
+| ProductionOrder          | specifies         | BOM/Materials              |
+| ProductionOrder          | specifies         | BOO/Operations             |
+| ProductionTree           | represents        | Item                       |
+| Item                     | has component     | RawMaterial                |
+| Item                     | has component     | Component                  |
+| Workstation              | performs          | Operation                  |
+| Station                  | belongs to        | Factory                    |
+| Machine                  | performs          | Operation                  |
+| QualityCheck             | checks            | Operation                  |
 
 
 ## Domain Model
