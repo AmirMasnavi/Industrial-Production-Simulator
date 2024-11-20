@@ -33,11 +33,9 @@ public class MenuItem {
         ProductionTreeBuilder treeBuilder = new ProductionTreeBuilder(items, operations, booDataResult.booData, booDataResult.itemQuantities);
         ProductionTreeNode rootNode = treeBuilder.buildTree(1006, operationToItemMap);
 
-        // Inicializar o ProductionTreeSearcher e indexar a árvore
         ProductionTreeSearcher searcher = new ProductionTreeSearcher();
         searcher.indexTree(rootNode);
 
-        // Inicializar o MaterialBST e adicionar materiais pela quantidade
         MaterialBST materialBST = new MaterialBST();
         for (Map.Entry<Integer, Double> entry : booDataResult.itemQuantities.entrySet()) {
             int itemId = entry.getKey();
@@ -52,9 +50,8 @@ public class MenuItem {
             materialBST.insert(quantity, itemName);
         }
 
-        // Inicializar o QualityCheckManager e adicionar verificações de qualidade
         QualityCheckManager qualityCheckManager = new QualityCheckManager();
-        qualityCheckManager.addQualityCheckBasedOnDepth(rootNode, 1); // Adicionar verificações de qualidade com profundidade inicial
+        qualityCheckManager.addQualityCheckBasedOnDepth(rootNode, 1);
 
 
         while (running) {
@@ -68,6 +65,8 @@ public class MenuItem {
             System.out.println("7. Search for Specific Operation or Material");
             System.out.println("8. Display Materials by Quantity");
             System.out.println("9. Perform Quality Checks by Priority");
+            System.out.println("10. Update Material Quantity");
+
 
             /*
             System.out.println("6. Product Structure");
@@ -106,6 +105,10 @@ public class MenuItem {
                 case 9:
                     performQualityChecks(qualityCheckManager);
                     break;
+                case 10:
+                    updateMaterialQuantity(searcher, materialBST);
+                    break;
+
                     /*
                 case 6:
                     showProduct();
@@ -431,6 +434,31 @@ public class MenuItem {
         System.out.println("\nPerforming Quality Checks in Priority Order:");
         qualityCheckManager.processQualityChecksInReverse();
     }
+
+    private static void updateMaterialQuantity(ProductionTreeSearcher searcher, MaterialBST materialBST) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Enter the name or ID of the material to update:");
+        String searchQuery = scanner.nextLine();
+
+        ProductionTreeNode node = searcher.getNodeByNameOrId(searchQuery);
+
+        if (node != null) {
+
+            System.out.println("Enter the new quantity:");
+            double newQuantity = scanner.nextDouble();
+
+
+            node.updateQuantity(newQuantity);
+            System.out.println("Material quantity updated in the production tree.");
+
+            materialBST.updateMaterialQuantity(searchQuery, newQuantity);
+            System.out.println("Material quantity updated in the material BST.");
+        } else {
+            System.out.println("Error: Material not found in the production tree.");
+        }
+    }
+
+
 
 
 

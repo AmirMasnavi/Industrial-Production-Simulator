@@ -70,4 +70,30 @@ class MaterialBST {
         }
     }
 
+    // Method to update the quantity of a material in the BST
+    public void updateMaterialQuantity(String materialName, double newQuantity) {
+        root = updateMaterialRecursive(root, materialName, newQuantity);
+    }
+
+    private Node updateMaterialRecursive(Node node, String materialName, double newQuantity) {
+        if (node == null) {
+            return null; // Material not found
+        }
+
+        // Find the material in the node's list
+        if (node.materials.contains(materialName)) {
+            // Update the material's quantity
+            node.quantity = newQuantity;
+        } else if (materialName.compareTo(node.materials.get(0)) < 0) {
+            // Search left if the material name is lexicographically smaller
+            node.left = updateMaterialRecursive(node.left, materialName, newQuantity);
+        } else {
+            // Search right if the material name is lexicographically larger
+            node.right = updateMaterialRecursive(node.right, materialName, newQuantity);
+        }
+
+        return node;
+    }
+
+
 }
