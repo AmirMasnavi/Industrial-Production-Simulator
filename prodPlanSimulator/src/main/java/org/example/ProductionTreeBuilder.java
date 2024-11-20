@@ -30,13 +30,13 @@ public class ProductionTreeBuilder {
         }
 
         Set<Integer> visitedItems = new HashSet<>();
-        buildSubTree(rootNode, visitedItems, operationToItemMap);
+        Set<Integer> addedOperations = new HashSet<>();
+        buildSubTree(rootNode, visitedItems, addedOperations, operationToItemMap);
 
         return rootNode;
     }
 
-
-    private void buildSubTree(ProductionTreeNode node, Set<Integer> visitedItems, Map<Integer, Integer> operationToItemMap) {
+    private void buildSubTree(ProductionTreeNode node, Set<Integer> visitedItems, Set<Integer> addedOperations, Map<Integer, Integer> operationToItemMap) {
         Item item = node.getItem();
 
         // Prevent infinite recursion by skipping already visited items
@@ -52,9 +52,10 @@ public class ProductionTreeBuilder {
 
             // Add operation node if it exists for this item
             Operation operation = findOperationByItemId(item.getId(), operationToItemMap);
-            if (operation != null) {
+            if (operation != null && !addedOperations.contains(operation.getId())) {
                 ProductionTreeNode operationNode = new ProductionTreeNode(operation);
                 node.addChild(operationNode); // Add operation as a direct child of the item
+                addedOperations.add(operation.getId());
             }
 
             // Process subcomponents
@@ -68,17 +69,20 @@ public class ProductionTreeBuilder {
                     Operation subOperation = findOperationById(subId);
                     Item resolvedItem = findItemById(resolvedItemId);
 
-                    // Create and link operation node
-                    ProductionTreeNode operationNode = new ProductionTreeNode(subOperation);
-                    node.addChild(operationNode);
+                    // Create and link operation node if it hasn't been added yet
+                    if (!addedOperations.contains(subOperation.getId())) {
+                        ProductionTreeNode operationNode = new ProductionTreeNode(subOperation);
+                        node.addChild(operationNode);
+                        addedOperations.add(subOperation.getId());
 
-                    // Create and link resolved item node under the operation
-                    ProductionTreeNode resolvedItemNode = new ProductionTreeNode(resolvedItem);
-                    resolvedItemNode.setQuantity(quantity);
-                    operationNode.addChild(resolvedItemNode);
+                        // Create and link resolved item node under the operation
+                        ProductionTreeNode resolvedItemNode = new ProductionTreeNode(resolvedItem);
+                        resolvedItemNode.setQuantity(quantity);
+                        operationNode.addChild(resolvedItemNode);
 
-                    // Recursively build the subtree for the resolved item
-                    buildSubTree(resolvedItemNode, visitedItems, operationToItemMap);
+                        // Recursively build the subtree for the resolved item
+                        buildSubTree(resolvedItemNode, visitedItems, addedOperations, operationToItemMap);
+                    }
                 } else {
                     // Subcomponent is a regular item
                     Item subItem = findItemById(subId);
@@ -88,12 +92,11 @@ public class ProductionTreeBuilder {
                     node.addChild(subNode);
 
                     // Recursively build the subtree for the sub-item
-                    buildSubTree(subNode, visitedItems, operationToItemMap);
+                    buildSubTree(subNode, visitedItems, addedOperations, operationToItemMap);
                 }
             }
         }
     }
-
 
     // Helper method to find an item by its ID
     private Item findItemById(int id) {
