@@ -307,52 +307,7 @@ public class MenuItem {
         ProductionTreeSearcher searcher2 = new ProductionTreeSearcher();
         searcher2.indexTree(root2Node);
         // Search examples
-        System.out.println(searcher.search("bench seat w/nut")); // Search by name
-        System.out.println(searcher.search("1004")); // Search by ID
-        System.out.println(searcher.search("17")); // Search for operation
 
-        System.out.println("Item Quantities:");
-        booDataResult.itemQuantities.forEach((itemId, quantity) -> {
-            System.out.println("Item ID: " + itemId + ", Quantity: " + quantity);
-        });
-
-
-        // Create a MaterialBST to track materials by quantity
-        MaterialBST materialBST = new MaterialBST();
-
-        // Populate the MaterialBST with item quantities from booDataResult
-        for (Map.Entry<Integer, Double> entry : booDataResult.itemQuantities.entrySet()) {
-            int itemId = entry.getKey();
-            Double quantity = entry.getValue();
-
-            // Find the item name from the items list
-            String itemName = items.stream()
-                    .filter(item -> item.getId() == itemId)
-                    .map(Item::getName)
-                    .findFirst()
-                    .orElse("Unknown Item");
-
-            // Insert the item name and quantity into the MaterialBST
-            materialBST.insert(quantity, itemName);
-        }
-
-        // Display materials sorted by quantities
-        System.out.println("\nMaterials Sorted by Quantity (Increasing Order):");
-        materialBST.displayInOrder();
-
-        System.out.println("\nMaterials Sorted by Quantity (Decreasing Order):");
-        materialBST.displayInReverseOrder();
-
-        // Initialize the QualityCheckManager
-        QualityCheckManager qualityCheckManager = new QualityCheckManager();
-
-        // Start adding quality checks to the queue based on their depth in the production tree
-        qualityCheckManager.addQualityCheckBasedOnDepth(rootNode, 1); // Start from the root with depth 0
-
-
-        // Perform quality checks one by one in priority order
-        System.out.println("\nPerforming Quality Checks in Priority Order:");
-        qualityCheckManager.processQualityChecksInReverse();
     }
 
     /**
