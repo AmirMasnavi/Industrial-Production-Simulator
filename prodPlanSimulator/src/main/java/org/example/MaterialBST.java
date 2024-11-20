@@ -80,10 +80,12 @@ class MaterialBST {
             return null; // Material not found
         }
 
+
         // Find the material in the node's list
         if (node.materials.contains(materialName)) {
             // Update the material's quantity
             node.quantity = newQuantity;
+            System.out.println(newQuantity);
         } else if (materialName.compareTo(node.materials.get(0)) < 0) {
             // Search left if the material name is lexicographically smaller
             node.left = updateMaterialRecursive(node.left, materialName, newQuantity);

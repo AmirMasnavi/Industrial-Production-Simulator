@@ -36,6 +36,10 @@ public class MenuItem {
         ProductionTreeSearcher searcher = new ProductionTreeSearcher();
         searcher.indexTree(rootNode);
 
+        ProductionTreeBuilderOpID treeBuilder2 = new ProductionTreeBuilderOpID(items, operations, booDataResult.booData, booDataResult.itemQuantities);
+        ProductionTreeNode rootNode2 = treeBuilder2.buildTree(20, operationToItemMap);
+
+
         MaterialBST materialBST = new MaterialBST();
         for (Map.Entry<Integer, Double> entry : booDataResult.itemQuantities.entrySet()) {
             int itemId = entry.getKey();
@@ -299,6 +303,9 @@ public class MenuItem {
         // Create and use the searcher
         ProductionTreeSearcher searcher = new ProductionTreeSearcher();
         searcher.indexTree(rootNode); // Index the tree for searching
+
+        ProductionTreeSearcher searcher2 = new ProductionTreeSearcher();
+        searcher2.indexTree(root2Node);
         // Search examples
         System.out.println(searcher.search("bench seat w/nut")); // Search by name
         System.out.println(searcher.search("1004")); // Search by ID
@@ -448,7 +455,7 @@ public class MenuItem {
             double newQuantity = scanner.nextDouble();
 
 
-            node.updateQuantity(newQuantity);
+            node.setQuantity(newQuantity);
             System.out.println("Material quantity updated in the production tree.");
 
             materialBST.updateMaterialQuantity(searchQuery, newQuantity);
