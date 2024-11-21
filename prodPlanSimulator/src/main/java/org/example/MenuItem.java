@@ -70,6 +70,8 @@ public class MenuItem {
             System.out.println("8. Display Materials by Quantity");
             System.out.println("9. Perform Quality Checks by Priority");
             System.out.println("10. Update Material Quantity");
+            System.out.println("11. Total Material Quantity");
+
 
 
             /*
@@ -111,6 +113,9 @@ public class MenuItem {
                     break;
                 case 10:
                     updateMaterialQuantity(searcher, materialBST);
+                    break;
+                case 11:
+                    displayTotalMaterials(materialBST);
                     break;
 
                     /*
@@ -390,6 +395,11 @@ public class MenuItem {
         } else {
             System.out.println("Invalid choice.");
         }
+    }
+
+    private static void displayTotalMaterials(MaterialBST materialBST) {
+        System.out.println("\nTotal Quantity of Materials Used: ");
+        materialBST.displayTotalMaterialsQuantity();
     }
 
     private static void performQualityChecks(QualityCheckManager qualityCheckManager) {

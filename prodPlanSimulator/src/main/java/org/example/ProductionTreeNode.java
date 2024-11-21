@@ -74,10 +74,6 @@ public class ProductionTreeNode {
         return item != null ? item.getName() : "Unknown Item"; // Return "Unknown Item" if item is null
     }
 
-    public void updateQuantity(double newQuantity) {
-        // Update the quantity of the current node
-        this.quantity = newQuantity;
-    }
 
 
     @Override

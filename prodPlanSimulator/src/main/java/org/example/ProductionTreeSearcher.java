@@ -116,4 +116,36 @@ public class ProductionTreeSearcher {
 
         return null;
     }
+
+    public int calculateNodeDepth(String searchTerm) {
+        ProductionTreeNode node = getNodeByNameOrId(searchTerm);
+
+        if (node == null) {
+            System.out.println("Node not found " + searchTerm);
+            return -1;
+        }
+
+        int depth = 0;
+
+        while (node.getParentOperation() != null) {
+            node = getNodeByOperation(node.getParentOperation());
+            if (node == null) {
+                break;
+            }
+            depth++;
+        }
+
+        return depth;
+    }
+
+
+    private ProductionTreeNode getNodeByOperation(Operation operation) {
+        for (ProductionTreeNode node : idMap.values()) {
+            if (node.getOperation() != null && node.getOperation().equals(operation)) {
+                return node;
+            }
+        }
+        return null;
+    }
+
 }
