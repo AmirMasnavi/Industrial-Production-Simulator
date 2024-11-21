@@ -12,6 +12,7 @@ public class MenuItem {
     private static Simulator simulator;
     private static SimulatorNoPriorities simulatorNoPriorites;
     private static boolean lastSimulationWithPriorities;
+    private static BooDataResult booDataResult;
 
     /**
      * Displays the main menu and handles user selections.
@@ -28,7 +29,7 @@ public class MenuItem {
         List<Item> items = CSVReader.readItemsFromCSV("./items.csv");
         List<Operation> operations = CSVReader.readOperationsFromCSV("./operations.csv");
         Map<Integer, Integer> operationToItemMap = new HashMap<>();
-        BooDataResult booDataResult = CSVReader.readBooFromCSV("./boo_v2.csv", operationToItemMap);
+        booDataResult = CSVReader.readBooFromCSV("./boo_v2.csv", operationToItemMap);
 
         ProductionTreeBuilder treeBuilder = new ProductionTreeBuilder(items, operations, booDataResult.booData, booDataResult.itemQuantities);
         ProductionTreeNode rootNode = treeBuilder.buildTree(1006, operationToItemMap);
@@ -410,7 +411,8 @@ public class MenuItem {
             double newQuantity = scanner.nextDouble();
 
 
-            node.setQuantity(newQuantity);
+            node.updateMaterialQuantity(newQuantity);
+            booDataResult.updateItemQuantity(node.getItem().getId(), newQuantity);
             System.out.println("Material quantity updated in the production tree.");
 
             materialBST.updateMaterialQuantity(searchQuery, newQuantity);

@@ -116,4 +116,16 @@ public class ProductionTreeSearcher {
 
         return null;
     }
+
+    public boolean updateMaterialQuantity(String searchTerm, double newQuantity) {
+        // Locate the node by name or ID
+        ProductionTreeNode node = getNodeByNameOrId(searchTerm);
+
+        if (node != null && node.getItem() != null) { // Ensure it's a material node
+            node.updateMaterialQuantity(newQuantity);
+            return true; // Update was successful
+        }
+        return false; // Node not found or invalid
+    }
+
 }
