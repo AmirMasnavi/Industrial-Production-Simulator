@@ -10,6 +10,8 @@ public class ProductionTreeNode {
     private double quantity; // Store quantity as a field
     private Operation parentOperation;
 
+    private double totalMaterialQuantity = 0.0;
+
     // Constructor for Item
     public ProductionTreeNode(Item item) {
         this.item = item;
@@ -72,6 +74,44 @@ public class ProductionTreeNode {
 
     public String getItemName() {
         return item != null ? item.getName() : "Unknown Item"; // Return "Unknown Item" if item is null
+    }
+
+
+    public void displayMaterialsByOperation() {
+        displayMaterialsByOperationRecursive(this);
+    }
+
+    private void displayMaterialsByOperationRecursive(ProductionTreeNode node) {
+        if (node == null) {
+            return;
+        }
+
+        if (node.getOperation() != null) {
+            double totalQuantity = 0.0;
+
+            for (ProductionTreeNode child : node.getChildren()) {
+                totalQuantity += child.getQuantity();
+            }
+
+            totalMaterialQuantity += totalQuantity;
+
+            System.out.println("Operation: " + node.getOperation().getName() +
+                    ", Total Material Quantity Used: " + totalQuantity);
+        }
+
+        // Recurse sobre os filhos
+        for (ProductionTreeNode child : node.getChildren()) {
+            displayMaterialsByOperationRecursive(child);
+        }
+
+    }
+
+    public void displayTotalMaterials(ProductionTreeNode node){
+        totalMaterialQuantity = 0.0;
+
+        displayMaterialsByOperationRecursive(node);
+
+        System.out.println("\nTotal Quantity of Materials Used: " + totalMaterialQuantity);
     }
 
 

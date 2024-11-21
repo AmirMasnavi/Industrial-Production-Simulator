@@ -115,7 +115,7 @@ public class MenuItem {
                     updateMaterialQuantity(searcher, materialBST);
                     break;
                 case 11:
-                    displayTotalMaterials(materialBST);
+                    displayTotalMaterials(rootNode);
                     break;
 
                     /*
@@ -397,9 +397,9 @@ public class MenuItem {
         }
     }
 
-    private static void displayTotalMaterials(MaterialBST materialBST) {
+    private static void displayTotalMaterials(ProductionTreeNode node) {
         System.out.println("\nTotal Quantity of Materials Used: ");
-        materialBST.displayTotalMaterialsQuantity();
+        node.displayTotalMaterials(node);
     }
 
     private static void performQualityChecks(QualityCheckManager qualityCheckManager) {
