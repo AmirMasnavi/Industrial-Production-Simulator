@@ -298,7 +298,7 @@ public class MenuItem {
 
         // Print the production tree
         ProductionTreePrinter printer = new ProductionTreePrinter(booDataResult.booData);
-        printer.printTree(root2Node);
+        printer.printTree(rootNode);
 
         // Create and use the searcher
         ProductionTreeSearcher searcher = new ProductionTreeSearcher();
