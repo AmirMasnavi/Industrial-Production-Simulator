@@ -56,6 +56,31 @@ class MaterialBST {
         }
     }
 
+    public void displayTotalMaterialsTest(){
+        displayTotalMaterialsQuantityRecursive(root);
+    }
+
+    public double displayTotalMaterialsQuantityRecursive(Node node) {
+        if (node == null) {
+            return 0.0; // Base case: no quantity in a null node
+        }
+
+        // Traverse left, process current node, and then traverse right
+        double leftSum = displayTotalMaterialsQuantityRecursive(node.left);
+
+        // Calculate total materials for the current operation
+        int totalMaterialsInNode = node.materials.size();
+        System.out.println("Quantity: " + node.quantity
+                + ", Materials: " + node.materials
+                + "\nTotal Materials in Node: " + totalMaterialsInNode);
+
+        double rightSum = displayTotalMaterialsQuantityRecursive(node.right);
+
+        // Accumulate the sum of quantities
+        return leftSum + node.quantity + rightSum;
+
+    }
+
     // Display materials in decreasing order of quantity
     public void displayInReverseOrder() {
         System.out.println("Materials in Decreasing Order of Quantity:");

@@ -71,6 +71,7 @@ public class MenuItem {
             System.out.println("9. Perform Quality Checks by Priority");
             System.out.println("10. Update Material Quantity");
             System.out.println("11. Total Material Quantity");
+            System.out.println("12. Total Material Quantity.2");
 
 
 
@@ -117,6 +118,10 @@ public class MenuItem {
                 case 11:
                     displayTotalMaterials(rootNode);
                     break;
+                case 12:
+                    displayTotalMaterials2(materialBST);
+                    break;
+
 
                     /*
                 case 6:
@@ -400,6 +405,11 @@ public class MenuItem {
     private static void displayTotalMaterials(ProductionTreeNode node) {
         System.out.println("\nTotal Quantity of Materials Used: ");
         node.displayTotalMaterials(node);
+    }
+
+    private static void displayTotalMaterials2(MaterialBST materialBST){
+        System.out.println("\nTotal Quantity of Materials Used: ");
+        materialBST.displayTotalMaterialsTest();
     }
 
     private static void performQualityChecks(QualityCheckManager qualityCheckManager) {
