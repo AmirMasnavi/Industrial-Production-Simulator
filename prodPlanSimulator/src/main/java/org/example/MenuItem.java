@@ -496,14 +496,18 @@ public class MenuItem {
             operationDepths.put(operation, depth);
         }
 
-        // Sort operations by tree depth in descending order
-        List<Operation> sortedOperations = operations.stream()
-                .sorted((op1, op2) -> Integer.compare(operationDepths.get(op2), operationDepths.get(op1)))
-                .toList();
+        // Usar PriorityQueue para armazenar as operações por profundidade
+        PriorityQueue<Operation> priorityQueue = new PriorityQueue<>(
+                (op1, op2) -> Integer.compare(operationDepths.get(op2), operationDepths.get(op1))
+        );
 
-        // Print the trees in descending order of depth
+        // Adicionar operações à fila de prioridade
+        priorityQueue.addAll(operations);
+
+        // Processar operações da fila
         ProductionTreePrinter printer = new ProductionTreePrinter(booDataResult.booData);
-        for (Operation operation : sortedOperations) {
+        while (!priorityQueue.isEmpty()) {
+            Operation operation = priorityQueue.poll();
             System.out.println("\nCritical Path Operation for: " + operation.getName() + " (ID: " + operation.getId() + ")");
             ProductionTreeNode rootNode = treeBuilder.buildTree(operation.getId(), operationToItemMap);
             printer.printOperationTree(rootNode);
@@ -522,6 +526,8 @@ public class MenuItem {
         }
         return maxDepth + 1;
     }
+
+
 
 
 
