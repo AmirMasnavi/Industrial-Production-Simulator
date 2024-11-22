@@ -5,7 +5,7 @@ import java.util.List;
 
 class MaterialBST {
     // Node class to represent each node in the BST
-    private static class Node {
+    public static class Node {
         Double quantity;
         List<String> materials; // List of materials associated with this quantity
         Node left, right;
@@ -42,7 +42,7 @@ class MaterialBST {
         return node;
     }
 
-    // Display materials in increasing order of quantity
+        // Display materials in increasing order of quantity
     public void displayInOrder() {
         System.out.println("Materials in Increasing Order of Quantity:");
         displayInOrderRecursive(root);
@@ -54,6 +54,31 @@ class MaterialBST {
             System.out.println("Quantity: " + node.quantity + ", Materials: " + node.materials);
             displayInOrderRecursive(node.right);
         }
+    }
+
+    public void displayTotalMaterialsTest(){
+        displayTotalMaterialsQuantityRecursive(root);
+    }
+
+    public double displayTotalMaterialsQuantityRecursive(Node node) {
+        if (node == null) {
+            return 0.0; // Base case: no quantity in a null node
+        }
+
+        // Traverse left, process current node, and then traverse right
+        double leftSum = displayTotalMaterialsQuantityRecursive(node.left);
+
+        // Calculate total materials for the current operation
+        int totalMaterialsInNode = node.materials.size();
+        System.out.println("Quantity: " + node.quantity
+                + ", Materials: " + node.materials
+                + "\nTotal Materials in Node: " + totalMaterialsInNode);
+
+        double rightSum = displayTotalMaterialsQuantityRecursive(node.right);
+
+        // Accumulate the sum of quantities
+        return leftSum + node.quantity + rightSum;
+
     }
 
     // Display materials in decreasing order of quantity
