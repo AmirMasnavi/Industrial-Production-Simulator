@@ -494,8 +494,7 @@
 
 
 ``````
-
-**Complexity Analysis:**
+***Complexity Analysis:***
 
 **Recursive Traversal:**
 - Visits each node exactly once (left, root, right).
@@ -603,4 +602,168 @@
 **Total Complexity:**
 - Best case: **O(log n)** (balanced BST).
 - Worst case: **O(n)** (unbalanced BST).
- 
+
+
+### USEI11
+
+> **insertRecursive**
+
+
+`````java
+public record QualityCheck(int checkId, String checkName, int priorityLevel) implements Comparable<QualityCheck> {
+
+    // Implement the compareTo method to define the priority
+    @Override
+    public int compareTo(QualityCheck other) {
+        // Higher priority level should come first (max-heap)
+        return Integer.compare(other.priorityLevel, this.priorityLevel);
+    }
+
+    @Override
+    public String toString() {
+        return String.format(
+                "Quality Check [Priority Level: %d, ID: %d, Name: '%s']",
+                priorityLevel, checkId, checkName
+        );
+    }
+}
+
+
+``````
+***Complexity Analysis:***
+
+**compareTo Method:**
+- Compares the `priorityLevel` of two `QualityCheck` objects.
+- Uses `Integer.compare`, which is O(1).
+- Total complexity: **O(1)**.
+
+**toString Method:**
+- Formats the `QualityCheck` object into a string representation using `String.format`.
+- The number of placeholders in the format string is fixed, so formatting is O(1).
+- Total complexity: **O(1)**.
+
+**Usage in Data Structures:**
+- The `compareTo` method may be used in sorting or priority-based data structures (e.g., `PriorityQueue`).
+- For sorting an array or list of `QualityCheck` objects, the `compareTo` method is called once per comparison:
+- Sorting complexity: **O(n log n)** for `n` objects in an efficient sorting algorithm (e.g., merge sort, quicksort).
+- For a priority queue (heap):
+- Insertion complexity: **O(log n)**.
+- Extraction complexity: **O(log n)**.
+
+
+> **addQualityCheckBasedOnDepth**
+
+`````java
+    public void addQualityCheckBasedOnDepth(ProductionTreeNode node, int depth) {
+        if (node == null) return;
+
+        // Assign higher priority for closer operations (smaller depth = higher priority)
+        if(node.getItemId() != -1) {
+        String checkName = node.getItemName() + " (" + node.getItemId() + ")";
+
+        // Create a QualityCheck instance for this operation
+        QualityCheck qualityCheck = new QualityCheck(node.getItemId(), checkName, depth);
+
+        // Add the quality check to the priority queue
+        qualityCheckQueue.offer(qualityCheck);
+        }
+
+
+        // Recursively add the operations for the child nodes with incremented depth
+        for (ProductionTreeNode childNode : node.getChildren()) {
+        addQualityCheckBasedOnDepth(childNode, depth + 1); // Increase depth as we go down the tree
+        }
+        }
+
+``````
+
+***Complexity Analysis:***
+
+**Recursive Tree Traversal:**
+- Visits each node in the tree once.
+- If the tree has n nodes, the traversal is O(n).
+
+**Quality Check Creation and Insertion:**
+- For each node, creates a `QualityCheck` (O(1)).
+- Inserts the `QualityCheck` into the priority queue, which is O(log k), where k is the current number of elements in the queue.
+
+**Total Complexity:**
+- Traversal: O(n).
+- Insertion: O(n log n) for all nodes.
+- Total: **O(n log n)**.
+
+
+>**processQualityChecksInRevers**
+
+`````java
+public void processQualityChecksInReverse() {
+        // Create a stack to reverse the order
+        Stack<QualityCheck> reverseStack = new Stack<>();
+
+        // Move all quality checks to the stack
+        while (!qualityCheckQueue.isEmpty()) {
+        reverseStack.push(qualityCheckQueue.poll());
+        }
+
+        // Now process and perform quality checks in reverse order (lowest priority first)
+        while (!reverseStack.isEmpty()) {
+        QualityCheck qc = reverseStack.pop();  // Pop the checks from the stack (which gives reverse order)
+        System.out.println("Performing Quality Check: " + qc);
+        }
+        }
+``````
+
+***Complexity Analysis:***
+
+**Reversing the Priority Queue:**
+- Moving all elements from the priority queue to a stack:
+- Removing elements from the queue is O(log n) per element.
+- Pushing elements to the stack is O(1) per element.
+- Total for n elements: O(n log n).
+
+**Processing in Reverse Order:**
+- Popping elements from the stack is O(1) per element.
+- Total for n elements: O(n).
+
+**Total Complexity:**
+- Reversing: O(n log n).
+- Processing: O(n).
+- Total: **O(n log n)**.
+
+>**performQualityChecks**
+
+`````java
+    public void performQualityChecks() {
+        while (!qualityCheckQueue.isEmpty()) {
+        QualityCheck check = qualityCheckQueue.poll();
+        System.out.println("Performing Quality Check: " + check);
+        }
+        }
+``````
+
+***Complexity Analysis:***
+
+**Processing the Priority Queue:**
+- Removes elements from the priority queue one at a time.
+- Each removal is O(log n).
+- For n elements, the total complexity is **O(n log n)**.
+
+>**viewQualityChecks**
+
+`````java
+    public void viewQualityChecks() {
+        System.out.println("Quality Checks in Order of Priority:");
+        for (QualityCheck check : qualityCheckQueue) {
+        System.out.println(check);
+        }
+        }
+``````
+
+***Complexity Analysis:***
+
+**Iterating through the Priority Queue:**
+- Iterating over the elements of the priority queue is O(n), where n is the size of the queue.
+- Printing each element is O(1) per element.
+
+**Total Complexity:**
+- **O(n)**.
