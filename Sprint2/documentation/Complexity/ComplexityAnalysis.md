@@ -373,4 +373,234 @@
 **Total Complexity:**
 - O(1), as both searches involve constant-time lookups.
 
+### USEI10
 
+> **insertRecursive**
+
+`````java
+        private Node insertRecursive(Node node, Double quantity, String material) {
+        if (node == null) {
+        return new Node(quantity, material);
+        }
+
+        if (quantity < node.quantity) {
+        node.left = insertRecursive(node.left, quantity, material);
+        } else if (quantity > node.quantity) {
+        node.right = insertRecursive(node.right, quantity, material);
+        } else {
+        // Quantity already exists, add material to the list
+        node.materials.add(material);
+        }
+
+        return node;
+        }
+
+
+``````
+**Complexity Analysis:**
+
+**Recursive Insertion:**
+- Traverses the binary search tree (BST) to find the correct position for insertion.
+- On a balanced BST, traversal depth is proportional to the tree height: O(log n), where n is the number of nodes.
+- On an unbalanced BST, the worst-case traversal depth is O(n).
+
+**Node Operations:**
+- Creating a new node (O(1)).
+- Adding a material to the node's list (O(1)).
+
+**Total Complexity:**
+- Best case: **O(log n)** (balanced BST).
+- Worst case: **O(n)** (unbalanced BST).
+
+
+> **displayInOrder**
+
+`````java
+    public void displayInOrder() {
+        System.out.println("Materials in Increasing Order of Quantity:");
+        displayInOrderRecursive(root);
+        }
+
+``````
+
+***Complexity Analysis:***
+
+**Tree Traversal:**
+- Uses in-order traversal, visiting each node exactly once.
+- Each node visit involves a constant-time operation (O(1)).
+
+**Total Complexity:**
+- O(n), where n is the number of nodes in the BST.
+
+> **displayInOrderRecursive**
+`````java
+    private void displayInOrderRecursive(Node node) {
+        if (node != null) {
+        displayInOrderRecursive(node.left);
+        System.out.println("Quantity: " + node.quantity + ", Materials: " + node.materials);
+        displayInOrderRecursive(node.right);
+        }
+        }
+
+``````
+
+***Complexity Analysis:***
+
+**Recursive Traversal:**
+- Visits each node exactly once (left, root, right).
+- At each node, a constant-time operation (O(1)) is performed to print the node's details.
+
+**Total Complexity:**
+- O(n), where n is the number of nodes in the BST.
+
+
+
+> **displayTotalMaterialsTest**
+`````java
+    public void displayTotalMaterialsTest(){
+        displayTotalMaterialsQuantityRecursive(root);
+        }
+``````
+***Complexity Analysis:***
+
+**Recursive Call:**
+- Delegates the work to `displayTotalMaterialsQuantityRecursive`.
+- Complexity matches that method: O(n), where n is the number of nodes.
+
+
+> **displayTotalMaterialsQuantityRecursive**
+
+`````java
+    public double displayTotalMaterialsQuantityRecursive(Node node) {
+        if (node == null) {
+        return 0.0; // Base case: no quantity in a null node
+        }
+
+        // Traverse left, process current node, and then traverse right
+        double leftSum = displayTotalMaterialsQuantityRecursive(node.left);
+
+        // Calculate total materials for the current operation
+        int totalMaterialsInNode = node.materials.size();
+        System.out.println("Quantity: " + node.quantity
+        + ", Materials: " + node.materials
+        + "\nTotal Materials in Node: " + totalMaterialsInNode);
+
+        double rightSum = displayTotalMaterialsQuantityRecursive(node.right);
+
+        // Accumulate the sum of quantities
+        return leftSum + node.quantity + rightSum;
+
+        }
+
+
+``````
+
+**Complexity Analysis:**
+
+**Recursive Traversal:**
+- Visits each node exactly once (left, root, right).
+- At each node:
+- Calculating the total materials in the node is O(1).
+- Printing details is also O(1).
+
+**Total Complexity:**
+- O(n), where n is the number of nodes in the BST.
+
+> **displayInReverseOrder**
+`````java
+    public void displayInReverseOrder() {
+        System.out.println("Materials in Decreasing Order of Quantity:");
+        displayInReverseOrderRecursive(root);
+        }
+``````
+***Complexity Analysis:***
+
+**Tree Traversal:**
+- Uses reverse in-order traversal, visiting each node exactly once (right, root, left).
+- Each node visit involves a constant-time operation (O(1)).
+
+**Total Complexity:**
+- O(n), where n is the number of nodes in the BST.
+
+> **displayInReverseOrderRecursive**
+
+`````java
+    private void displayInReverseOrderRecursive(Node node) {
+        if (node != null) {
+        displayInReverseOrderRecursive(node.right);
+        System.out.println("Quantity: " + node.quantity + ", Materials: " + node.materials);
+        displayInReverseOrderRecursive(node.left);
+        }
+        }
+``````
+***Complexity Analysis:***
+**Recursive Traversal:**
+- Visits each node exactly once (right, root, left).
+- At each node, a constant-time operation (O(1)) is performed to print the node's details.
+
+**Total Complexity:**
+- O(n), where n is the number of nodes in the BST.
+
+> **updateMaterialQuantite**
+
+`````java
+  public void updateMaterialQuantity(String materialName, double newQuantity) {
+        root = updateMaterialRecursive(root, materialName, newQuantity);
+        }
+
+``````
+***Complexity Analysis:***
+
+**Recursive Search:**
+- Traverses the BST to locate the node containing the material.
+- On a balanced BST, traversal depth is O(log n).
+- On an unbalanced BST, worst-case traversal depth is O(n).
+
+**Updating a Node:**
+- Checking and updating a material in a node's list is O(1).
+
+**Total Complexity:**
+- Best case: **O(log n)** (balanced BST).
+- Worst case: **O(n)** (unbalanced BST).
+
+> **updateMaterialRecursive**
+
+`````java
+    private Node updateMaterialRecursive(Node node, String materialName, double newQuantity) {
+        if (node == null) {
+        return null; // Material not found
+        }
+
+
+        // Find the material in the node's list
+        if (node.materials.contains(materialName)) {
+        // Update the material's quantity
+        node.quantity = newQuantity;
+        System.out.println(newQuantity);
+        } else if (materialName.compareTo(node.materials.get(0)) < 0) {
+        // Search left if the material name is lexicographically smaller
+        node.left = updateMaterialRecursive(node.left, materialName, newQuantity);
+        } else {
+        // Search right if the material name is lexicographically larger
+        node.right = updateMaterialRecursive(node.right, materialName, newQuantity);
+        }
+
+        return node;
+        }
+
+``````
+***Complexity Analysis:***
+
+**Recursive Search:**
+- Traverses the BST to locate the node containing the material.
+- On a balanced BST, traversal depth is O(log n).
+- On an unbalanced BST, worst-case traversal depth is O(n).
+
+**Updating a Node:**
+- Checking for a material in a node's list is O(1).
+- Updating the node's quantity is O(1).
+
+**Total Complexity:**
+- Best case: **O(log n)** (balanced BST).
+- Worst case: **O(n)** (unbalanced BST).
+ 
