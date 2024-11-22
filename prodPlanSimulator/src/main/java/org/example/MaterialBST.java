@@ -5,7 +5,7 @@ import java.util.List;
 
 class MaterialBST {
     // Node class to represent each node in the BST
-    private static class Node {
+    public static class Node {
         Double quantity;
         List<String> materials; // List of materials associated with this quantity
         Node left, right;

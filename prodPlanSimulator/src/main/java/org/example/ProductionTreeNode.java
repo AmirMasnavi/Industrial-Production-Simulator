@@ -77,10 +77,6 @@ public class ProductionTreeNode {
     }
 
 
-    public void displayMaterialsByOperation() {
-        displayMaterialsByOperationRecursive(this);
-    }
-
     private void displayMaterialsByOperationRecursive(ProductionTreeNode node) {
         if (node == null) {
             return;
