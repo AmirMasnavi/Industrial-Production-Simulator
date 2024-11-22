@@ -72,6 +72,7 @@ public class MenuItem {
             System.out.println("10. Update Material Quantity");
             System.out.println("11. Total Material Quantity");
             System.out.println("12. Total Material Quantity.2");
+            System.out.println("13. List Products and View BOM or BOO (LAPR3)");
 
 
 
@@ -121,6 +122,9 @@ public class MenuItem {
                 case 12:
                     displayTotalMaterials2(materialBST);
                     break;
+                case 13:
+                    listAndShowProducts(visualiser);
+                    break;
 
 
                     /*
@@ -138,6 +142,47 @@ public class MenuItem {
                 default:
                     System.out.println("Invalid option.");
             }
+        }
+    }
+
+    private static void listAndShowProducts(Visualiser visualiser) {
+        Scanner scanner = new Scanner(System.in);
+
+        // List all available products
+        visualiser.listProducts();
+
+        System.out.print("Choose a product by entering its number: ");
+        int selectedProductIndex = scanner.nextInt();
+
+        // Check if the selected product index is valid
+        if (selectedProductIndex < 1 || selectedProductIndex > visualiser.products.size()) {
+            System.out.println("Invalid product number. Please try again.");
+            return;
+        }
+
+        // Retrieve the selected product
+        Product selectedProduct = visualiser.products.get(selectedProductIndex - 1);
+
+        System.out.println("\nWhat would you like to view?");
+        System.out.println("1. Bill of Materials (BOM)");
+        System.out.println("2. Bill of Operations (BOO)");
+        System.out.println("3. Exit");
+
+        int choice = scanner.nextInt();
+        switch (choice) {
+            case 1:
+                // Print the BOM for the selected product
+                visualiser.printBOM(selectedProduct);
+                break;
+            case 2:
+                // Print the BOO for the selected product
+                visualiser.printBOO(selectedProduct);
+                break;
+            case 3:
+                System.out.println("Exiting...");
+                return;
+            default:
+                System.out.println("Invalid choice. Please try again.");
         }
     }
 
