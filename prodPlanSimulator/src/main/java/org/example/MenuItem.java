@@ -72,14 +72,9 @@ public class MenuItem {
             System.out.println("10. Update Material Quantity");
             System.out.println("11. Total Material Quantity");
             System.out.println("12. Total Material Quantity.2");
-            System.out.println("13. List Products and View BOM or BOO (LAPR3)");
+            System.out.println("13. Critical Path Operation");
+            System.out.println("14. List Products and View BOM or BOO (LAPR3)");
 
-
-
-            /*
-            System.out.println("6. Product Structure");
-            System.out.println("7. List Products and View BOM (LAPR3)");
-            */
             System.out.println("0. Exit");
 
             System.out.print("\nChoose an option: ");
@@ -123,18 +118,11 @@ public class MenuItem {
                     displayTotalMaterials2(materialBST);
                     break;
                 case 13:
+                    criticalPathOperations();
+                    break;
+                case 14:
                     listAndShowProducts(visualiser);
                     break;
-
-
-                    /*
-                case 6:
-                    showProduct();
-                    break;
-                case 7:
-                    listAndShowProducts(visualiser);
-                    break;
-                    */
                 case 0:
                     System.out.println("Exiting...");
                     running = false;
@@ -355,6 +343,9 @@ public class MenuItem {
         ProductionTreePrinter printer = new ProductionTreePrinter(booDataResult.booData);
         printer.printTree(rootNode);
 
+        ProductionTreePrinter printer2 = new ProductionTreePrinter(booDataResult.booData);
+        printer2.printTree(root2Node);
+
         // Create and use the searcher
         ProductionTreeSearcher searcher = new ProductionTreeSearcher();
         searcher.indexTree(rootNode); // Index the tree for searching
@@ -484,6 +475,55 @@ public class MenuItem {
             System.out.println("Error: Material not found in the production tree.");
         }
     }
+
+    private static void criticalPathOperations() {
+        List<Item> items = CSVReader.readItemsFromCSV("./items.csv");
+        List<Operation> operations = CSVReader.readOperationsFromCSV("./operations.csv");
+
+        // Create a map to store the mapping between op_id and item_id
+        Map<Integer, Integer> operationToItemMap = new HashMap<>();
+        BooDataResult booDataResult = CSVReader.readBooFromCSV("./boo_v2.csv", operationToItemMap);
+
+        ProductionTreeBuilderOpID treeBuilder = new ProductionTreeBuilderOpID(items, operations, booDataResult.booData, booDataResult.itemQuantities);
+
+        // Map to store operations and their respective tree depths
+        Map<Operation, Integer> operationDepths = new HashMap<>();
+
+        // Calculate the depth of each tree
+        for (Operation operation : operations) {
+            ProductionTreeNode rootNode = treeBuilder.buildTree(operation.getId(), operationToItemMap);
+            int depth = calculateTreeDepth(rootNode);
+            operationDepths.put(operation, depth);
+        }
+
+        // Sort operations by tree depth in descending order
+        List<Operation> sortedOperations = operations.stream()
+                .sorted((op1, op2) -> Integer.compare(operationDepths.get(op2), operationDepths.get(op1)))
+                .toList();
+
+        // Print the trees in descending order of depth
+        ProductionTreePrinter printer = new ProductionTreePrinter(booDataResult.booData);
+        for (Operation operation : sortedOperations) {
+            System.out.println("\nCritical Path Operation for: " + operation.getName() + " (ID: " + operation.getId() + ")");
+            ProductionTreeNode rootNode = treeBuilder.buildTree(operation.getId(), operationToItemMap);
+            printer.printOperationTree(rootNode);
+        }
+    }
+
+    private static int calculateTreeDepth(ProductionTreeNode node) {
+        if (node == null || node.getChildren().isEmpty()) {
+            return 1; // Base case: a single node has depth 1
+        }
+
+        // Recursively calculate the depth of children and add 1 for the current node
+        int maxDepth = 0;
+        for (ProductionTreeNode child : node.getChildren()) {
+            maxDepth = Math.max(maxDepth, calculateTreeDepth(child));
+        }
+        return maxDepth + 1;
+    }
+
+
 
 
 
