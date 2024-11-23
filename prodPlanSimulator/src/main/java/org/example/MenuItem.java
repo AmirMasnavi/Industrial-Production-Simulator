@@ -13,6 +13,8 @@ public class MenuItem {
     private static SimulatorNoPriorities simulatorNoPriorites;
     private static boolean lastSimulationWithPriorities;
 
+    private static SimulatorTree simulatorTree;
+
     /**
      * Displays the main menu and handles user selections.
      * <p>
@@ -74,6 +76,7 @@ public class MenuItem {
             System.out.println("12. Total Material Quantity.2");
             System.out.println("13. Critical Path Operation");
             System.out.println("14. List Products and View BOM or BOO (LAPR3)");
+            System.out.println("15. Run Simulation Tree");
 
             System.out.println("0. Exit");
 
@@ -123,6 +126,8 @@ public class MenuItem {
                 case 14:
                     listAndShowProducts(visualiser);
                     break;
+                case 15:
+                    runSimulationTree();
                 case 0:
                     System.out.println("Exiting...");
                     running = false;
@@ -527,15 +532,6 @@ public class MenuItem {
         return maxDepth + 1;
     }
 
-
-
-
-
-
-
-
-
-
     /**
      * Displays statistics for the last simulation that did not consider item priorities.
      * <p>
@@ -588,6 +584,30 @@ public class MenuItem {
             }
         }
     }
+
+    private static void runSimulationTree() {
+        try {
+            // Ler os ficheiros CSV necessários
+            String itemsFilePath = "./items.csv";
+            String operationsFilePath = "./operations.csv";
+            String booFilePath = "./boo_v2.csv";
+            String machinesFilePath = "./workstations_v2.csv";
+
+            // Criar a instância do simulador com base nos ficheiros
+            SimulatorTree simulator = new SimulatorTree(
+                    itemsFilePath, operationsFilePath, booFilePath, machinesFilePath
+            );
+
+            // Executar a simulação
+            simulator.runSimulation();
+            System.out.println("\nSimulation Tree completed.");
+        } catch (Exception e) {
+            System.err.println("Erro ao executar a simulação: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+
 
     // only to be used for the next sprint
 
