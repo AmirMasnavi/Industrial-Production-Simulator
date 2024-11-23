@@ -3,35 +3,25 @@ package org.example;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
- * Utility class for reading data from CSV files and converting them into lists of Java objects.
- * This class provides methods for reading two types of data: items and machines.
- * Each method reads a specified CSV file, converts its lines into corresponding Java objects,
- * and returns lists of those objects.
+ * Utility class for reading data from CSV files and converting them into structured Java objects.
  * <p>
- * Note: The first line of the CSV file (presumably the header) is skipped during reading.
- * </p>
+ * This class includes various methods to process CSV files representing different types of data,
+ * such as articles, machines, items, operations, and Bill of Operations (BOO) data.
+ * It provides flexible functionality for parsing and handling errors during file reading.
  */
 public class CSVReader {
 
     /**
-     * Reads a list of items from a CSV file.
-     * This method opens the specified CSV file, skips the header line, and processes each subsequent line
-     * to create an Item object. Each Item is instantiated by calling the {@link Article#fromCSV(String)} method.
-     *
+     * Reads a list of articles from a CSV file.
      * <p>
-     * If an error occurs while parsing a line, an error message is printed to standard error, indicating
-     * the problematic line and the reason for the error. If an IOException occurs while reading the file,
-     * an error message is printed with details about the issue.
-     * </p>
+     * Each line is processed using the {@code Article.fromCSV(String)} method to instantiate an {@code Article} object.
+     * Skips the header line in the file.
      *
-     * @param filePath the path to the CSV file from which to read items
-     * @return a List of Item objects created from the CSV file
+     * @param filePath the path to the CSV file containing article data
+     * @return a list of {@code Article} objects
      */
     public static List<Article> readArticlesFromCSV(String filePath) {
         List<Article> articles = new ArrayList<>();
@@ -52,17 +42,12 @@ public class CSVReader {
 
     /**
      * Reads a list of machines from a CSV file.
-     * This method opens the specified CSV file, skips the header line, and processes each subsequent line
-     * to create a Machine object. Each Machine is instantiated by calling the {@link Machine#fromCSV(String)} method.
-     *
      * <p>
-     * If an error occurs while parsing a line, an error message is printed to standard error, indicating
-     * the problematic line and the reason for the error. If an IOException occurs while reading the file,
-     * an error message is printed with details about the issue.
-     * </p>
+     * Each line is processed using the {@code Machine.fromCSV(String)} method to instantiate a {@code Machine} object.
+     * Skips the header line in the file.
      *
-     * @param filePath the path to the CSV file from which to read machines
-     * @return a List of Machine objects created from the CSV file
+     * @param filePath the path to the CSV file containing machine data
+     * @return a list of {@code Machine} objects
      */
     public static List<Machine> readMachinesFromCSV(String filePath) {
         List<Machine> machines = new ArrayList<>();
@@ -81,6 +66,15 @@ public class CSVReader {
         return machines;
     }
 
+    /**
+     * Reads a list of items from a CSV file.
+     * <p>
+     * Processes each line to create an {@code Item} object with ID and name fields.
+     * Skips the header line in the file.
+     *
+     * @param filePath the path to the CSV file containing item data
+     * @return a list of {@code Item} objects
+     */
     public static List<Item> readItemsFromCSV(String filePath) {
         List<Item> items = new ArrayList<>();
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
@@ -101,6 +95,15 @@ public class CSVReader {
         return items;
     }
 
+    /**
+     * Reads a list of operations from a CSV file.
+     * <p>
+     * Processes each line to create an {@code Operation} object with ID and name fields.
+     * Skips the header line in the file.
+     *
+     * @param filePath the path to the CSV file containing operation data
+     * @return a list of {@code Operation} objects
+     */
     public static List<Operation> readOperationsFromCSV(String filePath) {
         List<Operation> operations = new ArrayList<>();
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
@@ -121,10 +124,21 @@ public class CSVReader {
         return operations;
     }
 
-
+    /**
+     * Reads Bill of Operations (BOO) data from a CSV file.
+     * <p>
+     * Processes lines to populate the {@code booData} map with operation-to-suboperation relationships
+     * and the {@code itemQuantities} map with item quantities. Additionally, updates the provided
+     * {@code operationToItemMap} for operation-to-item mappings.
+     * Skips the header line in the file.
+     *
+     * @param filePath           the path to the CSV file containing BOO data
+     * @param operationToItemMap a map to populate with operation-to-item mappings
+     * @return a {@code BooDataResult} object containing parsed BOO data and item quantities
+     */
     public static BooDataResult readBooFromCSV(
             String filePath,
-            Map<Integer, Integer> operationToItemMap // Pass this map to populate
+            Map<Integer, Integer> operationToItemMap
     ) {
         Map<Integer, Map<Integer, Double>> booData = new HashMap<>();
         Map<Integer, Double> itemQuantities = new HashMap<>();
@@ -132,49 +146,29 @@ public class CSVReader {
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             br.readLine(); // Skip header
             br.lines().forEach(line -> {
-//                System.out.println("Processing line: " + line); // Debugging: Print current line
                 try {
                     String[] fields = line.split(";");
                     int opId = Integer.parseInt(fields[0]);
                     int itemId = Integer.parseInt(fields[1]);
                     double itemQty = Double.parseDouble(fields[2].replace(",", "."));
 
-                    // Store the item quantity
+                    // Store item quantity and map operation to item
                     itemQuantities.put(itemId, itemQty);
-
-                    // Map op_id to item_id for future lookup
                     operationToItemMap.put(opId, itemId);
 
+                    // Parse subcomponents for the operation
                     Map<Integer, Double> subcomponents = new HashMap<>();
-//                    boolean insideGroup = false;
-
                     for (int i = 3; i < fields.length; i++) {
                         String field = fields[i];
-
-                        if (field.equals("(")) {
-                            continue;
-                        }
-                        if (field.equals(")")) {
-                            continue;
-                        }
-                        if (field.isEmpty()) {
-                            continue;
-                        }
-
-                        try {
+                        if (!field.isEmpty() && !field.equals("(") && !field.equals(")")) {
                             int subItemId = Integer.parseInt(field);
                             double quantity = Double.parseDouble(fields[++i].replace(",", "."));
                             subcomponents.put(subItemId, quantity);
                             if (subItemId > 999) {
                                 itemQuantities.put(subItemId, quantity);
                             }
-
-
-                        } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
-                            System.err.println("Error parsing subcomponent at index " + i + ": " + e.getMessage());
                         }
                     }
-
                     booData.put(itemId, subcomponents);
                 } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
                     System.err.println("Error parsing line: " + line + ". " + e.getMessage());
@@ -186,6 +180,4 @@ public class CSVReader {
 
         return new BooDataResult(booData, itemQuantities);
     }
-
-
 }

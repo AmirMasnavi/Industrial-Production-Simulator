@@ -3,13 +3,31 @@ package org.example;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Binary Search Tree (BST) for managing materials and their associated quantities.
+ * <p>
+ * Each node in the tree represents a unique quantity and contains a list of materials
+ * associated with that quantity. The tree is organized by quantity, enabling efficient
+ * insertion, search, and traversal.
+ * </p>
+ */
 class MaterialBST {
-    // Node class to represent each node in the BST
-    public static class Node {
-        Double quantity;
-        List<String> materials; // List of materials associated with this quantity
-        Node left, right;
 
+    /**
+     * Inner class representing a node in the BST.
+     * Each node contains a quantity, a list of associated materials, and pointers to left and right child nodes.
+     */
+    public static class Node {
+        Double quantity; // The quantity associated with this node
+        List<String> materials; // List of materials corresponding to the quantity
+        Node left, right; // Left and right child nodes
+
+        /**
+         * Constructor to initialize a new node with a given quantity and material.
+         *
+         * @param quantity the quantity to associate with the node
+         * @param material the material to add to the node's material list
+         */
         Node(Double quantity, String material) {
             this.quantity = quantity;
             this.materials = new ArrayList<>();
@@ -20,7 +38,13 @@ class MaterialBST {
 
     private Node root; // Root node of the BST
 
-    // Insert a material with its quantity into the BST
+    /**
+     * Inserts a material and its associated quantity into the BST.
+     * If the quantity already exists, the material is added to the existing list of materials.
+     *
+     * @param quantity the quantity to associate with the material
+     * @param material the material to insert
+     */
     public void insert(Double quantity, String material) {
         root = insertRecursive(root, quantity, material);
     }
@@ -35,14 +59,15 @@ class MaterialBST {
         } else if (quantity > node.quantity) {
             node.right = insertRecursive(node.right, quantity, material);
         } else {
-            // Quantity already exists, add material to the list
-            node.materials.add(material);
+            node.materials.add(material); // Add material to the existing quantity node
         }
 
         return node;
     }
 
-        // Display materials in increasing order of quantity
+    /**
+     * Displays materials in ascending order of their quantities.
+     */
     public void displayInOrder() {
         System.out.println("Materials in Increasing Order of Quantity:");
         displayInOrderRecursive(root);
@@ -56,28 +81,28 @@ class MaterialBST {
         }
     }
 
-    public void displayTotalMaterialsTest(){
+    /**
+     * Calculates and displays the total quantity of all materials in the BST.
+     * Also prints the total number of materials for each quantity.
+     */
+    public void displayTotalMaterialsTest() {
         double totalQuantity = displayTotalMaterialsQuantityRecursive(root);
         System.out.println("Total Quantity of Materials Used: " + totalQuantity);
     }
 
-    public double displayTotalMaterialsQuantityRecursive(Node node) {
-
+    private double displayTotalMaterialsQuantityRecursive(Node node) {
         double total = 0.0;
 
         if (node == null) {
             return total;
         }
 
-
         total += displayTotalMaterialsQuantityRecursive(node.left);
-
 
         int totalMaterialsInNode = node.materials.size();
         System.out.println("Quantity: " + node.quantity
                 + ", Materials: " + node.materials
                 + "\nTotal Materials in Node: " + totalMaterialsInNode);
-
 
         total += node.quantity;
 
@@ -86,7 +111,9 @@ class MaterialBST {
         return total;
     }
 
-    // Display materials in decreasing order of quantity
+    /**
+     * Displays materials in descending order of their quantities.
+     */
     public void displayInReverseOrder() {
         System.out.println("Materials in Decreasing Order of Quantity:");
         displayInReverseOrderRecursive(root);
@@ -100,7 +127,16 @@ class MaterialBST {
         }
     }
 
-    // Method to update the quantity of a material in the BST
+    /**
+     * Updates the quantity of a specific material in the BST.
+     * <p>
+     * If the material is found, its associated quantity is updated. The search
+     * traverses the tree based on lexicographic order of the material name.
+     * </p>
+     *
+     * @param materialName the name of the material to update
+     * @param newQuantity  the new quantity to assign to the material
+     */
     public void updateMaterialQuantity(String materialName, double newQuantity) {
         root = updateMaterialRecursive(root, materialName, newQuantity);
     }
@@ -110,22 +146,15 @@ class MaterialBST {
             return null; // Material not found
         }
 
-
-        // Find the material in the node's list
         if (node.materials.contains(materialName)) {
-            // Update the material's quantity
-            node.quantity = newQuantity;
-            System.out.println(newQuantity);
+            node.quantity = newQuantity; // Update the quantity
+            System.out.println("Updated quantity to: " + newQuantity);
         } else if (materialName.compareTo(node.materials.get(0)) < 0) {
-            // Search left if the material name is lexicographically smaller
             node.left = updateMaterialRecursive(node.left, materialName, newQuantity);
         } else {
-            // Search right if the material name is lexicographically larger
             node.right = updateMaterialRecursive(node.right, materialName, newQuantity);
         }
 
         return node;
     }
-
-
 }

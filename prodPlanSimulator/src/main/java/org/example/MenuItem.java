@@ -608,21 +608,4 @@ public class MenuItem {
     }
 
 
-
-    // only to be used for the next sprint
-
-    /*private static void listAndShowProducts(Visualiser visualiser) {
-        Scanner = new Scanner(System.in);
-
-        // List all available products
-        visualiser.listProducts();
-
-        // Let the user select a product and view its BOM in tree format
-        Product selectedProduct = visualiser.selectProduct();
-
-        // Display the BOM tree for the selected product
-        visualiser.printBOM(selectedProduct);
-    }
-    */
-
 }
