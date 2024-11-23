@@ -110,6 +110,17 @@ public class ProductionTreeNode {
         System.out.println("\nTotal Quantity of Materials Used: " + totalMaterialQuantity);
     }
 
+    public void updateMaterialQuantity(double newQuantity) {
+        double scaleFactor = newQuantity / this.quantity; // Calculate the scale factor
+        this.quantity = newQuantity; // Update the current node's quantity
+
+        // Update quantities for all child nodes based on the scale factor
+        for (ProductionTreeNode child : children) {
+            double updatedQuantity = child.getQuantity() * scaleFactor;
+            child.updateMaterialQuantity(updatedQuantity);
+        }
+    }
+
 
 
     @Override
