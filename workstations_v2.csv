@@ -1,0 +1,11 @@
+workstation;name_oper;time
+ws100;assemble bench;20
+ws200;cut bench leg;30
+ws201;cut bench seat;35
+ws300;drill bench leg;25
+ws301;drill bench seat;20
+ws400;fix bolt M16 22;15
+ws401;fix nut M16 21;15
+ws500;polish bench leg;40
+ws501;polish bench seat;45
+ws600;varnish bench;50
