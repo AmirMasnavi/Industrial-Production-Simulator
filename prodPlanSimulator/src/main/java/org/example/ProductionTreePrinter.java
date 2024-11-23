@@ -49,4 +49,25 @@ public class ProductionTreePrinter {
             }
         }
     }
+
+    public void printOperationTree(ProductionTreeNode rootNode) {
+        System.out.println("Operation Tree:");
+        printOperationNode(rootNode, "", true);
+    }
+
+
+    private void printOperationNode(ProductionTreeNode node, String prefix, boolean isLast) {
+        if (node.getOperation() != null) {
+            System.out.print(prefix);
+            System.out.print(isLast ? "└── " : "├── ");
+            System.out.println("[Op" + node.getOperation().getId() + "]: " + node.getOperation().getName());
+        }
+
+        List<ProductionTreeNode> children = node.getChildren();
+        for (int i = 0; i < children.size(); i++) {
+            printOperationNode(children.get(i), prefix + (isLast ? "    " : "│   "), i == children.size() - 1);
+        }
+    }
+
+
 }

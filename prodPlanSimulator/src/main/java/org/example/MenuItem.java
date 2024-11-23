@@ -14,6 +14,8 @@ public class MenuItem {
     private static boolean lastSimulationWithPriorities;
     private static BooDataResult booDataResult;
 
+    private static SimulatorTree simulatorTree;
+
     /**
      * Displays the main menu and handles user selections.
      * <p>
@@ -71,12 +73,12 @@ public class MenuItem {
             System.out.println("8. Display Materials by Quantity");
             System.out.println("9. Perform Quality Checks by Priority");
             System.out.println("10. Update Material Quantity");
+            System.out.println("11. Total Material Quantity");
+            System.out.println("12. Total Material Quantity.2");
+            System.out.println("13. Critical Path Operation");
+            System.out.println("14. List Products and View BOM or BOO (LAPR3)");
+            System.out.println("15. Run Simulation Tree");
 
-
-            /*
-            System.out.println("6. Product Structure");
-            System.out.println("7. List Products and View BOM (LAPR3)");
-            */
             System.out.println("0. Exit");
 
             System.out.print("\nChoose an option: ");
@@ -113,15 +115,20 @@ public class MenuItem {
                 case 10:
                     updateMaterialQuantity(searcher, materialBST);
                     break;
-
-                    /*
-                case 6:
-                    showProduct();
+                case 11:
+                    displayTotalMaterials(rootNode);
                     break;
-                case 7:
+                case 12:
+                    displayTotalMaterials2(materialBST);
+                    break;
+                case 13:
+                    criticalPathOperations();
+                    break;
+                case 14:
                     listAndShowProducts(visualiser);
                     break;
-                    */
+                case 15:
+                    runSimulationTree();
                 case 0:
                     System.out.println("Exiting...");
                     running = false;
@@ -129,6 +136,47 @@ public class MenuItem {
                 default:
                     System.out.println("Invalid option.");
             }
+        }
+    }
+
+    private static void listAndShowProducts(Visualiser visualiser) {
+        Scanner scanner = new Scanner(System.in);
+
+        // List all available products
+        visualiser.listProducts();
+
+        System.out.print("Choose a product by entering its number: ");
+        int selectedProductIndex = scanner.nextInt();
+
+        // Check if the selected product index is valid
+        if (selectedProductIndex < 1 || selectedProductIndex > visualiser.products.size()) {
+            System.out.println("Invalid product number. Please try again.");
+            return;
+        }
+
+        // Retrieve the selected product
+        Product selectedProduct = visualiser.products.get(selectedProductIndex - 1);
+
+        System.out.println("\nWhat would you like to view?");
+        System.out.println("1. Bill of Materials (BOM)");
+        System.out.println("2. Bill of Operations (BOO)");
+        System.out.println("3. Exit");
+
+        int choice = scanner.nextInt();
+        switch (choice) {
+            case 1:
+                // Print the BOM for the selected product
+                visualiser.printBOM(selectedProduct);
+                break;
+            case 2:
+                // Print the BOO for the selected product
+                visualiser.printBOO(selectedProduct);
+                break;
+            case 3:
+                System.out.println("Exiting...");
+                return;
+            default:
+                System.out.println("Invalid choice. Please try again.");
         }
     }
 
@@ -301,6 +349,9 @@ public class MenuItem {
         ProductionTreePrinter printer = new ProductionTreePrinter(booDataResult.booData);
         printer.printTree(rootNode);
 
+        ProductionTreePrinter printer2 = new ProductionTreePrinter(booDataResult.booData);
+        printer2.printTree(root2Node);
+
         // Create and use the searcher
         ProductionTreeSearcher searcher = new ProductionTreeSearcher();
         searcher.indexTree(rootNode); // Index the tree for searching
@@ -393,6 +444,16 @@ public class MenuItem {
         }
     }
 
+    private static void displayTotalMaterials(ProductionTreeNode node) {
+        System.out.println("\nTotal Quantity of Materials Used: ");
+        node.displayTotalMaterials(node);
+    }
+
+    private static void displayTotalMaterials2(MaterialBST materialBST){
+        System.out.println("\nTotal Quantity of Materials Used: ");
+        materialBST.displayTotalMaterialsTest();
+    }
+
     private static void performQualityChecks(QualityCheckManager qualityCheckManager) {
         System.out.println("\nPerforming Quality Checks in Priority Order:");
         qualityCheckManager.processQualityChecksInReverse();
@@ -422,10 +483,56 @@ public class MenuItem {
         }
     }
 
+    private static void criticalPathOperations() {
+        List<Item> items = CSVReader.readItemsFromCSV("./items.csv");
+        List<Operation> operations = CSVReader.readOperationsFromCSV("./operations.csv");
 
+        // Create a map to store the mapping between op_id and item_id
+        Map<Integer, Integer> operationToItemMap = new HashMap<>();
+        BooDataResult booDataResult = CSVReader.readBooFromCSV("./boo_v2.csv", operationToItemMap);
 
+        ProductionTreeBuilderOpID treeBuilder = new ProductionTreeBuilderOpID(items, operations, booDataResult.booData, booDataResult.itemQuantities);
 
+        // Map to store operations and their respective tree depths
+        Map<Operation, Integer> operationDepths = new HashMap<>();
 
+        // Calculate the depth of each tree
+        for (Operation operation : operations) {
+            ProductionTreeNode rootNode = treeBuilder.buildTree(operation.getId(), operationToItemMap);
+            int depth = calculateTreeDepth(rootNode);
+            operationDepths.put(operation, depth);
+        }
+
+        // Usar PriorityQueue para armazenar as operações por profundidade
+        PriorityQueue<Operation> priorityQueue = new PriorityQueue<>(
+                (op1, op2) -> Integer.compare(operationDepths.get(op2), operationDepths.get(op1))
+        );
+
+        // Adicionar operações à fila de prioridade
+        priorityQueue.addAll(operations);
+
+        // Processar operações da fila
+        ProductionTreePrinter printer = new ProductionTreePrinter(booDataResult.booData);
+        while (!priorityQueue.isEmpty()) {
+            Operation operation = priorityQueue.poll();
+            System.out.println("\nCritical Path Operation for: " + operation.getName() + " (ID: " + operation.getId() + ")");
+            ProductionTreeNode rootNode = treeBuilder.buildTree(operation.getId(), operationToItemMap);
+            printer.printOperationTree(rootNode);
+        }
+    }
+
+    private static int calculateTreeDepth(ProductionTreeNode node) {
+        if (node == null || node.getChildren().isEmpty()) {
+            return 1; // Base case: a single node has depth 1
+        }
+
+        // Recursively calculate the depth of children and add 1 for the current node
+        int maxDepth = 0;
+        for (ProductionTreeNode child : node.getChildren()) {
+            maxDepth = Math.max(maxDepth, calculateTreeDepth(child));
+        }
+        return maxDepth + 1;
+    }
 
     /**
      * Displays statistics for the last simulation that did not consider item priorities.
@@ -479,6 +586,30 @@ public class MenuItem {
             }
         }
     }
+
+    private static void runSimulationTree() {
+        try {
+            // Ler os ficheiros CSV necessários
+            String itemsFilePath = "./items.csv";
+            String operationsFilePath = "./operations.csv";
+            String booFilePath = "./boo_v2.csv";
+            String machinesFilePath = "./workstations_v2.csv";
+
+            // Criar a instância do simulador com base nos ficheiros
+            SimulatorTree simulator = new SimulatorTree(
+                    itemsFilePath, operationsFilePath, booFilePath, machinesFilePath
+            );
+
+            // Executar a simulação
+            simulator.runSimulation();
+            System.out.println("\nSimulation Tree completed.");
+        } catch (Exception e) {
+            System.err.println("Erro ao executar a simulação: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+
 
     // only to be used for the next sprint
 
