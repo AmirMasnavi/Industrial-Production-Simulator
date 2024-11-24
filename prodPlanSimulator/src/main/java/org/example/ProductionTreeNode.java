@@ -149,11 +149,13 @@ public class ProductionTreeNode {
      * @param node The root node of the subtree to process.
      */
     private void displayMaterialsByOperationRecursive(ProductionTreeNode node) {
+
         if (node == null) {
             return;
         }
 
         if (node.getOperation() != null) {
+
             double totalQuantity = 0.0;
 
             for (ProductionTreeNode child : node.getChildren()) {
@@ -168,6 +170,7 @@ public class ProductionTreeNode {
 
         // Recurse over child nodes
         for (ProductionTreeNode child : node.getChildren()) {
+
             displayMaterialsByOperationRecursive(child);
         }
     }
@@ -178,8 +181,8 @@ public class ProductionTreeNode {
      * @param node The root node of the subtree to process.
      */
     public void displayTotalMaterials(ProductionTreeNode node) {
-        totalMaterialQuantity = 0.0;
 
+        totalMaterialQuantity = 0.0;
         displayMaterialsByOperationRecursive(node);
 
         System.out.println("\nTotal Quantity of Materials Used: " + totalMaterialQuantity);
@@ -191,6 +194,7 @@ public class ProductionTreeNode {
      * @param newQuantity The new quantity to set for this node.
      */
     public void updateMaterialQuantity(double newQuantity) {
+
         double scaleFactor = newQuantity / this.quantity; // Calculate the scale factor
         this.quantity = newQuantity; // Update the current node's quantity
 
@@ -208,6 +212,7 @@ public class ProductionTreeNode {
      */
     @Override
     public String toString() {
+
         StringBuilder sb = new StringBuilder();
         sb.append("ProductionTreeNode{");
         if (item != null) {
