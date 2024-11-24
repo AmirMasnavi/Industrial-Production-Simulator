@@ -74,8 +74,8 @@ public class MenuItem {
             System.out.println("11. Total Material Quantity");
             System.out.println("12. Total Material Quantity.2");
             System.out.println("13. Critical Path Operation");
-            System.out.println("14. List Products and View BOM or BOO (LAPR3)");
-            System.out.println("15. Run Simulation Tree");
+            System.out.println("14. Run Simulation Tree");
+            System.out.println("15. List Products and View BOM or BOO (LAPR3)");
 
             System.out.println("0. Exit");
 
@@ -123,10 +123,10 @@ public class MenuItem {
                     criticalPathOperations();
                     break;
                 case 14:
-                    listAndShowProducts(visualiser);
+                    runSimulationTree();
                     break;
                 case 15:
-                    runSimulationTree();
+                    listAndShowProducts(visualiser);
                 case 0:
                     System.out.println("Exiting...");
                     running = false;
