@@ -7,7 +7,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Unit tests for the {@link MachineUtilization} class.
- *
  * This class contains a set of JUnit tests to verify the behavior of the
  * {@link MachineUtilization} class. The tests cover functionalities such as
  * retrieving machine details, total time, utilization percentage, and operation type usage.
@@ -18,7 +17,6 @@ public class MachineUtilizationTest {
 
     /**
      * Sets up the test environment before each test execution.
-     *
      * Initializes a new {@link MachineUtilization} instance with the ID "Machine1",
      * total time of 100, utilization percentage of 75.5, and operation type usage of 50.0.
      * This setup is performed before each test to ensure a consistent starting state.
@@ -30,7 +28,6 @@ public class MachineUtilizationTest {
 
     /**
      * Tests the {@link MachineUtilization#getIdMachine()} method.
-     *
      * Verifies that the machine ID is correctly returned as "Machine1".
      * This test ensures that the machine ID is properly stored and retrieved.
      */
@@ -41,7 +38,6 @@ public class MachineUtilizationTest {
 
     /**
      * Tests the {@link MachineUtilization#getTotalTime()} method.
-     *
      * Verifies that the total time associated with the machine utilization is correctly returned as 100.
      * Ensures that the {@link MachineUtilization} class correctly handles the total time value.
      */
@@ -52,7 +48,6 @@ public class MachineUtilizationTest {
 
     /**
      * Tests the {@link MachineUtilization#getUtilizationPercentage()} method.
-     *
      * Verifies that the utilization percentage is correctly returned as 75.5.
      * A delta value of 0.001 is used for comparison to account for floating-point precision.
      * Ensures that the class accurately represents the machine's utilization.
@@ -64,7 +59,6 @@ public class MachineUtilizationTest {
 
     /**
      * Tests the {@link MachineUtilization#getOperationTypeUsage()} method.
-     *
      * Verifies that the operation type usage percentage is correctly returned as 50.0.
      * A delta value of 0.001 is used for comparison to ensure floating-point accuracy.
      * This test checks that the operation type usage is properly calculated and stored.

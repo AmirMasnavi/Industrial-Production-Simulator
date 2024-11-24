@@ -403,16 +403,7 @@ public class MenuItem {
         boolean backToMenu = false;
 
         while (!backToMenu) {
-            System.out.println("\n=== Simulation Statistics (With Priorities) ===");
-            System.out.println("1. Show Total Time Spent Per Item");
-            System.out.println("2. Show Total Time Spent Per Operation");
-            System.out.println("3. Show Machine Utilization Report");
-            System.out.println("4. Show Operation Execution and Waiting Times Report");
-            System.out.println("5. Show Workstation Flow Dependency Report");
-            System.out.println("6. Show Total Waiting Time Per Item");
-            System.out.println("0. Go back to Menu");
-            System.out.print("\nChoose an option: ");
-
+            printStatisticsMenu("Simulation Statistics (With Priorities)");
             int reportOption = scanner.nextInt();
 
             switch (reportOption) {
@@ -433,14 +424,32 @@ public class MenuItem {
                     break;
                 case 6:
                     simulator.calculateTotalWaitingTimePerItem();
+                    break;
                 case 0:
                     backToMenu = true;
-                    continue;
+                    break;
                 default:
-                    System.out.println("Invalid option. Please choose between 1 and 5.");
+                    System.out.println("Invalid option. Please choose between 1 and 6.");
             }
         }
     }
+
+
+    /**
+     * Auxiliary method to prevent repeated code on both Simulators Statistics Menu
+     */
+    private static void printStatisticsMenu(String title) {
+        System.out.println("\n=== " + title + " ===");
+        System.out.println("1. Show Total Time Spent Per Item");
+        System.out.println("2. Show Total Time Spent Per Operation");
+        System.out.println("3. Show Machine Utilization Report");
+        System.out.println("4. Show Operation Execution and Waiting Times Report");
+        System.out.println("5. Show Workstation Flow Dependency Report");
+        System.out.println("6. Show Total Waiting Time Per Item");
+        System.out.println("0. Go back to Menu");
+        System.out.print("\nChoose an option: ");
+    }
+
 
     /**
      * Searches for a specific operation or material by name or ID.
@@ -596,16 +605,7 @@ public class MenuItem {
         boolean backToMenu = false;
 
         while (!backToMenu) {
-            System.out.println("\n=== Simulation Statistics (Without Priorities) ===");
-            System.out.println("1. Show Total Time Spent Per Item");
-            System.out.println("2. Show Total Time Spent Per Operation");
-            System.out.println("3. Show Machine Utilization Report");
-            System.out.println("4. Show Operation Execution and Waiting Times Report");
-            System.out.println("5. Show Workstation Flow Dependency Report");
-            System.out.println("6. Show Total Waiting Time Per Item");
-            System.out.println("0. Go back to Menu");
-            System.out.print("\nChoose an option: ");
-
+            printStatisticsMenu("Simulation Statistics (Without Priorities)");
             int reportOption = scanner.nextInt();
 
             switch (reportOption) {
@@ -629,9 +629,9 @@ public class MenuItem {
                     break;
                 case 0:
                     backToMenu = true;
-                    continue;
+                    break;
                 default:
-                    System.out.println("Invalid option. Please choose between 1 and 5.");
+                    System.out.println("Invalid option. Please choose between 1 and 6.");
             }
         }
     }

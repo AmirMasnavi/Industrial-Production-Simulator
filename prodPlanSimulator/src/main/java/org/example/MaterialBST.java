@@ -149,7 +149,7 @@ class MaterialBST {
         if (node.materials.contains(materialName)) {
             node.quantity = newQuantity; // Update the quantity
             System.out.println("Updated quantity to: " + newQuantity);
-        } else if (materialName.compareTo(node.materials.get(0)) < 0) {
+        } else if (materialName.compareTo(node.materials.getFirst()) < 0) {
             node.left = updateMaterialRecursive(node.left, materialName, newQuantity);
         } else {
             node.right = updateMaterialRecursive(node.right, materialName, newQuantity);

@@ -100,49 +100,6 @@ public class ProductionTreeSearcher {
     }
 
     /**
-     * Calculates the depth of a node within the production tree.
-     *
-     * @param searchTerm the name or ID of the node whose depth is to be calculated.
-     * @return the depth of the node, or -1 if the node is not found.
-     */
-    public int calculateNodeDepth(String searchTerm) {
-        ProductionTreeNode node = getNodeByNameOrId(searchTerm);
-
-        if (node == null) {
-            System.out.println("Node not found: " + searchTerm);
-            return -1;
-        }
-
-        int depth = 0;
-
-        // Traverse up the tree to calculate depth
-        while (node.getParentOperation() != null) {
-            node = getNodeByOperation(node.getParentOperation());
-            if (node == null) {
-                break;
-            }
-            depth++;
-        }
-
-        return depth;
-    }
-
-    /**
-     * Searches for a node corresponding to a given operation.
-     *
-     * @param operation the operation to search for.
-     * @return the node associated with the operation, or null if not found.
-     */
-    private ProductionTreeNode getNodeByOperation(Operation operation) {
-        for (ProductionTreeNode node : idMap.values()) {
-            if (node.getOperation() != null && node.getOperation().equals(operation)) {
-                return node;
-            }
-        }
-        return null;
-    }
-
-    /**
      * Formats and retrieves details of a node for display purposes.
      *
      * @param node the node whose details are to be retrieved.

@@ -7,7 +7,6 @@ import java.util.Stack;
  * Manages a collection of quality checks for a production process.
  * Quality checks are prioritized based on the depth of the node in the production tree,
  * where closer nodes (smaller depth) have higher priority.
- *
  * Supports adding quality checks, performing them in priority order, or processing them in reverse priority order.
  */
 public class QualityCheckManager {

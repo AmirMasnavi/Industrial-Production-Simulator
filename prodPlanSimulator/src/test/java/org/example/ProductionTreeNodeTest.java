@@ -61,7 +61,7 @@ public class ProductionTreeNodeTest {
 
         List<ProductionTreeNode> children = itemNode.getChildren();
         assertEquals(1, children.size());
-        assertEquals(childNode, children.get(0));
+        assertEquals(childNode, children.getFirst());
     }
 
     /**

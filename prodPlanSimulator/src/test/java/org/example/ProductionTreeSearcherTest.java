@@ -11,7 +11,6 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class ProductionTreeSearcherTest {
     private ProductionTreeSearcher searcher;
-    private ProductionTreeNode rootNode;
 
     /**
      * Sets up the test environment before each test method is executed.
@@ -27,7 +26,7 @@ class ProductionTreeSearcherTest {
         Item item3 = new Item(3, "Item3");
         Operation op1 = new Operation(1, "Operation1");
 
-        rootNode = new ProductionTreeNode(item1);
+        ProductionTreeNode rootNode = new ProductionTreeNode(item1);
         ProductionTreeNode opNode = new ProductionTreeNode(op1);
         ProductionTreeNode child1 = new ProductionTreeNode(item2);
         ProductionTreeNode child2 = new ProductionTreeNode(item3);

@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Unit test class for testing the functionality of the BooDataResult class.
@@ -94,7 +95,7 @@ class BooDataResultTest {
         booDataResult.updateItemQuantity(999, 50.0);
 
         // Verify that nothing was changed for the non-existing item
-        assertEquals(null, booDataResult.getItemQuantities().get(999));
+        assertNull(booDataResult.getItemQuantities().get(999));
         assertEquals(5.0, booDataResult.getItemQuantities().get(101)); // Original value remains
     }
 
