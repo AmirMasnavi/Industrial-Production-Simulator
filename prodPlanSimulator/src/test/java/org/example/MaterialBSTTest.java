@@ -8,17 +8,27 @@ import java.io.PrintStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Test class for MaterialBST, which tests various functionalities of the MaterialBST class.
+ */
 class MaterialBSTTest {
 
     private MaterialBST materialBST;
     private final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
+    /**
+     * Sets up the test environment by initializing the MaterialBST instance
+     * and redirecting System.out to capture output.
+     */
     @BeforeEach
     void setUp() {
         materialBST = new MaterialBST();
         System.setOut(new PrintStream(outputStream)); // Redirect System.out for testing output
     }
 
+    /**
+     * Test case for inserting materials and displaying them in increasing order of quantity.
+     */
     @Test
     void testInsertAndDisplayInOrder() {
         materialBST.insert(10.0, "Material A");
@@ -37,6 +47,9 @@ class MaterialBSTTest {
         assertEquals(expectedOutput.strip(), outputStream.toString().strip());
     }
 
+    /**
+     * Test case for inserting materials and displaying them in decreasing order of quantity.
+     */
     @Test
     void testInsertAndDisplayInReverseOrder() {
         materialBST.insert(15.0, "Material X");
@@ -55,6 +68,9 @@ class MaterialBSTTest {
         assertEquals(expectedOutput.strip(), outputStream.toString().strip());
     }
 
+    /**
+     * Test case for inserting duplicate materials with the same quantity.
+     */
     @Test
     void testInsertDuplicates() {
         materialBST.insert(10.0, "Material A");
@@ -70,6 +86,9 @@ class MaterialBSTTest {
         assertEquals(expectedOutput.strip(), outputStream.toString().strip());
     }
 
+    /**
+     * Test case for displaying materials in an empty tree.
+     */
     @Test
     void testEmptyTreeDisplay() {
         materialBST.displayInOrder();
@@ -89,10 +108,12 @@ class MaterialBSTTest {
         assertEquals(expectedOutputReverse.strip(), outputStream.toString().strip());
     }
 
+    /**
+     * Test case for displaying the total materials and their quantities.
+     */
     @Test
     void testDisplayTotalMaterials() {
         outputStream.reset();
-
 
         materialBST.displayTotalMaterialsTest();
         String expectedOutputEmpty = """
@@ -100,7 +121,6 @@ class MaterialBSTTest {
             """;
         assertEquals(expectedOutputEmpty.strip(), outputStream.toString().strip());
         outputStream.reset();
-
 
         materialBST.insert(25.0, "Material Single");
         materialBST.displayTotalMaterialsTest();
@@ -111,7 +131,6 @@ class MaterialBSTTest {
             """;
         assertEquals(expectedOutputSingleNode.strip(), outputStream.toString().strip());
         outputStream.reset();
-
 
         materialBST.insert(15.0, "Material X");
         materialBST.insert(10.0, "Material Y");
@@ -130,17 +149,20 @@ class MaterialBSTTest {
         assertEquals(expectedOutputMultipleNodes.strip(), outputStream.toString().strip());
     }
 
+    /**
+     * Test case for updating the quantity of an existing material.
+     */
     @Test
     void testUpdateMaterialQuantityExistingMaterial() {
-        // Configuração inicial
+        // Initial setup
         materialBST.insert(10.0, "Material A");
         materialBST.insert(20.0, "Material B");
         materialBST.insert(15.0, "Material C");
 
-        // Atualizar um material existente
+        // Update an existing material
         materialBST.updateMaterialQuantity("Material B", 25.0);
 
-        // Verificar a saída
+        // Verify the output
         materialBST.displayInOrder();
         String expectedOutput = """
             Materials in Increasing Order of Quantity:
@@ -152,16 +174,19 @@ class MaterialBSTTest {
         outputStream.reset();
     }
 
+    /**
+     * Test case for attempting to update a material that doesn't exist.
+     */
     @Test
     void testUpdateMaterialQuantityNonExistingMaterial() {
-        // Configuração inicial
+        // Initial setup
         materialBST.insert(10.0, "Material A");
         materialBST.insert(20.0, "Material B");
 
-        // Tentar atualizar um material que não existe
+        // Try to update a non-existing material
         materialBST.updateMaterialQuantity("Material X", 30.0);
 
-        // Verificar se a estrutura permanece inalterada
+        // Verify that the structure remains unchanged
         materialBST.displayInOrder();
         String expectedOutput = """
             Materials in Increasing Order of Quantity:
@@ -172,16 +197,19 @@ class MaterialBSTTest {
         outputStream.reset();
     }
 
+    /**
+     * Test case for updating a material quantity when there are duplicate materials.
+     */
     @Test
     void testUpdateMaterialQuantityWithDuplicateMaterials() {
-        // Configuração inicial
+        // Initial setup
         materialBST.insert(10.0, "Material A");
-        materialBST.insert(10.0, "Material B"); // Mesmo valor de quantidade
+        materialBST.insert(10.0, "Material B"); // Same quantity as Material A
 
-        // Atualizar um material existente
+        // Update an existing material
         materialBST.updateMaterialQuantity("Material B", 15.0);
 
-        // Verificar a saída
+        // Verify the output
         materialBST.displayInOrder();
         String expectedOutput = """
             Materials in Increasing Order of Quantity:
@@ -192,12 +220,15 @@ class MaterialBSTTest {
         outputStream.reset();
     }
 
+    /**
+     * Test case for attempting to update a material in an empty tree.
+     */
     @Test
     void testUpdateMaterialQuantityEmptyTree() {
-        // Tentar atualizar em uma árvore vazia
+        // Attempt to update in an empty tree
         materialBST.updateMaterialQuantity("Material A", 50.0);
 
-        // Verificar se não há saída inesperada
+        // Verify that no unexpected output is produced
         materialBST.displayInOrder();
         String expectedOutput = """
             Materials in Increasing Order of Quantity:
@@ -205,8 +236,4 @@ class MaterialBSTTest {
         assertEquals(expectedOutput.strip(), outputStream.toString().strip());
         outputStream.reset();
     }
-
-
-
-
 }

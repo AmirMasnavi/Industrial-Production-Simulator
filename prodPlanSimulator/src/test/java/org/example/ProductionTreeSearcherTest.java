@@ -5,10 +5,18 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Test class for the ProductionTreeSearcher class, which is responsible for indexing and searching nodes in a production tree.
+ * This class contains test cases for indexing the tree, searching by name, checking the parent operation, and handling non-existent nodes.
+ */
 class ProductionTreeSearcherTest {
     private ProductionTreeSearcher searcher;
     private ProductionTreeNode rootNode;
 
+    /**
+     * Sets up the test environment before each test method is executed.
+     * Initializes a sample production tree with items and operations and indexes it using the ProductionTreeSearcher.
+     */
     @BeforeEach
     void setUp() {
         searcher = new ProductionTreeSearcher();
@@ -32,6 +40,10 @@ class ProductionTreeSearcherTest {
         searcher.indexTree(rootNode);
     }
 
+    /**
+     * Test case for the indexTree method.
+     * Verifies that all nodes are indexed correctly by ensuring that searches return valid results.
+     */
     @Test
     void testIndexTree() {
         // Ensure all nodes are indexed
@@ -47,6 +59,10 @@ class ProductionTreeSearcherTest {
         assertNotNull(searcher.search("1")); // ID of Operation1
     }
 
+    /**
+     * Test case for searching nodes by their name.
+     * Verifies that the correct details are returned when searching for a node by its name.
+     */
     @Test
     void testSearchByName() {
         // Search by name
@@ -61,7 +77,10 @@ class ProductionTreeSearcherTest {
         assertTrue(result.contains("Type: Operation"));
     }
 
-
+    /**
+     * Test case for checking the parent operation when searching for a child node.
+     * Verifies that the parent operation of a child node is included in the search result.
+     */
     @Test
     void testParentOperationInDetails() {
         // Search a child node and check parent operation
@@ -69,6 +88,10 @@ class ProductionTreeSearcherTest {
         assertTrue(result.contains("Parent Operation: [Op1] Operation1"));
     }
 
+    /**
+     * Test case for handling search results when a node is not found.
+     * Verifies that the search returns the appropriate "not found" message when searching for non-existent nodes.
+     */
     @Test
     void testSearchNotFound() {
         // Search for a non-existent node

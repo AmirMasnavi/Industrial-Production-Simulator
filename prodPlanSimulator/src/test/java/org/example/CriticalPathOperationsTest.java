@@ -6,12 +6,23 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 import java.util.*;
 
+/**
+ * Unit test class for testing the functionality of the CriticalPathOperations class.
+ * <p>
+ * This class contains test cases for verifying the behavior of methods in the CriticalPathOperations class,
+ * including critical path operations processing and tree depth calculation.
+ * </p>
+ */
 class CriticalPathOperationsTest {
 
     private List<Item> items;
     private List<Operation> operations;
     private BooDataResult booDataResult;
 
+    /**
+     * Sets up the test environment by initializing test data for items, operations, and BooDataResult
+     * before each test case.
+     */
     @BeforeEach
     void setUp() {
         // Initialize test data for items
@@ -36,6 +47,14 @@ class CriticalPathOperationsTest {
         booDataResult = new BooDataResult(booData, itemQuantities);
     }
 
+    /**
+     * Tests the functionality of the criticalPathOperations method from the CriticalPathOperations class.
+     * <p>
+     * The method processes the given items, operations, and BooDataResult to determine critical path operations.
+     * In this test, the focus is on ensuring the method runs successfully, though output validation would be
+     * required in a real test case.
+     * </p>
+     */
     @Test
     void testCriticalPathOperations() {
         // Capture output by redirecting System.out
@@ -46,9 +65,16 @@ class CriticalPathOperationsTest {
 
         // Validate that the correct operations were processed and printed
         // In a real test, we would check the output, but here we'll focus on calling the method
-        assertTrue(true); // This is just a placeholder for the actual test
+        assertTrue(true); // Placeholder to represent successful execution
     }
 
+    /**
+     * Tests the calculation of tree depth using a simple tree structure.
+     * <p>
+     * The test ensures that the tree depth calculation returns the correct depth for a given tree
+     * by building a small tree with two child nodes.
+     * </p>
+     */
     @Test
     void testCalculateTreeDepth() {
         // Create a simple tree structure to test the depth calculation
@@ -65,6 +91,12 @@ class CriticalPathOperationsTest {
         assertEquals(2, depth);
     }
 
+    /**
+     * Tests the calculation of tree depth for a tree with a single node.
+     * <p>
+     * The test ensures that the tree depth is correctly calculated as 1 for a tree with only one node.
+     * </p>
+     */
     @Test
     void testCalculateTreeDepthForSingleNode() {
         // Create a tree with a single node (depth 1)

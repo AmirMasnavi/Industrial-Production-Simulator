@@ -7,11 +7,19 @@ import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Test class for the ProductionTreeBuilderOpID class, which is responsible for building a tree structure of production operations.
+ * This class tests the methods for handling different scenarios including circular dependencies, missing items, and invalid operations.
+ */
 class ProductionTreeBuilderOpIDTest {
 
     private Map<Integer, Map<Integer, Double>> booData;
     private ProductionTreeBuilderOpID builder;
 
+    /**
+     * Sets up the test environment before each test method is run.
+     * Initializes a list of items, operations, and a booData map with test data.
+     */
     @BeforeEach
     void setUp() {
         List<Item> items = Arrays.asList(
@@ -38,6 +46,10 @@ class ProductionTreeBuilderOpIDTest {
         builder = new ProductionTreeBuilderOpID(items, operations, booData, itemQuantities);
     }
 
+    /**
+     * Test case for handling the scenario where the operation ID provided does not correspond to any valid operation.
+     * It expects an IllegalArgumentException with a specific message.
+     */
     @Test
     void testBuildTreeWithNoAssociatedItem() {
         Map<Integer, Integer> operationToItemMap = new HashMap<>();
@@ -47,6 +59,10 @@ class ProductionTreeBuilderOpIDTest {
         assertEquals("Operation not found for ID: 99", exception.getMessage());
     }
 
+    /**
+     * Test case for handling circular dependencies within the production tree.
+     * It ensures that the builder avoids infinite recursion and builds a valid tree structure even when a circular dependency exists.
+     */
     @Test
     void testBuildTreeWithCircularDependency() {
         booData.put(3, Map.of(1, 500.0)); // Circular dependency: Sub Item 2 references Root Item
@@ -66,7 +82,10 @@ class ProductionTreeBuilderOpIDTest {
         assertEquals(1, children.size());
     }
 
-
+    /**
+     * Test case for handling the scenario where an operation references a nonexistent item ID.
+     * It ensures that the builder throws an IllegalArgumentException when an invalid item ID is encountered.
+     */
     @Test
     void testBuildTreeWithMissingItemInOperationMap() {
         Map<Integer, Integer> operationToItemMap = new HashMap<>();
