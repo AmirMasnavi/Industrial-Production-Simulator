@@ -26,7 +26,7 @@ public class ProductionTreePrinter {
      * @param rootNode The root node of the production tree to print.
      */
     public void printTree(ProductionTreeNode rootNode) {
-        System.out.println("Production Tree:");
+        System.out.println("\nProduction Tree:");
         printNode(rootNode, "", true);
     }
 
