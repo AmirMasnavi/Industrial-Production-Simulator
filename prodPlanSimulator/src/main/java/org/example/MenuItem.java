@@ -503,9 +503,12 @@ public class MenuItem {
      * </p>
      * @param node The root node of the production tree used to calculate and display total material quantities.
      */
+
     private static void displayTotalMaterials(ProductionTreeNode node) {
+
         System.out.println("\nTotal Quantity of Materials Used: ");
         node.displayTotalMaterials(node);
+
     }
 
     /**
