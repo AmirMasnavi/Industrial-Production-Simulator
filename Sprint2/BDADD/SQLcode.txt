@@ -488,137 +488,154 @@ END;
 
 
 ------- USBD13 - As a Production Manager, I want to get a list of operations involved in the production of a product, as well as each workstation type.
-    
-CREATE OR REPLACE FUNCTION list_parts_used_product(
-    product_id IN Operation.ProductID%TYPE -- Input product ID
+
+CREATE OR REPLACE FUNCTION list_operations_and_workstationTypes(
+    product_id IN Product.ProductID%TYPE -- Input parameter for the product ID
 )
-RETURN SYS_REFCURSOR -- Returns a cursor with the list of parts
-IS
-    list_parts_cursor SYS_REFCURSOR; -- Cursor to hold the result
+RETURN SYS_REFCURSOR -- Returns a cursor with the list of operations and workstation types
+AS
+    operation_workstationTypes_cursor SYS_REFCURSOR; -- Declare the cursor to store the result
 BEGIN
-    -- Query to list parts directly associated with the product and its subassemblies
-    OPEN list_parts_cursor FOR
-        -- Parts directly associated with the product
-        SELECT BI.PartNumber, 
-               SUM(BI.Quantity) AS Quantity
-        FROM BOO_INPUT BI
-        JOIN Operation O ON BI.OPID = O.OPID
-        WHERE O.ProductID = product_id
-        GROUP BY BI.PartNumber
-        
+    -- Open the cursor to execute the query
+    OPEN operation_workstationTypes_cursor FOR
+        -- First query: Operations directly associated with the product
+        SELECT O.OPID, WtOp.WTID -- Operation ID and Workstation Type ID
+        FROM Operation O
+        JOIN WorkstationTypes_Operation_Type WtOp ON WtOp.OP_TYPE = O.OP_TYPE -- Join to get workstation types based on operation type
+        WHERE O.ProductID = product_id -- Filter for the specified product
+        GROUP BY O.OPID, WtOp.WTID -- Group by operation ID and workstation type ID
+
         UNION ALL
 
-        -- Parts associated with subassemblies (recursive case)
-        SELECT BO.PartNumber, 
-               SUM(BO.Quantity) AS Quantity
-        FROM BOO_OUTPUT BO
-        JOIN Operation O ON BO.OPID = O.OPID
-        JOIN BOO_INPUT BI ON BI.OPID = BO.OPID
-        WHERE BO.PartNumber NOT LIKE O.ProductID
-          AND O.ProductID IN (
-              SELECT BI.PartNumber
-              FROM BOO_INPUT BI
-              JOIN Part P ON BI.PartNumber = P.PartNumber
-              JOIN Operation O ON BI.OPID = O.OPID
-              WHERE O.ProductID = product_id 
-              GROUP BY BI.PartNumber
-          )
-        GROUP BY BO.PartNumber;
+        -- Second query: Operations related to the product's output parts
+        SELECT O.OPID, WtOp.WTID -- Operation ID and Workstation Type ID
+        FROM Operation O
+        JOIN BOO_OUTPUT BO ON O.OPID = BO.OPID -- Join to get operations linked to output parts
+        JOIN WorkstationTypes_Operation_Type WtOp ON WtOp.OP_TYPE = O.OP_TYPE -- Join to get workstation types
+        WHERE BO.PartNumber IN ( -- Filter for output parts associated with the product
+            SELECT PartNumber
+            FROM BOO_INPUT
+            WHERE OPID IN ( -- Find input operations related to the product
+                SELECT OPID
+                FROM Operation
+                WHERE ProductID = product_id -- Filter by the product ID
+            )
+        )
+        GROUP BY O.OPID, WtOp.WTID; -- Group by operation ID and workstation type ID
 
     -- Return the cursor with the results
-    RETURN list_parts_cursor;
+    RETURN operation_workstationTypes_cursor;
 END;
 /
 
 -- Block to test the function
 DECLARE
-    list_parts_cursor   SYS_REFCURSOR; -- Cursor to hold the result
-    part_number         BOO_INPUT.PartNumber%TYPE; -- Variable to store part number
-    quantity            BOO_INPUT.Quantity%TYPE;  -- Variable to store quantity
-    product_id          VARCHAR2(20) := 'AS12946S22'; -- Product ID for testing
+    operation_workstationTypes_cursor SYS_REFCURSOR; -- Declare cursor to hold the result
+    op Operation.OPID%TYPE; -- Variable to store the operation ID
+    wT WorkstationTypes_Operation_Type.WTID%TYPE; -- Variable to store the workstation type ID
 BEGIN
-    -- Display the product ID
-    DBMS_OUTPUT.PUT_LINE('List of parts for product: ' || product_id);
-    
-    -- Call the function to get parts associated with the product
-    list_parts_cursor := list_parts_used_product(product_id);
-    
+    -- Call the function with a specific product ID ('AS12945S22') and assign the result to the cursor
+    operation_workstationTypes_cursor := list_operations_and_workstationTypes('AS12945S22');
+
     -- Loop through the cursor results
     LOOP
-        FETCH list_parts_cursor INTO part_number, quantity;
-        EXIT WHEN list_parts_cursor%NOTFOUND;
-        
-        -- Display the part number and quantity
-        DBMS_OUTPUT.PUT_LINE('Part Number: ' || part_number || ', Quantity: ' || quantity);
+        FETCH operation_workstationTypes_cursor INTO op, wT; -- Fetch operation ID and workstation type ID
+        EXIT WHEN operation_workstationTypes_cursor%NOTFOUND; -- Exit when no more records are found
+
+        -- Print the operation and workstation type to the output
+        DBMS_OUTPUT.PUT_LINE('Operation: ' || op || ', Workstation Type: ' || wT);
     END LOOP;
-    
+
     -- Close the cursor after processing
-    CLOSE list_parts_cursor;
+    CLOSE operation_workstationTypes_cursor;
 END;
 /
 
-    
+
+
 ------- USBD14 - As a Plant Manager, I want to know which product uses all types of machines available in the factory.
 
 CREATE OR REPLACE FUNCTION list_product_haveALL_operations
-RETURN SYS_REFCURSOR 
+RETURN SYS_REFCURSOR -- Returns a cursor with the products using all workstations
 AS
-    product_haveAll_operations_cursor SYS_REFCURSOR;
-    total_workstations_count INTEGER;
+    product_haveAll_operations_cursor SYS_REFCURSOR; -- Declare cursor to hold the result
+    total_workstations_count INTEGER; -- Variable to hold the total count of distinct workstation types
 BEGIN
-    -- Count total distinct workstation types
-    SELECT COUNT(DISTINCT WTID) 
+    -- Count the total number of distinct workstation types from the WorkstationTypes table
+    SELECT COUNT(DISTINCT WTID)
     INTO total_workstations_count
     FROM WorkstationTypes_Operation_Type;
 
-    -- Return products that use all workstation types
+    -- Open the cursor to return products that use all workstation types
     OPEN product_haveAll_operations_cursor FOR
-        SELECT P.ProductID
+        SELECT P.ProductID -- Return the product ID
         FROM Product P
-        JOIN Operation O ON P.ProductID = O.ProductID
-        JOIN WorkstationTypes_Operation_Type WTOT ON O.OP_TYPE = WTOT.OP_TYPE
-        JOIN WorkstationTypes WT ON WTOT.WTID = WT.WTID
-        GROUP BY P.ProductID
-        HAVING COUNT(DISTINCT WT.WTID) = total_workstations_count;
+        JOIN Operation O ON P.ProductID = O.ProductID -- Join to link products with operations
+        JOIN WorkstationTypes_Operation_Type WTOT ON O.OP_TYPE = WTOT.OP_TYPE -- Join to match operations to workstation types
+        JOIN WorkstationTypes WT ON WTOT.WTID = WT.WTID -- Join to get the workstation type
+        GROUP BY P.ProductID -- Group by product ID
+        HAVING COUNT(DISTINCT WT.WTID) = total_workstations_count; -- Ensure the product uses all workstation types
 
+    -- Return the cursor with the results
     RETURN product_haveAll_operations_cursor;
 END;
 /
 
--- Insert test data
+-- Insert test data into the Part, Product, BOO, and Operation tables
 INSERT INTO Part (PartNumber, Description) VALUES ('A99999S99', 'TESTE');
 INSERT INTO Product (ProductID, FamilyID, Name, Description) VALUES ('A99999S99', 130, 'US14', 'Teste');
 INSERT INTO BOO (ProductID) VALUES ('A99999S99');
 
--- Insert operations for product 'A99999S99'
+-- Insert operations associated with the product 'A99999S99'
+-- Operation for A4578
 INSERT INTO Operation (OPID, ProductID, OP_TYPE, Next_OP) VALUES (25, 'A99999S99', 5647, NULL);
--- (Additional operations omitted for brevity)
+-- Operation for A4588
+INSERT INTO Operation (OPID, ProductID, OP_TYPE, Next_OP) VALUES (26, 'A99999S99', 5649, NULL);
+-- Operation for A4598
+INSERT INTO Operation (OPID, ProductID, OP_TYPE, Next_OP) VALUES (27, 'A99999S99', 5651, NULL);
+-- Operation for C5637
+INSERT INTO Operation (OPID, ProductID, OP_TYPE, Next_OP) VALUES (28, 'A99999S99', 5653, NULL);
+-- Operation for S3271
+INSERT INTO Operation (OPID, ProductID, OP_TYPE, Next_OP) VALUES (29, 'A99999S99', 5659, NULL);
+-- Operation for T3452
+INSERT INTO Operation (OPID, ProductID, OP_TYPE, Next_OP) VALUES (30, 'A99999S99', 5661, NULL);
+-- Operation for K3675
+INSERT INTO Operation (OPID, ProductID, OP_TYPE, Next_OP) VALUES (31, 'A99999S99', 5663, NULL);
+-- Operation for D9123
+INSERT INTO Operation (OPID, ProductID, OP_TYPE, Next_OP) VALUES (32, 'A99999S99', 5665, NULL);
+-- Operation for Q3547
+INSERT INTO Operation (OPID, ProductID, OP_TYPE, Next_OP) VALUES (33, 'A99999S99', 5667, NULL);
+-- Operation for Q5478
+INSERT INTO Operation (OPID, ProductID, OP_TYPE, Next_OP) VALUES (34, 'A99999S99', 5671, NULL);
 
--- Test block to fetch products using all workstations
+-- Anonymous block to test the function
 DECLARE
-    cursor_result SYS_REFCURSOR;
-    product_id VARCHAR2(255);
+    cursor_result SYS_REFCURSOR; -- Declare cursor to store the result
+    product_id VARCHAR2(255); -- Variable to store the product ID
 BEGIN
-    -- Call function to get products
+    -- Call the function to get products that use all workstations
     cursor_result := list_product_haveALL_operations;
 
-    -- Fetch first product
+    -- Try to fetch the first product from the cursor
     FETCH cursor_result INTO product_id;
 
+    -- Check if any product was found
     IF cursor_result%NOTFOUND THEN
         DBMS_OUTPUT.PUT_LINE('No products have used all workstations.');
     ELSE
-        -- Loop through and display products
+        -- If products were found, display the results
         LOOP
-            DBMS_OUTPUT.PUT_LINE('Product ID: ' || product_id);
-            FETCH cursor_result INTO product_id;
-            EXIT WHEN cursor_result%NOTFOUND;
+            DBMS_OUTPUT.PUT_LINE('Product ID: ' || product_id); -- Display product ID
+            FETCH cursor_result INTO product_id; -- Fetch next product
+            EXIT WHEN cursor_result%NOTFOUND; -- Exit when no more products are found
         END LOOP;
     END IF;
 
+    -- Close the cursor after processing
     CLOSE cursor_result;
 END;
 /
+
 
 
 ------- USBD15 - As a Plant Floor Manager, I want to register a workstation in the system.
