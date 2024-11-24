@@ -767,3 +767,268 @@ public void processQualityChecksInReverse() {
 
 **Total Complexity:**
 - **O(n)**.
+
+### USEI12
+
+> **updateMaterialQuantity**
+
+```java
+public void updateMaterialQuantity(double newQuantity) {
+    double scaleFactor = newQuantity / this.quantity; // Calculate the scale factor
+    this.quantity = newQuantity; // Update the current node's quantity
+
+    // Update quantities for all child nodes based on the scale factor
+    for (ProductionTreeNode child : children) {
+        double updatedQuantity = child.getQuantity() * scaleFactor;
+        child.updateMaterialQuantity(updatedQuantity);
+    }
+}
+```
+
+***Complexity Analysis:***
+
+**Recursive Update of Quantities:**
+- The method visits each node in the tree once.
+- For each node, it performs a constant number of operations (e.g., calculating the scale factor, updating quantities).
+- If the tree has `n` nodes, the traversal complexity is **O(n)**.
+
+**Total Complexity:**
+- **O(n)**, where `n` is the number of nodes in the tree.
+
+---
+
+> **updateItemQuantity**
+
+```java
+public void updateItemQuantity(int itemId, double newQuantity) {
+
+    // Update the itemQuantities map
+    if (itemQuantities.containsKey(itemId)) {
+        itemQuantities.put(itemId, newQuantity);
+    }
+
+    // Update booData where this item ID exists as a child or parent
+    if (booData.containsKey(itemId)) {
+        for (Map.Entry<Integer, Double> entry : booData.get(itemId).entrySet()) {
+            entry.setValue(newQuantity);
+        }
+    }
+
+    for (Map.Entry<Integer, Map<Integer, Double>> entry : booData.entrySet()) {
+        if (entry.getValue().containsKey(itemId)) {
+            entry.getValue().put(itemId, newQuantity);
+        }
+    }
+
+    System.out.println("Updated booData: " + booData);
+
+}
+```
+
+***Complexity Analysis:***
+
+**Updating `itemQuantities`:**
+- Checking and updating the map is **O(1)** for a hash map.
+
+**Updating `booData`:**
+- Iterates over `booData` to update relevant entries:
+    - First loop: Accessing `booData.get(itemId)` is **O(1)**, but iterating over its entries is **O(m)**, where `m` is the number of child entries for `itemId`.
+    - Second loop: Iterates over all `booData` entries, which is **O(k)**, where `k` is the total number of entries in the map.
+
+**Total Complexity:**
+- Let `k` be the size of `booData` and `m` the average number of child entries for a given item.
+- Total complexity is approximately **O(k + m)** in the worst case.
+
+---
+
+> **updateMaterialRecursive**
+
+```java
+private Node updateMaterialRecursive(Node node, String materialName, double newQuantity) {
+    if (node == null) {
+        return null; // Material not found
+    }
+
+    if (node.materials.contains(materialName)) {
+        node.quantity = newQuantity; // Update the quantity
+        System.out.println("Updated quantity to: " + newQuantity);
+    } else if (materialName.compareTo(node.materials.get(0)) < 0) {
+        node.left = updateMaterialRecursive(node.left, materialName, newQuantity);
+    } else {
+        node.right = updateMaterialRecursive(node.right, materialName, newQuantity);
+    }
+
+    return node;
+}
+```
+
+***Complexity Analysis:***
+
+**Recursive Search and Update:**
+- The method follows the structure of a binary search tree.
+- In the worst case, it traverses from the root to a leaf node.
+- If the tree is balanced, this traversal is **O(log n)**, where `n` is the number of nodes.
+- If the tree is unbalanced (degenerates into a linked list), this traversal is **O(n)**.
+
+**String Comparisons:**
+- The string comparison operation (`compareTo`) is **O(s)**, where `s` is the length of the material name.
+- In practice, `s` is much smaller than `n`, so it does not dominate the overall complexity.
+
+**Total Complexity:**
+- **O(log n)** for a balanced tree.
+- **O(n)** for an unbalanced tree.
+
+### USEI13
+
+> **displayTotalMaterialsTest**
+
+```java
+public void displayTotalMaterialsTest() {
+    double totalQuantity = displayTotalMaterialsQuantityRecursive(root);
+    System.out.println("Total Quantity of Materials Used: " + totalQuantity);
+}
+
+private double displayTotalMaterialsQuantityRecursive(Node node) {
+    double total = 0.0;
+
+    if (node == null) {
+        return total;
+    }
+
+    total += displayTotalMaterialsQuantityRecursive(node.left);
+
+    int totalMaterialsInNode = node.materials.size();
+    System.out.println("Quantity: " + node.quantity
+            + ", Materials: " + node.materials
+            + "\nTotal Materials in Node: " + totalMaterialsInNode);
+
+    total += node.quantity;
+
+    total += displayTotalMaterialsQuantityRecursive(node.right);
+
+    return total;
+}
+```
+
+***Complexity Analysis:***
+
+**Recursive Traversal:**
+- The method traverses each node in the binary tree exactly once.
+- For a tree with `n` nodes, the traversal complexity is **O(n)**.
+
+**Per-Node Operations:**
+- At each node, the size of the materials list (`node.materials.size()`) is accessed, which is **O(1)** as it only retrieves the size.
+- Printing statements involve constant-time operations.
+
+**Total Complexity:**
+- Since the traversal dominates, the total complexity is **O(n)**, where `n` is the number of nodes in the binary tree.
+
+
+### USEI14
+
+> **criticalPathOperations**
+
+```java
+public static void criticalPathOperations(List<Item> items, List<Operation> operations, BooDataResult booDataResult) {
+    // Create a map to store the mapping between operation ID and item ID
+    Map<Integer, Integer> operationToItemMap = new HashMap<>();
+
+    // Creating the tree builder that will be used to build operation trees
+    ProductionTreeBuilderOpID treeBuilder = new ProductionTreeBuilderOpID(items, operations, booDataResult.booData, booDataResult.itemQuantities);
+
+    // Map to store operations and their respective tree depths
+    Map<Operation, Integer> operationDepths = new HashMap<>();
+
+    // Calculate the depth of each tree by iterating over each operation
+    for (Operation operation : operations) {
+        // Build the tree for each operation
+        ProductionTreeNode rootNode = treeBuilder.buildTree(operation.getId(), operationToItemMap);
+        // Calculate the depth of the current operation's tree
+        int depth = calculateTreeDepth(rootNode);
+        // Store the calculated depth for the operation
+        operationDepths.put(operation, depth);
+    }
+
+    // Using PriorityQueue to store operations ordered by tree depth (most critical first)
+    PriorityQueue<Operation> priorityQueue = new PriorityQueue<>(
+            (op1, op2) -> Integer.compare(operationDepths.get(op2), operationDepths.get(op1))
+    );
+
+    // Add all operations to the priority queue
+    priorityQueue.addAll(operations);
+
+    // Process operations in the order of their criticality (based on tree depth)
+    ProductionTreePrinter printer = new ProductionTreePrinter(booDataResult.booData);
+    while (!priorityQueue.isEmpty()) {
+        // Poll the operation with the highest priority (most critical)
+        Operation operation = priorityQueue.poll();
+        // Print the critical path operation details
+        System.out.println("\nCritical Path Operation for: " + operation.getName() + " (ID: " + operation.getId() + ")");
+        // Build the operation tree for this operation
+        ProductionTreeNode rootNode = treeBuilder.buildTree(operation.getId(), operationToItemMap);
+        // Print the operation tree
+        printer.printOperationTree(rootNode);
+    }
+}
+```
+
+***Complexity Analysis:***
+
+**Tree Building for Each Operation:**
+- For each operation, the tree is built using `treeBuilder.buildTree`.
+- Let `t` be the average complexity of building a tree. If this involves visiting all nodes/items related to the operation, it can scale up to **O(n)** for `n` nodes.
+
+**Calculating Tree Depth:**
+- The `calculateTreeDepth` method is called for each operation's tree.
+- For a tree with `d` nodes, this method traverses all nodes, resulting in **O(d)** per tree.
+- Total for all operations: **O(m × d)**, where `m` is the number of operations and `d` the average tree size.
+
+**Priority Queue Operations:**
+- Adding `m` operations to the priority queue: **O(m log m)**.
+- Removing all `m` operations from the queue: **O(m log m)**.
+
+**Tree Printing:**
+- Printing involves traversing and formatting the tree. For a tree with `d` nodes, this is **O(d)** per tree.
+
+**Total Complexity:**
+- Tree building and depth calculation: **O(m × d)**.
+- Priority queue operations: **O(m log m)**.
+- Tree printing: **O(m × d)**.
+- Combined total complexity: **O(m × d + m log m)**.
+
+---
+
+> **calculateTreeDepth**
+
+```java
+public static int calculateTreeDepth(ProductionTreeNode node) {
+    // Base case: if the node is null or has no children, the depth is 1
+    if (node == null || node.getChildren().isEmpty()) {
+        return 1;
+    }
+
+    // Recursively calculate the depth of each child and return the maximum depth plus 1
+    int maxDepth = 0;
+    for (ProductionTreeNode child : node.getChildren()) {
+        maxDepth = Math.max(maxDepth, calculateTreeDepth(child));
+    }
+    return maxDepth + 1;
+}
+```
+
+***Complexity Analysis:***
+
+**Recursive Tree Depth Calculation:**
+- Visits each node in the tree once.
+- For a tree with `n` nodes, the traversal complexity is **O(n)**.
+
+**Per-Node Operations:**
+- The `getChildren` call retrieves the child list, which is typically **O(1)**.
+- `Math.max` and a simple loop to iterate over children are also constant-time for each child.
+
+**Total Complexity:**
+- **O(n)**, where `n` is the number of nodes in the tree.
+
+
+
+
