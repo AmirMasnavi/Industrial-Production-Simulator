@@ -3,7 +3,7 @@
 ## Complexity Analysis:
 
 ### USEI08
-> **buildTre**
+> **buildTree**
 
 `````java
     public ProductionTreeNode buildTree(int itemId, Map<Integer, Integer> operationToItemMap) {
