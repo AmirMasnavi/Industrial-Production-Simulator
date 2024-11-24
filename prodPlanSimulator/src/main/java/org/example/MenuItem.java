@@ -139,6 +139,16 @@ public class MenuItem {
         }
     }
 
+    /**
+     * Lists and shows available products to the user.
+     * <p>
+     * This method allows the user to choose a product from a list and then view its corresponding Bill of Materials (BOM)
+     * or Bill of Operations (BOO). It provides options for users to exit or go back after selecting a product.
+     * </p>
+     *
+     * @param visualiser the visualizer instance used to list products and display BOM/BOO.
+     */
+
     private static void listAndShowProducts(Visualiser visualiser) {
         Scanner scanner = new Scanner(System.in);
 
@@ -328,6 +338,15 @@ public class MenuItem {
         }
     }
 
+
+    /**
+     * Builds and displays the production tree based on the provided data.
+     * <p>
+     * This method loads the items, operations, and BOO data from CSV files, constructs two
+     * different production trees, prints both trees, and indexes them for searching. It does not
+     * allow direct user interaction.
+     * </p>
+     */
     private static void productionTree() {
         // Load data from CSV files
         List<Item> items = CSVReader.readItemsFromCSV("./items.csv");
@@ -414,6 +433,14 @@ public class MenuItem {
         }
     }
 
+    /**
+     * Searches for a specific operation or material by name or ID.
+     * <p>
+     * This method allows the user to search for a material or operation based on the user input.
+     * The search result is then printed to the console.
+     * </p>
+     * @param searcher The searcher object used for searching the production tree.
+     */
     private static void searchOperationOrMaterial(ProductionTreeSearcher searcher) {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Enter the name or ID of the operation/material to search:");
@@ -425,6 +452,15 @@ public class MenuItem {
     }
 
 
+
+    /**
+     * Displays materials sorted by their quantity in either increasing or decreasing order.
+     * <p>
+     * This method prompts the user to select the desired order of display for materials based
+     * on their quantity. The materials are displayed in increasing or decreasing order as per the user's choice.
+     * </p>
+     * @param materialBST The Material Binary Search Tree (BST) used for storing and displaying materials.
+     */
     private static void displayMaterialsByQuantity(MaterialBST materialBST) {
         Scanner scanner = new Scanner(System.in);
         System.out.println("\nChoose the order to display materials:");
@@ -444,21 +480,54 @@ public class MenuItem {
         }
     }
 
+    /**
+     * Displays the total quantity of materials used in the production process.
+     * <p>
+     * This method calculates and displays the total material quantities used in the production process
+     * by traversing the production tree node.
+     * </p>
+     * @param node The root node of the production tree used to calculate and display total material quantities.
+     */
     private static void displayTotalMaterials(ProductionTreeNode node) {
         System.out.println("\nTotal Quantity of Materials Used: ");
         node.displayTotalMaterials(node);
     }
 
+    /**
+     * Displays the total quantity of materials used in the material BST.
+     * <p>
+     * This method calculates and displays the total material quantities stored in the MaterialBST.
+     * </p>
+     * @param materialBST The Material Binary Search Tree (BST) used to store and calculate material quantities.
+     */
     private static void displayTotalMaterials2(MaterialBST materialBST){
         System.out.println("\nTotal Quantity of Materials Used: ");
         materialBST.displayTotalMaterialsTest();
     }
 
+
+    /**
+     * Performs quality checks in reverse priority order.
+     * <p>
+     * This method triggers the quality check manager to perform quality checks based on the
+     * priority order in reverse (highest priority first).
+     * </p>
+     * @param qualityCheckManager The quality check manager used to process quality checks.
+     */
     private static void performQualityChecks(QualityCheckManager qualityCheckManager) {
         System.out.println("\nPerforming Quality Checks in Priority Order:");
         qualityCheckManager.processQualityChecksInReverse();
     }
 
+    /**
+     * Allows the user to update the quantity of a specific material in both the production tree and the material BST.
+     * <p>
+     * This method prompts the user to enter the name or ID of a material, and then allows them
+     * to update its quantity. The updated quantity is reflected in both the production tree and the material BST.
+     * </p>
+     * @param searcher The searcher used to find the material in the production tree.
+     * @param materialBST The Material Binary Search Tree (BST) used to update the material quantity.
+     */
     private static void updateMaterialQuantity(ProductionTreeSearcher searcher, MaterialBST materialBST) {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Enter the name or ID of the material to update:");
@@ -483,6 +552,13 @@ public class MenuItem {
         }
     }
 
+    /**
+     * Displays the critical path operations based on item and operation data.
+     * <p>
+     * This method loads the necessary data and then calls a method to display the critical path operations
+     * in the production process.
+     * </p>
+     */
     private static void criticalPathOperations() {
         List<Item> items = CSVReader.readItemsFromCSV("./items.csv");
         List<Operation> operations = CSVReader.readOperationsFromCSV("./operations.csv");
@@ -549,6 +625,14 @@ public class MenuItem {
         }
     }
 
+    /**
+     * Runs the simulation using the specified CSV files for items, operations, BOO data, and workstations.
+     * <p>
+     * This method reads the necessary input CSV files, creates an instance of the simulation
+     * system, and then executes the simulation. It handles any exceptions that may arise
+     * during the simulation process and prints the results to the console.
+     * </p>
+     */
     private static void runSimulationTree() {
         try {
             // Ler os ficheiros CSV necessários
