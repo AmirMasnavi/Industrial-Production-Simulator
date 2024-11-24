@@ -5,14 +5,26 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * Builds a hierarchical production tree from a list of items, operations, and their relationships.
+ * This tree represents the dependencies between items and operations as defined in the Bill of Operations (BOO) data.
+ */
 public class ProductionTreeBuilder {
 
-    private final List<Item> items;
-    private final List<Operation> operations;
-    private final Map<Integer, Map<Integer, Double>> booData;
-    private final Map<Integer, Double> itemQuantities;
+    // Fields to hold the data required for building the tree
+    private final List<Item> items;                           // List of all items
+    private final List<Operation> operations;                 // List of all operations
+    private final Map<Integer, Map<Integer, Double>> booData; // BOO data mapping item IDs to their subcomponents
+    private final Map<Integer, Double> itemQuantities;        // Map of item IDs to their quantities
 
-    // Constructor to initialize the builder with data
+    /**
+     * Constructor to initialize the ProductionTreeBuilder with necessary data.
+     *
+     * @param items          list of all items
+     * @param operations     list of all operations
+     * @param booData        map defining BOO relationships (item ID -> subcomponents and their quantities)
+     * @param itemQuantities map of item IDs to their quantities
+     */
     public ProductionTreeBuilder(List<Item> items, List<Operation> operations, Map<Integer, Map<Integer, Double>> booData, Map<Integer, Double> itemQuantities) {
         this.items = items;
         this.operations = operations;
@@ -20,15 +32,23 @@ public class ProductionTreeBuilder {
         this.itemQuantities = itemQuantities;
     }
 
+    /**
+     * Builds the root of a production tree for a given item and recursively constructs its sub-tree.
+     *
+     * @param itemId             the ID of the root item
+     * @param operationToItemMap a map linking operation IDs to their associated items
+     * @return the root of the production tree
+     */
     public ProductionTreeNode buildTree(int itemId, Map<Integer, Integer> operationToItemMap) {
         Item rootItem = findItemById(itemId);
         ProductionTreeNode rootNode = new ProductionTreeNode(rootItem);
 
-        // Set root node quantity using itemQuantities
+        // Set the quantity of the root node using the provided quantities map
         if (itemQuantities.containsKey(itemId)) {
             rootNode.setQuantity(itemQuantities.get(itemId));
         }
 
+        // Sets to track visited items and added operations to prevent redundancy
         Set<Integer> visitedItems = new HashSet<>();
         Set<Integer> addedOperations = new HashSet<>();
         buildSubTree(rootNode, visitedItems, addedOperations, operationToItemMap);
@@ -36,29 +56,37 @@ public class ProductionTreeBuilder {
         return rootNode;
     }
 
+    /**
+     * Recursively builds the sub-tree for a given node, linking operations and subcomponents.
+     *
+     * @param node               the current node being processed
+     * @param visitedItems       a set of already visited item IDs to avoid infinite loops
+     * @param addedOperations    a set of already added operation IDs to prevent duplication
+     * @param operationToItemMap a map linking operation IDs to their associated items
+     */
     private void buildSubTree(ProductionTreeNode node, Set<Integer> visitedItems, Set<Integer> addedOperations, Map<Integer, Integer> operationToItemMap) {
         Item item = node.getItem();
 
-        // Prevent infinite recursion by skipping already visited items
+        // Avoid processing an item multiple times
         if (visitedItems.contains(item.getId())) {
             return;
         }
 
         visitedItems.add(item.getId());
 
-        // Check if this item has any subcomponents
+        // Check if this item has any subcomponents in the BOO data
         if (booData.containsKey(item.getId())) {
             Map<Integer, Double> subcomponents = booData.get(item.getId());
 
-            // Add operation node if it exists for this item
+            // Add the operation node if applicable
             Operation operation = findOperationByItemId(item.getId(), operationToItemMap);
             if (operation != null && !addedOperations.contains(operation.getId())) {
                 ProductionTreeNode operationNode = new ProductionTreeNode(operation);
-                node.addChild(operationNode); // Add operation as a direct child of the item
+                node.addChild(operationNode); // Attach the operation node to the item node
                 addedOperations.add(operation.getId());
             }
 
-            // Process subcomponents
+            // Process subcomponents of the item
             for (Map.Entry<Integer, Double> subcomponent : subcomponents.entrySet()) {
                 int subId = subcomponent.getKey();
                 double quantity = subcomponent.getValue();
@@ -69,36 +97,41 @@ public class ProductionTreeBuilder {
                     Operation subOperation = findOperationById(subId);
                     Item resolvedItem = findItemById(resolvedItemId);
 
-                    // Create and link operation node if it hasn't been added yet
+                    // Add the operation node and its resolved item sub-node
                     if (!addedOperations.contains(subOperation.getId())) {
                         ProductionTreeNode operationNode = new ProductionTreeNode(subOperation);
                         node.addChild(operationNode);
                         addedOperations.add(subOperation.getId());
 
-                        // Create and link resolved item node under the operation
                         ProductionTreeNode resolvedItemNode = new ProductionTreeNode(resolvedItem);
                         resolvedItemNode.setQuantity(quantity);
                         operationNode.addChild(resolvedItemNode);
 
-                        // Recursively build the subtree for the resolved item
+                        // Recursively build the tree for the resolved item
                         buildSubTree(resolvedItemNode, visitedItems, addedOperations, operationToItemMap);
                     }
                 } else {
-                    // Subcomponent is a regular item
+                    // Subcomponent is a standard item
                     Item subItem = findItemById(subId);
                     ProductionTreeNode subNode = new ProductionTreeNode(subItem);
                     subNode.setQuantity(quantity);
 
                     node.addChild(subNode);
 
-                    // Recursively build the subtree for the sub-item
+                    // Recursively build the tree for the sub-item
                     buildSubTree(subNode, visitedItems, addedOperations, operationToItemMap);
                 }
             }
         }
     }
 
-    // Helper method to find an item by its ID
+    /**
+     * Finds an item by its ID in the list of items.
+     *
+     * @param id the ID of the item to find
+     * @return the matching item
+     * @throws IllegalArgumentException if no item with the specified ID is found
+     */
     private Item findItemById(int id) {
         return items.stream()
                 .filter(item -> item.getId() == id)
@@ -106,7 +139,13 @@ public class ProductionTreeBuilder {
                 .orElseThrow(() -> new IllegalArgumentException("Item not found for ID: " + id));
     }
 
-    // Helper method to find an operation by item ID
+    /**
+     * Finds an operation associated with a given item ID based on the operation-to-item map.
+     *
+     * @param itemId             the ID of the item
+     * @param operationToItemMap a map linking operation IDs to item IDs
+     * @return the matching operation, or null if no operation is associated with the item
+     */
     private Operation findOperationByItemId(int itemId, Map<Integer, Integer> operationToItemMap) {
         return operations.stream()
                 .filter(operation -> operationToItemMap.get(operation.getId()) != null
@@ -115,12 +154,17 @@ public class ProductionTreeBuilder {
                 .orElse(null); // Return null if no operation is found
     }
 
-    // Helper method to find an operation by its ID
+    /**
+     * Finds an operation by its ID in the list of operations.
+     *
+     * @param operationId the ID of the operation to find
+     * @return the matching operation
+     * @throws IllegalArgumentException if no operation with the specified ID is found
+     */
     private Operation findOperationById(int operationId) {
         return operations.stream()
                 .filter(op -> op.getId() == operationId)
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Operation not found for ID: " + operationId));
     }
-
 }

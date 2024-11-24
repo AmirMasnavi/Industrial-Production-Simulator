@@ -5,14 +5,26 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * This class builds a hierarchical production tree starting from a root operation.
+ * It utilizes relationships defined between operations and items in a Bill of Operations (BOO) structure.
+ * The tree can represent both operations and associated items in a structured format.
+ */
 public class ProductionTreeBuilderOpID {
 
-    private final List<Item> items;
-    private final List<Operation> operations;
-    private final Map<Integer, Map<Integer, Double>> booData;
-    private final Map<Integer, Double> itemQuantities;
+    private final List<Item> items; // List of all items available
+    private final List<Operation> operations; // List of all operations available
+    private final Map<Integer, Map<Integer, Double>> booData; // BOO data linking items to subcomponents
+    private final Map<Integer, Double> itemQuantities; // Quantities for items in the production tree
 
-    // Constructor to initialize the builder with data
+    /**
+     * Constructor to initialize the builder with the necessary data.
+     *
+     * @param items          List of items involved in production.
+     * @param operations     List of operations involved in production.
+     * @param booData        Mapping of item IDs to their subcomponents and quantities.
+     * @param itemQuantities Mapping of item IDs to their quantities in production.
+     */
     public ProductionTreeBuilderOpID(List<Item> items, List<Operation> operations, Map<Integer, Map<Integer, Double>> booData, Map<Integer, Double> itemQuantities) {
         this.items = items;
         this.operations = operations;
@@ -20,6 +32,13 @@ public class ProductionTreeBuilderOpID {
         this.itemQuantities = itemQuantities;
     }
 
+    /**
+     * Builds a production tree starting from a root operation.
+     *
+     * @param operationId         The ID of the root operation to start the tree.
+     * @param operationToItemMap  A mapping of operation IDs to their associated item IDs.
+     * @return A {@link ProductionTreeNode} representing the root of the production tree.
+     */
     public ProductionTreeNode buildTree(int operationId, Map<Integer, Integer> operationToItemMap) {
         Operation rootOperation = findOperationById(operationId);
         ProductionTreeNode rootNode = new ProductionTreeNode(rootOperation);
@@ -30,6 +49,13 @@ public class ProductionTreeBuilderOpID {
         return rootNode;
     }
 
+    /**
+     * Builds the subtree for a given operation node by recursively adding its associated items and subcomponents.
+     *
+     * @param node                The current operation node being processed.
+     * @param visitedOperations   A set of already visited operation IDs to prevent infinite recursion.
+     * @param operationToItemMap  A mapping of operation IDs to their associated item IDs.
+     */
     private void buildSubTree(ProductionTreeNode node, Set<Integer> visitedOperations, Map<Integer, Integer> operationToItemMap) {
         Operation operation = node.getOperation();
 
@@ -58,6 +84,13 @@ public class ProductionTreeBuilderOpID {
         }
     }
 
+    /**
+     * Builds the subtree for a given item node by recursively adding its subcomponents.
+     *
+     * @param node                The current item node being processed.
+     * @param visitedItems        A set of already visited item IDs to prevent infinite recursion.
+     * @param operationToItemMap  A mapping of operation IDs to their associated item IDs.
+     */
     private void buildItemSubTree(ProductionTreeNode node, Set<Integer> visitedItems, Map<Integer, Integer> operationToItemMap) {
         Item item = node.getItem();
 
@@ -109,7 +142,13 @@ public class ProductionTreeBuilderOpID {
         }
     }
 
-    // Helper method to find an item by its ID
+    /**
+     * Helper method to find an item by its ID.
+     *
+     * @param id The ID of the item to find.
+     * @return The {@link Item} corresponding to the provided ID.
+     * @throws IllegalArgumentException If the item is not found.
+     */
     private Item findItemById(int id) {
         return items.stream()
                 .filter(item -> item.getId() == id)
@@ -117,7 +156,13 @@ public class ProductionTreeBuilderOpID {
                 .orElseThrow(() -> new IllegalArgumentException("Item not found for ID: " + id));
     }
 
-    // Helper method to find an operation by its ID
+    /**
+     * Helper method to find an operation by its ID.
+     *
+     * @param operationId The ID of the operation to find.
+     * @return The {@link Operation} corresponding to the provided ID.
+     * @throws IllegalArgumentException If the operation is not found.
+     */
     private Operation findOperationById(int operationId) {
         return operations.stream()
                 .filter(op -> op.getId() == operationId)

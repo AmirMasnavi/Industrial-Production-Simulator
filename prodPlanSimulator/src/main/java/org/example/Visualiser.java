@@ -2,16 +2,25 @@ package org.example;
 
 import java.util.*;
 
+/**
+ * The `Visualiser` class provides a mechanism to visualize products, their Bills of Materials (BOM),
+ * and Bills of Operations (BOO). It simulates the structure and operations necessary to display
+ * manufacturing details of products in a hierarchical (tree-like) format.
+ */
 public class Visualiser {
 
-
+    // List that stores all products
     final List<Product> products = new ArrayList<>();
+    // Map that stores the Bill of Materials (BOM) for each product, identified by product code
     private final Map<String, List<BillOfMaterials>> bomMap = new HashMap<>();
+    // Map that stores the Bill of Operations (BOO) for each product, identified by product code
     private final Map<String, List<BillOfOperations>> booMap = new HashMap<>();
 
-
+    /**
+     * The constructor initializes products, BOM, and BOO data.
+     */
     public Visualiser() {
-        // Initialize products
+        // Initialize the product list
         products.add(new Product("AS12945T22", "La Belle 22 5l pot", "5l 22 cm aluminium and teflon non stick pot"));
         products.add(new Product("AS12945S22", "Pro 22 5l pot", "5l 22 cm stainless steel pot"));
         products.add(new Product("AS12945S20", "Pro 20 3l pot", "3l 20 cm stainless steel pot"));
@@ -20,7 +29,7 @@ public class Visualiser {
         products.add(new Product("AS12945S48", "Pro 17 lid", "17 cm stainless steel lid"));
         products.add(new Product("AS12945G48", "Pro Clear 17 lid", "17 cm glass lid"));
 
-        // Initialize Bill of Materials (BOM)
+        // Initialize the BOM for each product, associating product codes with components
         bomMap.put("AS12945S22", Arrays.asList(
                 new BillOfMaterials("AS12945S22", "PN12344A21", "Screw M6 35 mm", 1),
                 new BillOfMaterials("AS12945S22", "PN52384R50", "300x300 mm 5mm stainless steel sheet", 1),
@@ -58,7 +67,7 @@ public class Visualiser {
                 new BillOfMaterials("AS12945G48", "PN18544A21", "Rivet 6 mm", 2)
         ));
 
-        // Initialize Bill of Operations (BOO)
+        // Initialize the BOO for each product, associating product codes with necessary operations
         booMap.put("AS12945S22", Arrays.asList(
                 new BillOfOperations("AS12945S22", "5647", "Disc cutting", 1),
                 new BillOfOperations("AS12945S22", "5647", "Disc cutting", 2),
@@ -105,53 +114,58 @@ public class Visualiser {
         ));
 
         booMap.put("AS12945P17", Arrays.asList(
-                new BillOfOperations("AS12945P17", "5681", "Initial pan base pressing", 1),
-                new BillOfOperations("AS12945P17", "5682", "Final pan base pressing", 2),
-                new BillOfOperations("AS12945P17", "5683", "Pan base finishing", 3),
-                new BillOfOperations("AS12945P17", "5665", "Handle welding", 4),
-                new BillOfOperations("AS12945P17", "5688", "Pan test and packaging", 5)
+                new BillOfOperations("AS12945P17", "5647", "Sauce pan base pressing", 1),
+                new BillOfOperations("AS12945P17", "5649", "Sauce pan finishing", 2),
+                new BillOfOperations("AS12945P17", "5655", "Sauce pan handle riveting", 3),
+                new BillOfOperations("AS12945P17", "5663", "Sauce pan test and packaging", 4)
         ));
 
         booMap.put("AS12945S48", Arrays.asList(
-                new BillOfOperations("AS12945S48", "5655", "Lid pressing", 1),
-                new BillOfOperations("AS12945S48", "5657", "Lid finishing", 2),
-                new BillOfOperations("AS12945S48", "5661", "Lid handle screw", 3),
-                new BillOfOperations("AS12945S48", "5667", "Lid polishing", 4),
-                new BillOfOperations("AS12945S48", "5663", "Pot test and packaging", 5)
+                new BillOfOperations("AS12945S48", "5647", "Lid disc cutting", 1),
+                new BillOfOperations("AS12945S48", "5653", "Lid finishing", 2),
+                new BillOfOperations("AS12945S48", "5655", "Lid riveting", 3),
+                new BillOfOperations("AS12945S48", "5667", "Lid polishing", 4)
         ));
 
         booMap.put("AS12945G48", Arrays.asList(
-                new BillOfOperations("AS12945G48", "5655", "Lid pressing", 1),
-                new BillOfOperations("AS12945G48", "5657", "Lid finishing", 2),
-                new BillOfOperations("AS12945G48", "5661", "Lid handle screw", 3),
-                new BillOfOperations("AS12945G48", "5667", "Lid polishing", 4),
-                new BillOfOperations("AS12945G48", "5663", "Pot test and packaging", 5)
+                new BillOfOperations("AS12945G48", "5647", "Glass lid cutting", 1),
+                new BillOfOperations("AS12945G48", "5653", "Glass lid finishing", 2),
+                new BillOfOperations("AS12945G48", "5655", "Glass lid riveting", 3),
+                new BillOfOperations("AS12945G48", "5667", "Glass lid polishing", 4)
         ));
-
-
     }
 
-    // Display all products
+    /**
+     * Displays all the available products in the system.
+     */
     public void listProducts() {
-        System.out.println("List of Products:");
+        System.out.println("Product List:");
         for (int i = 0; i < products.size(); i++) {
             System.out.printf("%d. %s\n", i + 1, products.get(i));
         }
     }
 
-    // Get product selection
+    /**
+     * Allows the user to select a product from the list to view its BOM or BOO.
+     *
+     * @return The selected product, or null if the selection is invalid.
+     */
     public Product selectProduct() {
         Scanner scanner = new Scanner(System.in);
-        System.out.println("\nEnter the number of the product to view its Bill of Materials (BOM):");
+        System.out.println("\nEnter the product number to view its Bill of Materials (BOM):");
         int selection = scanner.nextInt();
         if (selection > 0 && selection <= products.size()) {
             return products.get(selection - 1);
         }
-        System.out.println("Invalid selection. Try again.");
+        System.out.println("Invalid selection. Please try again.");
         return null;
     }
 
-    // Print the BOM for the selected product in tree format
+    /**
+     * Prints the Bill of Materials (BOM) for the selected product in a tree format.
+     *
+     * @param product The product whose BOM will be displayed.
+     */
     public void printBOM(Product product) {
         if (product == null) return;
         List<BillOfMaterials> bomList = bomMap.get(product.getCode());
@@ -163,15 +177,24 @@ public class Visualiser {
         }
     }
 
-    // Recursive method to print BOM as a tree structure (genealogical tree style)
+    /**
+     * Recursive method to print the BOM structure in tree format.
+     *
+     * @param bomList The list of BOM items to be printed.
+     * @param level   The current indentation level.
+     */
     private void printBOMTree(List<BillOfMaterials> bomList, int level) {
-        String indent = " ".repeat(level * 4);  // Adjust indentation level
+        String indent = " ".repeat(level * 4);  // Create indentation based on the level
         for (BillOfMaterials bom : bomList) {
             System.out.println(indent + "├── " + bom);
-            // You can recursively print sub-parts here if needed
         }
     }
-    // Print the BOO for the selected product in tree format
+
+    /**
+     * Prints the Bill of Operations (BOO) for the selected product in a tree format.
+     *
+     * @param product The product whose BOO will be displayed.
+     */
     public void printBOO(Product product) {
         if (product == null) return;
         List<BillOfOperations> booList = booMap.get(product.getCode());
@@ -183,13 +206,16 @@ public class Visualiser {
         }
     }
 
-    // Recursive method to print BOO as a tree structure
+    /**
+     * Recursive method to print the BOO structure in tree format.
+     *
+     * @param booList The list of BOO items to be printed.
+     * @param level   The current indentation level.
+     */
     private void printBOOTree(List<BillOfOperations> booList, int level) {
-        String indent = " ".repeat(level * 4);  // Adjust indentation level
+        String indent = " ".repeat(level * 4);  // Create indentation based on the level
         for (BillOfOperations boo : booList) {
             System.out.println(indent + "├── " + boo);
-            // Add sub-operation logic here if applicable
         }
     }
-
 }
