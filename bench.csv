@@ -1,0 +1,4 @@
+article;priority;name_oper1;name_oper2;name_oper3;name_oper4;name_oper5;name_oper6
+1002 - bench leg w/bolt;LOW;cut bench seat;polish bench seat;drill bench seat;fix nut M16 21
+1004 - bench seat w/nut;LOW;cut bench leg;polish bench leg;drill bench leg;fix bolt M16 22
+1006 - finished bench;HIGH;assemble bench;varnish bench;pack bench
