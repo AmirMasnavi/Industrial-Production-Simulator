@@ -1030,5 +1030,197 @@ public static int calculateTreeDepth(ProductionTreeNode node) {
 - **O(n)**, where `n` is the number of nodes in the tree.
 
 
+### USEI15
+
+> **runSimulationTree**
+
+```java
+private static void runSimulationTree() {
+    List<Article> new_articles;
+    List<Machine> new_machines;
+
+    new_articles = CSVReader.readArticlesFromCSV("./bench.csv");
+    new_machines = CSVReader.readMachinesFromCSV("./workstations_v2.csv");
+
+    AVLTree avlTree = new AVLTree();
+
+    // Populate the AVL tree with operations and their dependencies
+    booDataResult.booData.forEach((itemId, subcomponents) -> {
+        // For each item produced, we will insert an operation into the AVL tree
+        for (Map.Entry<Integer, Double> entry : subcomponents.entrySet()) {
+            int opId = entry.getKey();
+            avlTree.insert(opId, itemId, subcomponents);
+        }
+    });
+
+    // Traverse the AVL tree and simulate the production process
+    avlTree.inorderTraversal();
+
+    runSimulationWithoutPriorities(new_articles, new_machines);
+}
+```
+
+***Complexity Analysis:***
+
+**Reading CSV Files:**
+- Assuming CSVReader.readArticlesFromCSV and readMachinesFromCSV parse the files line by line, their complexity is O(a + m), where a is the number of articles and m is the number of machines.
+
+**AVL Tree Insertion:**
+- Each insertion into the AVL tree involves balancing, with complexity O(log k) for k nodes.
+- Let n be the total number of operations in booDataResult.booData. Inserting all operations results in O(n log n).
+
+**Inorder Traversal:**
+- Visits each node exactly once. Complexity is O(n) for n nodes.
+
+**Total Complexity:**
+- Reading files: O(a + m).
+- AVL tree operations: O(n log n).
+- Traversal: O(n).
+- Combined: O(a + m + n log n).
+
+> **insert**
+
+```java
+private AVLNode insert(AVLNode node, int opId, int itemId, Map<Integer, Double> subcomponents) {
+  if (node == null) return new AVLNode(opId, itemId, subcomponents);
+
+  if (opId < node.opId) {
+    node.left = insert(node.left, opId, itemId, subcomponents);
+  } else if (opId > node.opId) {
+    node.right = insert(node.right, opId, itemId, subcomponents);
+  }
+
+  node.height = 1 + Math.max(getHeight(node.left), getHeight(node.right));
+  int balance = getBalance(node);
+
+  if (balance > 1 && opId < node.left.opId) return rotateRight(node);
+  if (balance < -1 && opId > node.right.opId) return rotateLeft(node);
+  if (balance > 1 && opId > node.left.opId) {
+    node.left = rotateLeft(node.left);
+    return rotateRight(node);
+  }
+  if (balance < -1 && opId < node.right.opId) {
+    node.right = rotateRight(node.right);
+    return rotateLeft(node);
+  }
+
+  return node;
+}
+
+```
+
+***Complexity Analysis:***
+
+**Recursive Insertion:**
+- Each recursive call compares opId to a node and descends the tree. For a balanced AVL tree, this requires O(log n) comparisons.
+
+**Balancing Operations:**
+- After insertion, up to two rotations may be needed. Each rotation is O(1).
+
+**Height and Balance Updates:**
+- Calculating height and balance requires O(1) operations per node.
+
+**Total Complexity:**
+- For inserting one node: O(log n).
+- For inserting n nodes: O(n log n).
+
+
+> **processOperation**
+
+```java
+private void processOperation(AVLNode node) {
+  System.out.println("Processing operation: " + node.opId + " for item: " + node.itemId);
+
+  for (Map.Entry<Integer, Double> entry : node.subcomponents.entrySet()) {
+    System.out.println("  - Subcomponent: Item " + entry.getKey() + " with quantity " + entry.getValue());
+  }
+}
+
+
+```
+
+***Complexity Analysis:***
+
+**Iterating Over Subcomponents:**
+- Let s be the number of subcomponents in node.subcomponents.
+- The loop iterates over each entry, resulting in O(s) complexity.
+
+**Printing Operations:**
+- Printing each entry is constant-time, so overall printing scales with the loop size.
+
+**Total Complexity:**
+- O(s), where s is the number of subcomponents.
+
+> **rotateLeft and rotateRight**
+
+```java
+private AVLNode rotateLeft(AVLNode z) {
+  AVLNode y = z.right;
+  AVLNode T2 = y.left;
+
+  y.left = z;
+  z.right = T2;
+
+  z.height = Math.max(getHeight(z.left), getHeight(z.right)) + 1;
+  y.height = Math.max(getHeight(y.left), getHeight(y.right)) + 1;
+
+  return y;
+}
+
+private AVLNode rotateRight(AVLNode y) {
+  AVLNode x = y.left;
+  AVLNode T2 = x.right;
+
+  x.right = y;
+  y.left = T2;
+
+  y.height = Math.max(getHeight(y.left), getHeight(y.right)) + 1;
+  x.height = Math.max(getHeight(x.left), getHeight(x.right)) + 1;
+
+  return x;
+}
+
+
+```
+
+***Complexity Analysis:***
+
+**Rotations:**
+- Each rotation involves reassigning pointers and updating heights for a constant number of nodes.
+- Complexity per rotation: O(1).
+
+**Total Complexity:**
+- O(1) per rotation.
+
+> **inorderTraversal**
+
+```java
+private void inorderTraversal(AVLNode node) {
+  if (node != null) {
+    inorderTraversal(node.left);
+    processOperation(node);
+    inorderTraversal(node.right);
+  }
+}
+
+
+```
+
+***Complexity Analysis:***
+
+**Recursive Traversal:**
+- Visits each node in the AVL tree once. For n nodes, the traversal complexity is O(n).
+
+**Processing Each Node:**
+- The processOperation method is called for each node. Let s be the average number of subcomponents per node.
+- Processing all nodes: O(n × s).
+
+**Total Complexity:**
+- O(n × s).
+
+
+
+
+
 
 
