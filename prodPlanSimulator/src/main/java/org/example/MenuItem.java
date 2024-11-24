@@ -486,52 +486,14 @@ public class MenuItem {
     private static void criticalPathOperations() {
         List<Item> items = CSVReader.readItemsFromCSV("./items.csv");
         List<Operation> operations = CSVReader.readOperationsFromCSV("./operations.csv");
-
-        // Create a map to store the mapping between op_id and item_id
         Map<Integer, Integer> operationToItemMap = new HashMap<>();
         BooDataResult booDataResult = CSVReader.readBooFromCSV("./boo_v2.csv", operationToItemMap);
 
-        ProductionTreeBuilderOpID treeBuilder = new ProductionTreeBuilderOpID(items, operations, booDataResult.booData, booDataResult.itemQuantities);
-
-        // Map to store operations and their respective tree depths
-        Map<Operation, Integer> operationDepths = new HashMap<>();
-
-        // Calculate the depth of each tree
-        for (Operation operation : operations) {
-            ProductionTreeNode rootNode = treeBuilder.buildTree(operation.getId(), operationToItemMap);
-            int depth = calculateTreeDepth(rootNode);
-            operationDepths.put(operation, depth);
-        }
-
-        // Usar PriorityQueue para armazenar as operações por profundidade
-        PriorityQueue<Operation> priorityQueue = new PriorityQueue<>(
-                (op1, op2) -> Integer.compare(operationDepths.get(op2), operationDepths.get(op1))
-        );
-
-        // Adicionar operações à fila de prioridade
-        priorityQueue.addAll(operations);
-
-        // Processar operações da fila
-        ProductionTreePrinter printer = new ProductionTreePrinter(booDataResult.booData);
-        while (!priorityQueue.isEmpty()) {
-            Operation operation = priorityQueue.poll();
-            System.out.println("\nCritical Path Operation for: " + operation.getName() + " (ID: " + operation.getId() + ")");
-            ProductionTreeNode rootNode = treeBuilder.buildTree(operation.getId(), operationToItemMap);
-            printer.printOperationTree(rootNode);
-        }
+        criticalPathOperations(items, operations, booDataResult);
     }
 
-    private static int calculateTreeDepth(ProductionTreeNode node) {
-        if (node == null || node.getChildren().isEmpty()) {
-            return 1; // Base case: a single node has depth 1
-        }
-
-        // Recursively calculate the depth of children and add 1 for the current node
-        int maxDepth = 0;
-        for (ProductionTreeNode child : node.getChildren()) {
-            maxDepth = Math.max(maxDepth, calculateTreeDepth(child));
-        }
-        return maxDepth + 1;
+    private static void criticalPathOperations(List<Item> items, List<Operation> operations, BooDataResult booDataResult) {
+        CriticalPathOperations.criticalPathOperations(items, operations, booDataResult);
     }
 
     /**
