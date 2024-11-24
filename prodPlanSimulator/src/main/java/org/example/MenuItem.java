@@ -13,10 +13,7 @@ public class MenuItem {
     private static SimulatorNoPriorities simulatorNoPriorites;
     private static boolean lastSimulationWithPriorities;
     private static BooDataResult booDataResult;
-    private static List<Article> articles;
-    private static List<Machine> machines;
 
-    private static SimulatorTree simulatorTree;
 
     /**
      * Displays the main menu and handles user selections.
@@ -30,8 +27,8 @@ public class MenuItem {
         boolean running = true;
         Visualiser visualiser = new Visualiser();
 
-        articles = CSVReader.readArticlesFromCSV("./articles.csv");
-        machines = CSVReader.readMachinesFromCSV("./workstations.csv");
+        List<Article> articles = CSVReader.readArticlesFromCSV("./articles.csv");
+        List<Machine> machines = CSVReader.readMachinesFromCSV("./workstations.csv");
         List<Item> items = CSVReader.readItemsFromCSV("./items.csv");
         List<Operation> operations = CSVReader.readOperationsFromCSV("./operations.csv");
         Map<Integer, Integer> operationToItemMap = new HashMap<>();
@@ -42,9 +39,6 @@ public class MenuItem {
 
         ProductionTreeSearcher searcher = new ProductionTreeSearcher();
         searcher.indexTree(rootNode);
-
-        ProductionTreeBuilderOpID treeBuilder2 = new ProductionTreeBuilderOpID(items, operations, booDataResult.booData, booDataResult.itemQuantities);
-        ProductionTreeNode rootNode2 = treeBuilder2.buildTree(20, operationToItemMap);
 
 
         MaterialBST materialBST = new MaterialBST();
@@ -362,7 +356,7 @@ public class MenuItem {
 
         // Create a scanner for user input
         Scanner scanner = new Scanner(System.in);
-        int itemId = -1;
+        int itemId;
 
         // Loop until a valid item ID is provided
         while (true) {
@@ -444,7 +438,6 @@ public class MenuItem {
                     continue;
                 default:
                     System.out.println("Invalid option. Please choose between 1 and 5.");
-                    continue;
             }
         }
     }
@@ -639,7 +632,6 @@ public class MenuItem {
                     continue;
                 default:
                     System.out.println("Invalid option. Please choose between 1 and 5.");
-                    continue;
             }
         }
     }
