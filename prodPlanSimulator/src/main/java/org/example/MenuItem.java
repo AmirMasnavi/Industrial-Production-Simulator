@@ -13,6 +13,8 @@ public class MenuItem {
     private static SimulatorNoPriorities simulatorNoPriorites;
     private static boolean lastSimulationWithPriorities;
     private static BooDataResult booDataResult;
+    private static List<Article> articles;
+    private static List<Machine> machines;
 
     private static SimulatorTree simulatorTree;
 
@@ -28,6 +30,8 @@ public class MenuItem {
         boolean running = true;
         Visualiser visualiser = new Visualiser();
 
+        articles = CSVReader.readArticlesFromCSV("./articles.csv");
+        machines = CSVReader.readMachinesFromCSV("./workstations.csv");
         List<Item> items = CSVReader.readItemsFromCSV("./items.csv");
         List<Operation> operations = CSVReader.readOperationsFromCSV("./operations.csv");
         Map<Integer, Integer> operationToItemMap = new HashMap<>();
@@ -92,7 +96,7 @@ public class MenuItem {
                     listMachines();
                     break;
                 case 3:
-                    runSimulationWithoutPriorities();
+                    runSimulationWithoutPriorities(articles, machines);
                     break;
                 case 4:
                     runSimulation();
@@ -311,10 +315,7 @@ public class MenuItem {
      * and executes the simulation.
      * </p>
      */
-    private static void runSimulationWithoutPriorities() {
-        List<Article> articles = CSVReader.readArticlesFromCSV("./articles.csv");
-        List<Machine> machines = CSVReader.readMachinesFromCSV("./workstations.csv");
-
+    private static void runSimulationWithoutPriorities(List<Article> articles, List<Machine> machines) {
         simulatorNoPriorites = new SimulatorNoPriorities(articles, machines);
         simulatorNoPriorites.runSimulation();
         lastSimulationWithPriorities = false;
@@ -649,26 +650,27 @@ public class MenuItem {
      * </p>
      */
     private static void runSimulationTree() {
-        try {
-            // Ler os ficheiros CSV necessários
-            String itemsFilePath = "./items.csv";
-            String operationsFilePath = "./operations.csv";
-            String booFilePath = "./boo_v2.csv";
-            String machinesFilePath = "./workstations_v2.csv";
+        List<Article> new_articles;
+        List<Machine> new_machines;
 
-            // Criar a instância do simulador com base nos ficheiros
-            SimulatorTree simulator = new SimulatorTree(
-                    itemsFilePath, operationsFilePath, booFilePath, machinesFilePath
-            );
+        new_articles = CSVReader.readArticlesFromCSV("./bench.csv");
+        new_machines = CSVReader.readMachinesFromCSV("./workstations_v2.csv");
 
-            // Executar a simulação
-            simulator.runSimulation();
-            System.out.println("\nSimulation Tree completed.");
-        } catch (Exception e) {
-            System.err.println("Erro ao executar a simulação: " + e.getMessage());
-            e.printStackTrace();
-        }
+        AVLTree avlTree = new AVLTree();
+
+        // Populate the AVL tree with operations and their dependencies
+        booDataResult.booData.forEach((itemId, subcomponents) -> {
+            // For each item produced, we will insert an operation into the AVL tree
+            for (Map.Entry<Integer, Double> entry : subcomponents.entrySet()) {
+                int opId = entry.getKey();
+                avlTree.insert(opId, itemId, subcomponents);
+            }
+        });
+
+        // Traverse the AVL tree and simulate the production process
+        avlTree.inorderTraversal();
+
+        runSimulationWithoutPriorities(new_articles, new_machines);
     }
-
 
 }
