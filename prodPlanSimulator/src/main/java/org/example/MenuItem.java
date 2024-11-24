@@ -68,7 +68,7 @@ public class MenuItem {
             System.out.println("3. Run Simulation");
             System.out.println("4. Run Simulation With Priorities");
             System.out.println("5. Show Simulation Statistics");
-            System.out.println("6. Build the complete production tree ");
+            System.out.println("6. Build Production Tree");
             System.out.println("7. Search for Specific Operation or Material");
             System.out.println("8. Display Materials by Quantity");
             System.out.println("9. Perform Quality Checks by Priority");
@@ -358,28 +358,43 @@ public class MenuItem {
 
         // Create a ProductionTreeBuilder with the read data
         ProductionTreeBuilder treeBuilder = new ProductionTreeBuilder(items, operations, booDataResult.booData, booDataResult.itemQuantities);
-        ProductionTreeBuilderOpID treeBuilder2 = new ProductionTreeBuilderOpID(items, operations, booDataResult.booData, booDataResult.itemQuantities);
-        // Create and index the production tree
-        // Build the production tree for item ID 1001
-        ProductionTreeNode rootNode = treeBuilder.buildTree(1006, operationToItemMap);
-        ProductionTreeNode root2Node = treeBuilder2.buildTree(20, operationToItemMap);
+
+        // Create a scanner for user input
+        Scanner scanner = new Scanner(System.in);
+        int itemId = -1;
+
+        // Loop until a valid item ID is provided
+        while (true) {
+            System.out.print("Enter the ID of the item to build the production tree: ");
+            try {
+                itemId = Integer.parseInt(scanner.nextLine());
+                // Check if the item ID exists in the items list
+                int finalItemId = itemId;
+                boolean itemExists = items.stream().anyMatch(item -> item.getId() == finalItemId);
+
+                if (itemExists) {
+                    break; // Valid item ID found, exit the loop
+                } else {
+                    System.out.println("Invalid item ID. Please try again.");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input. Please enter a valid numeric ID.");
+            }
+        }
+
+        // Build the production tree for the specified item ID
+        ProductionTreeNode rootNode = treeBuilder.buildTree(itemId, operationToItemMap);
 
         // Print the production tree
         ProductionTreePrinter printer = new ProductionTreePrinter(booDataResult.booData);
         printer.printTree(rootNode);
 
-        ProductionTreePrinter printer2 = new ProductionTreePrinter(booDataResult.booData);
-        printer2.printTree(root2Node);
-
         // Create and use the searcher
         ProductionTreeSearcher searcher = new ProductionTreeSearcher();
         searcher.indexTree(rootNode); // Index the tree for searching
 
-        ProductionTreeSearcher searcher2 = new ProductionTreeSearcher();
-        searcher2.indexTree(root2Node);
-        // Search examples
-
     }
+
 
     /**
      * Displays statistics for the last simulation that considered item priorities.
