@@ -60,7 +60,7 @@ public class SimulatorNoPriorities {
      */
     private void initializeTasks() {
         for (Article article : this.articles) {
-            if (article.hasMoreOperations()) {
+            if (article.hasMoreOperations() && !Objects.equals(article.getIdItem(), "1006 - finished bench")) {
                 taskQueue.add(new Task(article, article.getNextOperation()));
                 itemWorkstationHistory.put(article, new ArrayList<>());
                 itemWaitingTimes.put(article.getIdItem(), 0); // Initialize waiting time for each item
@@ -87,17 +87,43 @@ public class SimulatorNoPriorities {
     /**
      * Main simulation loop. Processes tasks and updates machine availability.
      */
+    /**
+     * Main simulation loop. Processes tasks and updates machine availability.
+     */
     public void runSimulation() {
         System.out.println("\n=== Items to be Processed in the Simulation ===\n");
         presentInitialItemList();
         System.out.println("\n=== Starting the Simulation ===");
-        while (!taskQueue.isEmpty() || !busyMachines.isEmpty()) {
+        boolean isItem1006Started = false;
+
+        while (!taskQueue.isEmpty() || !busyMachines.isEmpty() || !isItem1006Started) {
             processTasks();
             updateMachineAvailability();
+
+            // Check if all other items are finished and start item 1006
+            if (!isItem1006Started && taskQueue.isEmpty() && busyMachines.isEmpty()) {
+                // Start processing item 1006
+                Optional<Article> item1006 = articles.stream()
+                        .filter(article -> Objects.equals(article.getIdItem(), "1006 - finished bench"))
+                        .findFirst();
+
+                if (item1006.isPresent()) {
+                    Article article1006 = item1006.get();
+                    if (article1006.hasMoreOperations()) {
+                        taskQueue.add(new Task(article1006, article1006.getNextOperation()));
+                        itemWorkstationHistory.put(article1006, new ArrayList<>());
+                        itemWaitingTimes.put(article1006.getIdItem(), 0); // Initialize waiting time for item 1006
+                        isItem1006Started = true;
+                        System.out.println("\n=== Start Assembling bench ===");
+                    }
+                }
+            }
+
             currentTime++;
         }
         System.out.println("=== Simulation Finished ===");
     }
+
 
     /**
      * Process tasks from the queue and assign them to available machines.
