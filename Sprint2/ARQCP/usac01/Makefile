@@ -1,17 +1,14 @@
-prog: asm.o main.o
-	gcc asm.o main.o -o prog
-
-asm.o: asm.s asm.h
-	gcc -c asm.s -o asm.o
-
-main.o: main.c asm.h
-	gcc -c main.c -o main.o
-
-clean:
-	rm -f *.o prog
+main: us01.o asm.o
+	gcc us01.o asm.o -z noexecstack -o main
 	
-debug: prog
-	gdb ./prog 
+us02.o: us01.c 
+	gcc -g -Wall -Wextra -fanalyzer -c us01.c -o us01.o
+	
+asm.o: asm.s
+	gcc -g -Wall -Wextra -fanalyzer -c asm.s -o asm.o
 
-run: prog
-	./prog
+run: main
+	./main
+	
+clean:
+	rm -f *.o main
