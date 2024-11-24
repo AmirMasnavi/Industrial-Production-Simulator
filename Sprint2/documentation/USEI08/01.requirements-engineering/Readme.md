@@ -1,10 +1,9 @@
-# USEI08 - Process Items by Priority
+# USEI08 -   Build Production Tree
 
 ## 1. Requirements Engineering
 
 ### 1.1. User Story Description
-
-As a Product Manager, I want to make an improvement to the simulator developed in USEI02 by taking into account a processing order bases on priority.
+As a user, I want to import data from a CSV file containing the operations, components, materials, and quantities for a product to create a production tree. Each node represents an operation or material at a specific stage of the production process.
 
 ### 1.2. Customer Specifications and Clarifications 
 
