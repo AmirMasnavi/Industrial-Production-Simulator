@@ -48,9 +48,12 @@ public class ProductImporter {
         String productId = PRODUCTS[productIndex][0];
         System.out.printf("Você escolheu: %s (%s)\n", PRODUCTS[productIndex][1], PRODUCTS[productIndex][2]);
 
+        System.out.println("Você escolheu o produto com ID: " + productId);
+
         // Exportar BOO e BOM do produto escolhido
         exportDataToCSV(productId);
     }
+
 
     public static void exportDataToCSV(String productId) {
         try (Connection connection = DatabaseConnection.getConnection()) {
