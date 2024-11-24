@@ -4,7 +4,7 @@
 
 ![Mounted sensor](png/imagenssensor.png)
 
-## USFS01
+## USFA01
 * Using Arduino, we created a code that would allow us to monitor temperatures and humidity, and the behavior of the respective LEDs.
 
 `````java
@@ -98,7 +98,7 @@
 
 ````````
 
-## USFS02
+## USFA02
 * In order for the file to be created, we used a code that we made in python and associated it with the arduino.
 
 ``````java
@@ -161,6 +161,6 @@ PORT = "COM5"
         main()
 
 ``````
-**Output USFS02:**
+**Output USFA02:**
 
 sensor_logs.txt
