@@ -6,142 +6,116 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Scanner;
 
-/**
- * A utility class for importing and exporting product-related data from an Oracle database.
- * Currently, this class focuses on exporting Bill of Operations (BOO) data to a CSV file.
- * Future enhancements include processing the Bill of Materials (BOM).
- */
 public class ProductImporter {
 
-    /**
-     * Main method for initiating the product import process. This connects to the database,
-     * fetches the necessary data, and generates CSV files.
-     *
-     * @param args command-line arguments (not used)
-     */
+    // Lista de produtos disponíveis
+    private static final String[][] PRODUCTS = {
+            {"AS12945T22", "La Belle 22 5l pot", "5l 22 cm aluminium and teflon non stick pot"},
+            {"AS12945S22", "Pro 22 5l pot", "5l 22 cm stainless steel pot"},
+            {"AS12945S20", "Pro 20 3l pot", "3l 20 cm stainless steel pot"},
+            {"AS12945S17", "Pro 17 2l pot", "2l 17 cm stainless steel pot"},
+            {"AS12945P17", "Pro 17 2l sauce pan", "2l 17 cm stainless steel souce pan"},
+            {"AS12945S48", "Pro 17 lid", "17 cm stainless steel lid"},
+            {"AS12945G48", "Pro Clear 17 lid", "17 cm glass lid"},
+            {"AS12946S22", "Pro 22 5l pot bottom", "5l 22 cm stainless steel pot bottom"},
+            {"AS12947S22", "Pro 22 lid", "22 cm stainless steel lid"},
+            {"AS12946S20", "Pro 20 3l pot bottom", "3l 20 cm stainless steel pot bottom"},
+            {"AS12947S20", "Pro 20 lid", "20 cm stainless steel lid"}
+    };
+
     public static void main(String[] args) {
-        // Replace with the desired ProductID
-        String productID = "AS12945S22";
+        Scanner scanner = new Scanner(System.in);
 
-        // Connect to the Oracle database
+        // Apresentar lista de produtos ao usuário
+        System.out.println("Lista de produtos disponíveis:");
+        for (int i = 0; i < PRODUCTS.length; i++) {
+            System.out.printf("%d - %s (%s)\n", i + 1, PRODUCTS[i][1], PRODUCTS[i][2]);
+        }
+
+        // Perguntar ao usuário qual produto deseja
+        System.out.print("Insira o número do produto que deseja exportar: ");
+        int productIndex = scanner.nextInt() - 1;
+
+        // Validar entrada do usuário
+        if (productIndex < 0 || productIndex >= PRODUCTS.length) {
+            System.out.println("Número inválido. Tente novamente.");
+            return;
+        }
+
+        // Obter o ProductID escolhido
+        String productId = PRODUCTS[productIndex][0];
+        System.out.printf("Você escolheu: %s (%s)\n", PRODUCTS[productIndex][1], PRODUCTS[productIndex][2]);
+
+        // Exportar BOO e BOM do produto escolhido
+        exportDataToCSV(productId);
+    }
+
+    public static void exportDataToCSV(String productId) {
         try (Connection connection = DatabaseConnection.getConnection()) {
-
-            // Check if the connection was successfully established
-            if (connection != null) {
-                // Process Bill of Operations (BOO) and export to CSV
-                exportBOOToCSV(connection, productID);
-
-                // Placeholder for processing Bill of Materials (BOM) in the future
-                // processBillOfMaterials(connection, productID);
+            if (connection == null) {
+                System.out.println("Conexão com o banco de dados falhou!");
+                return;
             }
 
-        } catch (SQLException e) {
-            System.err.println("Error connecting to the database: " + e.getMessage());
+            // Exportar dados do BOO
+            exportBOOData(connection, productId);
+
+            // Exportar dados do BOM
+            exportBOMData(connection, productId);
+
+        } catch (SQLException | IOException e) {
             e.printStackTrace();
         }
     }
 
-    /**
-     * Exports the Bill of Operations (BOO) data for a specified product to a CSV file.
-     * The export includes associated inputs from the BOO_INPUT table.
-     *
-     * @param connection a valid database connection
-     * @param productID  the identifier of the product whose BOO data will be exported
-     * @throws SQLException if an error occurs during database interaction
-     */
-    public static void exportBOOToCSV(Connection connection, String productID) throws SQLException {
-        // SQL query to fetch BOO data for the specified product
-        String queryBOO = "SELECT * FROM BOO WHERE ProductID = ?";
-        String queryBOOInput = "SELECT PARTNUMBER, OPID, QUANTITY, UNIT FROM BOO_INPUT WHERE OPID IN " +
-                "(SELECT OPID FROM BOO WHERE ProductID = ?)";
+    private static void exportBOOData(Connection connection, String productId) throws SQLException, IOException {
+        String queryBOO = "SELECT O.OPID " +
+                "FROM Operation O " +
+                "WHERE O.ProductID = ?";
 
-        try (
-                PreparedStatement stmtBOO = connection.prepareStatement(queryBOO);
-                PreparedStatement stmtBOOInput = connection.prepareStatement(queryBOOInput)
-        ) {
-            stmtBOO.setString(1, productID);
-            stmtBOOInput.setString(1, productID);
+        try (PreparedStatement stmt = connection.prepareStatement(queryBOO)) {
+            stmt.setString(1, productId);
+            try (ResultSet rs = stmt.executeQuery();
+                 FileWriter csvWriter = new FileWriter("BOO_" + productId + ".csv")) {
 
-            ResultSet rsBOO = stmtBOO.executeQuery();
-            ResultSet rsBOOInput = stmtBOOInput.executeQuery();
+                // Escrever cabeçalho
+                csvWriter.append("OperationID\n");
 
-            // Create the output CSV file
-            String outputFileName = "BOO_" + productID + ".csv";
-            try (FileWriter writer = new FileWriter(outputFileName)) {
-                // Write the CSV header
-                writer.append("Partnumber,OPID,QUANTITY,UNITY\n");
-
-                // Process BOO_INPUT data and write to the CSV file
-                boolean hasData = false;
-
-                while (rsBOOInput.next()) {
-                    hasData = true;
-                    String partNumber = rsBOOInput.getString("Partnumber");
-                    String opID = rsBOOInput.getString("OPID");
-                    int quantity = rsBOOInput.getInt("QUANTITY");
-                    String unity = rsBOOInput.getString("UNITY");
-
-                    // Write data to the CSV file
-                    writer.append(partNumber)
-                            .append(",")
-                            .append(opID)
-                            .append(",")
-                            .append(String.valueOf(quantity))
-                            .append(",")
-                            .append(unity)
-                            .append("\n");
+                // Escrever dados
+                while (rs.next()) {
+                    csvWriter.append(rs.getString("OPID")).append("\n");
                 }
 
-                // Provide feedback on the result
-                if (!hasData) {
-                    System.out.println("No data found for product: " + productID);
-                } else {
-                    System.out.println("CSV file successfully created: " + outputFileName);
-                }
-            } catch (IOException e) {
-                System.err.println("Error creating the CSV file: " + e.getMessage());
+                System.out.println("Dados do BOO exportados para BOO_" + productId + ".csv");
             }
         }
     }
 
-    // Placeholder for future implementation of Bill of Materials (BOM) processing
-    // Uncomment and modify as needed
-    /**
-     * Processes the Bill of Materials (BOM) data for a specified product and exports it to a CSV file.
-     *
-     * @param connection a valid database connection
-     * @param productID  the identifier of the product whose BOM data will be exported
-     * @throws SQLException if an error occurs during database interaction
-     */
-//    private static void processBillOfMaterials(Connection connection, String productID) throws SQLException {
-//        String queryBOM = "SELECT * FROM PART WHERE ProductID = ?";
-//        try (PreparedStatement stmtBOM = connection.prepareStatement(queryBOM)) {
-//            stmtBOM.setString(1, productID);
-//            ResultSet rsBOM = stmtBOM.executeQuery();
-//
-//            // Generate the CSV file for BOM data
-//            try (FileWriter writer = new FileWriter("BillOfMaterials_" + productID + ".csv")) {
-//                // Write the CSV header
-//                writer.append("PartNumber,Description,Quantity\n");
-//
-//                while (rsBOM.next()) {
-//                    String partNumber = rsBOM.getString("PartNumber");
-//                    String description = rsBOM.getString("Description");
-//                    int quantity = rsBOM.getInt("Quantity");
-//
-//                    // Write data to the CSV file
-//                    writer.append(partNumber)
-//                            .append(",")
-//                            .append(description)
-//                            .append(",")
-//                            .append(String.valueOf(quantity))
-//                            .append("\n");
-//                }
-//            } catch (IOException e) {
-//                System.err.println("Error writing the Bill of Materials CSV file: " + e.getMessage());
-//                e.printStackTrace();
-//            }
-//        }
-//    }
+    private static void exportBOMData(Connection connection, String productId) throws SQLException, IOException {
+        String queryBOM = "SELECT BI.PartNumber, SUM(BI.Quantity) AS Quantity " +
+                "FROM BOO_INPUT BI " +
+                "JOIN Operation O ON BI.OPID = O.OPID " +
+                "WHERE O.ProductID = ? " +
+                "GROUP BY BI.PartNumber";
+
+        try (PreparedStatement stmt = connection.prepareStatement(queryBOM)) {
+            stmt.setString(1, productId);
+            try (ResultSet rs = stmt.executeQuery();
+                 FileWriter csvWriter = new FileWriter("BOM_" + productId + ".csv")) {
+
+                // Escrever cabeçalho
+                csvWriter.append("PartNumber,Quantity\n");
+
+                // Escrever dados
+                while (rs.next()) {
+                    csvWriter.append(rs.getString("PartNumber")).append(",")
+                            .append(String.valueOf(rs.getInt("Quantity"))).append("\n");
+                }
+
+                System.out.println("Dados do BOM exportados para BOM_" + productId + ".csv");
+            }
+        }
+    }
 }
