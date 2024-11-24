@@ -103,5 +103,3 @@ complete:
     # Restore the original base pointer and return
     movq %r15, %rbp       # Restore the saved base pointer
     ret                   # Return to caller
-    
-.section .note.GNU-stack

@@ -38,36 +38,20 @@ int main() {
         switch (option) {
             case 1: {
                 char str[] = "TEMP&unit:celsius&value:20#HUM&unit:percentage&value:80";
-
-                printf("Input String: %s\n\n", str);
-
                 char token1[] = "TEMP";
-                char unit1[20];
-                int value1;
+                char token2[] = "AAA";
+                char unit[20];
+                int value, res;
 
-                printf("Input Token: %s\n", token1);
-                int res1 = extract_data(str, token1, unit1, &value1);
-                printf("Result (TEMP): %d\n", res1);
+                printf("Input string: %s\n", str);
+                printf("Token 1: %s\n", token1);
+                printf("Token 2: %s\n", token2);
 
-                if (res1 == 1) {
-                    printf("Unit: %s\nValue: %d\n\n", unit1, value1);
-                } else {
-                    printf("Error: Empty Unit, Value = %d\n\n", value1);
-                }
+                res = extract_data(str, token1, unit, &value);
+                printf("%d:%s,%d\n", res, unit, value);
 
-                char token2[] = "HUM";
-                char unit2[20];
-                int value2;
-
-                printf("Input Token: %s\n", token2);
-                int res2 = extract_data(str, token2, unit2, &value2);
-                printf("Result (HUM): %d\n", res2);
-
-                if (res2 == 1) {
-                    printf("Unit: %s\nValue: %d\n\n", unit2, value2);
-                } else {
-                    printf("Error: Empty Unit, Value = %d\n\n", value2);
-                }
+                res = extract_data(str, token2, unit, &value);
+                printf("%d:%s,%d\n", res, unit, value);
 
                 break;
             }
