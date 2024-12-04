@@ -480,6 +480,7 @@ public class MenuItem {
      * @param materialBST The Material Binary Search Tree (BST) used for storing and displaying materials.
      */
     private static void displayMaterialsByQuantity(MaterialBST materialBST) {
+
         Scanner scanner = new Scanner(System.in);
         System.out.println("\nChoose the order to display materials:");
         System.out.println("1. Increasing order of quantity");
@@ -488,11 +489,15 @@ public class MenuItem {
         int orderChoice = scanner.nextInt();
 
         if (orderChoice == 1) {
+
             System.out.println("\nMaterials Sorted by Quantity (Increasing Order):");
             materialBST.displayInOrder();
+
         } else if (orderChoice == 2) {
+
             System.out.println("\nMaterials Sorted by Quantity (Decreasing Order):");
             materialBST.displayInReverseOrder();
+
         } else {
             System.out.println("Invalid choice.");
         }
