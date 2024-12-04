@@ -65,6 +65,23 @@ class MaterialBST {
         return node;
     }
 
+
+    /**
+     * Displays materials in descending order of their quantities.
+     */
+    public void displayInReverseOrder() {
+        System.out.println("Materials in Decreasing Order of Quantity:");
+        displayInReverseOrderRecursive(root);
+    }
+
+    private void displayInReverseOrderRecursive(Node node) {
+        if (node != null) {
+            displayInReverseOrderRecursive(node.right);
+            System.out.println("Quantity: " + node.quantity + ", Materials: " + node.materials);
+            displayInReverseOrderRecursive(node.left);
+        }
+    }
+
     /**
      * Displays materials in ascending order of their quantities.
      */
@@ -73,13 +90,13 @@ class MaterialBST {
         displayInOrderRecursive(root);
     }
 
-     private void displayInOrderRecursive(Node node) {
+    private void displayInOrderRecursive(Node node) {
         if (node != null) {
             displayInOrderRecursive(node.left);
             System.out.println("Quantity: " + node.quantity + ", Materials: " + node.materials);
             displayInOrderRecursive(node.right);
         }
-     }
+    }
 
     /**
      * Calculates and displays the total quantity of all materials in the BST.
@@ -112,22 +129,6 @@ class MaterialBST {
     }
 
     /**
-     * Displays materials in descending order of their quantities.
-     */
-    public void displayInReverseOrder() {
-        System.out.println("Materials in Decreasing Order of Quantity:");
-        displayInReverseOrderRecursive(root);
-    }
-
-    private void displayInReverseOrderRecursive(Node node) {
-        if (node != null) {
-            displayInReverseOrderRecursive(node.right);
-            System.out.println("Quantity: " + node.quantity + ", Materials: " + node.materials);
-            displayInReverseOrderRecursive(node.left);
-        }
-    }
-
-    /**
      * Updates the quantity of a specific material in the BST.
      * <p>
      * If the material is found, its associated quantity is updated. The search
@@ -149,7 +150,7 @@ class MaterialBST {
         if (node.materials.contains(materialName)) {
             node.quantity = newQuantity; // Update the quantity
             System.out.println("Updated quantity to: " + newQuantity);
-        } else if (materialName.compareTo(node.materials.get(0)) < 0) {
+        } else if (materialName.compareTo(node.materials.getFirst()) < 0) {
             node.left = updateMaterialRecursive(node.left, materialName, newQuantity);
         } else {
             node.right = updateMaterialRecursive(node.right, materialName, newQuantity);
