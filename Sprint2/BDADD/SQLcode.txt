@@ -428,17 +428,17 @@ BEGIN
     -- Query to list parts directly associated with the product and its subassemblies
     OPEN list_parts_cursor FOR
         -- Parts directly associated with the product
-        SELECT BI.PartNumber, 
+        SELECT BI.PartNumber,
                SUM(BI.Quantity) AS Quantity
         FROM BOO_INPUT BI
         JOIN Operation O ON BI.OPID = O.OPID
         WHERE O.ProductID = product_id
         GROUP BY BI.PartNumber
-        
+
         UNION ALL
 
         -- Parts associated with subassemblies (recursive case)
-        SELECT BO.PartNumber, 
+        SELECT BO.PartNumber,
                SUM(BO.Quantity) AS Quantity
         FROM BOO_OUTPUT BO
         JOIN Operation O ON BO.OPID = O.OPID
@@ -447,9 +447,8 @@ BEGIN
           AND O.ProductID IN (
               SELECT BI.PartNumber
               FROM BOO_INPUT BI
-              JOIN Part P ON BI.PartNumber = P.PartNumber
               JOIN Operation O ON BI.OPID = O.OPID
-              WHERE O.ProductID = product_id 
+              WHERE O.ProductID = product_id
               GROUP BY BI.PartNumber
           )
         GROUP BY BO.PartNumber;
