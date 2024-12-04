@@ -68,30 +68,27 @@ class MaterialBST {
     /**
      * Displays materials in ascending order of their quantities.
      */
-     public void displayInOrder() {
-
-         System.out.println("Materials in Increasing Order of Quantity:");
-         displayInOrderRecursive(root);
-     }
-
-    private void displayInOrderRecursive(Node node) {
-         if (node != null) {
-
-             displayInOrderRecursive(node.left);
-             System.out.println("Quantity: " + node.quantity + ", Materials: " + node.materials);
-             displayInOrderRecursive(node.right);
-         }
+    public void displayInOrder() {
+        System.out.println("Materials in Increasing Order of Quantity:");
+        displayInOrderRecursive(root);
     }
+
+     private void displayInOrderRecursive(Node node) {
+        if (node != null) {
+            displayInOrderRecursive(node.left);
+            System.out.println("Quantity: " + node.quantity + ", Materials: " + node.materials);
+            displayInOrderRecursive(node.right);
+        }
+     }
 
     /**
      * Calculates and displays the total quantity of all materials in the BST.
      * Also prints the total number of materials for each quantity.
      */
     public void displayTotalMaterialsTest() {
-
-         double totalQuantity = displayTotalMaterialsQuantityRecursive(root);
-         System.out.println("Total Quantity of Materials Used: " + totalQuantity);
-     }
+        double totalQuantity = displayTotalMaterialsQuantityRecursive(root);
+        System.out.println("Total Quantity of Materials Used: " + totalQuantity);
+    }
 
     private double displayTotalMaterialsQuantityRecursive(Node node) {
         double total = 0.0;
@@ -117,19 +114,18 @@ class MaterialBST {
     /**
      * Displays materials in descending order of their quantities.
      */
-     public void displayInReverseOrder() {
+    public void displayInReverseOrder() {
+        System.out.println("Materials in Decreasing Order of Quantity:");
+        displayInReverseOrderRecursive(root);
+    }
 
-         System.out.println("Materials in Decreasing Order of Quantity:");
-         displayInReverseOrderRecursive(root);
-     }
-
-     private void displayInReverseOrderRecursive(Node node) {
-         if (node != null) {
-             displayInReverseOrderRecursive(node.right);
-             System.out.println("Quantity: " + node.quantity + ", Materials: " + node.materials);
-             displayInReverseOrderRecursive(node.left);
-         }
-     }
+    private void displayInReverseOrderRecursive(Node node) {
+        if (node != null) {
+            displayInReverseOrderRecursive(node.right);
+            System.out.println("Quantity: " + node.quantity + ", Materials: " + node.materials);
+            displayInReverseOrderRecursive(node.left);
+        }
+    }
 
     /**
      * Updates the quantity of a specific material in the BST.
@@ -142,21 +138,21 @@ class MaterialBST {
      * @param newQuantity  the new quantity to assign to the material
      */
     public void updateMaterialQuantity(String materialName, double newQuantity) {
-         root = updateMaterialRecursive(root, materialName, newQuantity);
+        root = updateMaterialRecursive(root, materialName, newQuantity);
     }
 
     private Node updateMaterialRecursive(Node node, String materialName, double newQuantity) {
         if (node == null) {
-             return null; // Material not found
+            return null; // Material not found
         }
 
         if (node.materials.contains(materialName)) {
-             node.quantity = newQuantity; // Update the quantity
-             System.out.println("Updated quantity to: " + newQuantity);
-        } else if (materialName.compareTo(node.materials.getFirst()) < 0) {
-             node.left = updateMaterialRecursive(node.left, materialName, newQuantity);
+            node.quantity = newQuantity; // Update the quantity
+            System.out.println("Updated quantity to: " + newQuantity);
+        } else if (materialName.compareTo(node.materials.get(0)) < 0) {
+            node.left = updateMaterialRecursive(node.left, materialName, newQuantity);
         } else {
-             node.right = updateMaterialRecursive(node.right, materialName, newQuantity);
+            node.right = updateMaterialRecursive(node.right, materialName, newQuantity);
         }
 
         return node;
