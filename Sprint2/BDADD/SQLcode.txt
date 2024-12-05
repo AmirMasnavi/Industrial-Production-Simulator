@@ -438,7 +438,7 @@ BEGIN
         UNION ALL
 
         -- Parts associated with subassemblies (recursive case)
-        SELECT BO.PartNumber,
+        SELECT BI.PartNumber,
                SUM(BO.Quantity) AS Quantity
         FROM BOO_OUTPUT BO
         JOIN Operation O ON BO.OPID = O.OPID
@@ -451,7 +451,7 @@ BEGIN
               WHERE O.ProductID = product_id
               GROUP BY BI.PartNumber
           )
-        GROUP BY BO.PartNumber;
+        GROUP BY BI.PartNumber;
 
     -- Return the cursor with the results
     RETURN list_parts_cursor;
