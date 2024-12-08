@@ -196,7 +196,7 @@ public class CSVReader {
             while ((line = br.readLine()) != null) {
                 String[] parts = line.split(";");
                 if (parts.length < 6) {
-                    throw new IllegalArgumentException("Invalid CSV format");
+                    throw new IllegalArgumentException("Invalid CSV format: Insufficient fields on line: " + line);
                 }
 
                 int id = Integer.parseInt(parts[0]);
@@ -211,16 +211,39 @@ public class CSVReader {
                     dependencies.add(Integer.parseInt(parts[i]));
                 }
 
-                Activity activity = new Activity(id, description, duration, durationUnit, cost, costUnit, dependencies);
-                activities.add(activity);
-                activityMap.put(id, activity);
+                // Check for duplicate activities
+                if (activityMap.containsKey(id)) {
+                    Activity existing = activityMap.get(id);
+
+                    // Check for consistency in other fields
+                    if (!existing.getDescription().equals(description) ||
+                            existing.getDuration() != duration ||
+                            !existing.getDurationUnit().equals(durationUnit) ||
+                            existing.getCost() != cost ||
+                            !existing.getCostUnit().equals(costUnit)) {
+                        throw new IllegalArgumentException("Duplicate activity ID with conflicting details: " + id);
+                    }
+
+                    // Merge dependencies
+                    List<Integer> existingDependencies = existing.getDependencies();
+                    for (int dep : dependencies) {
+                        if (!existingDependencies.contains(dep)) {
+                            existingDependencies.add(dep);
+                        }
+                    }
+                    System.out.println("Merged dependencies for activity ID: " + id);
+                } else {
+                    Activity activity = new Activity(id, description, duration, durationUnit, cost, costUnit, dependencies);
+                    activities.add(activity);
+                    activityMap.put(id, activity);
+                }
             }
 
             // Validate dependencies
             for (Activity activity : activities) {
                 for (int dependency : activity.getDependencies()) {
                     if (!activityMap.containsKey(dependency)) {
-                        throw new IllegalArgumentException("Invalid dependency for activity " + activity.getId());
+                        throw new IllegalArgumentException("Invalid dependency for activity " + activity.getId() + ": " + dependency);
                     }
                 }
             }
@@ -232,4 +255,5 @@ public class CSVReader {
 
         return activities;
     }
+
 }

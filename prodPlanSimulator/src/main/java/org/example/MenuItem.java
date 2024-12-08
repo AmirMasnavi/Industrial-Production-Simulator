@@ -715,9 +715,18 @@ public class MenuItem {
         PERTCPMGraph pertcpmGraph = new PERTCPMGraph();
         pertcpmGraph.buildGraph(activities);
 
+        // Validate for circular dependencies
+        try {
+            pertcpmGraph.validateNoCircularDependencies();
+            System.out.println("No circular dependencies detected. The project graph is valid.");
+        } catch (IllegalStateException e) {
+            System.err.println(e.getMessage());
+            return; // Stop further processing
+        }
+
         Graph<Activity, Integer> graph = pertcpmGraph.getGraph();
 
-        System.out.println("Graph built successfully:");
+        System.out.println("\nGraph built successfully:");
         System.out.println("Number of vertices: " + graph.numVertices());
         System.out.println("Number of edges: " + graph.numEdges());
         System.out.println("\nVertices:");
@@ -737,7 +746,7 @@ public class MenuItem {
         // Export the graph to DOT format
         String dotFilePath = "./pert_cpm_graph.dot";
         GraphVizExporter.exportToDot(graph, dotFilePath);
-        System.out.println("DOT file created: " + dotFilePath);
+        System.out.println("\nDOT file created: " + dotFilePath);
 
         // Generate the image using GraphViz
         String outputImagePath = "./pert_cpm_graph.png";
