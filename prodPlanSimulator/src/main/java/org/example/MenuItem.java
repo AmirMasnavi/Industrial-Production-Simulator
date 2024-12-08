@@ -1,6 +1,9 @@
 package org.example;
 
 import org.example.sprint3.*;
+
+import javax.swing.*;
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -730,6 +733,59 @@ public class MenuItem {
                     edge.getWeight(),
                     edge.getVOrig().getDurationUnit()); // Using origin's duration unit for simplicity
         }
+
+        // Export the graph to DOT format
+        String dotFilePath = "./pert_cpm_graph.dot";
+        GraphVizExporter.exportToDot(graph, dotFilePath);
+        System.out.println("DOT file created: " + dotFilePath);
+
+        // Generate the image using GraphViz
+        String outputImagePath = "./pert_cpm_graph.png";
+        try {
+            generateGraphImage(dotFilePath, outputImagePath);
+            System.out.println("Image generated: " + outputImagePath);
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+            System.err.println("Error generating the graph image.");
+        }
+
+        // Optionally display the image
+//        displayImage(outputImagePath);
+
+
+    }
+
+    /**
+     * Generates a graph image from a DOT file using GraphViz.
+     */
+    private static void generateGraphImage(String dotFilePath, String outputImagePath) throws IOException, InterruptedException {
+        ProcessBuilder processBuilder = new ProcessBuilder(
+                "dot", "-Tpng", dotFilePath, "-o", outputImagePath
+        );
+        processBuilder.redirectErrorStream(true);
+        Process process = processBuilder.start();
+
+        // Wait for the process to complete
+        int exitCode = process.waitFor();
+        if (exitCode != 0) {
+            throw new RuntimeException("GraphViz process failed with exit code: " + exitCode);
+        }
+    }
+
+    /**
+     * Displays the generated image using a simple Swing GUI.
+     */
+    private static void displayImage(String imagePath) {
+        javax.swing.SwingUtilities.invokeLater(() -> {
+            JFrame frame = new JFrame("PERT/CPM Graph");
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.setSize(800, 600);
+
+            JLabel label = new JLabel(new ImageIcon(imagePath));
+            frame.getContentPane().add(label);
+
+            frame.setVisible(true);
+        });
     }
 
 }
