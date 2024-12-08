@@ -1,5 +1,6 @@
 package org.example;
 
+import org.example.sprint3.*;
 import java.util.*;
 
 /**
@@ -76,6 +77,7 @@ public class MenuItem {
             System.out.println("13. Critical Path Operation");
             System.out.println("14. Run Simulation Tree");
             System.out.println("15. List Products and View BOM or BOO (LAPR3)");
+            System.out.println("16. Build a PERT-CPM graph");
 
             System.out.println("0. Exit");
 
@@ -127,6 +129,10 @@ public class MenuItem {
                     break;
                 case 15:
                     listAndShowProducts(visualiser);
+                    break;
+                case 16:
+                    buildPertCpmGraph();
+                    break;
                 case 0:
                     System.out.println("Exiting...");
                     running = false;
@@ -697,6 +703,33 @@ public class MenuItem {
         avlTree.inorderTraversal();
 
         runSimulationWithoutPriorities(new_articles, new_machines);
+    }
+
+    public static void buildPertCpmGraph() {
+
+        List<Activity> activities = CSVReader.readActivitiesFromCsv("./activities.csv");
+
+        PERTCPMGraph pertcpmGraph = new PERTCPMGraph();
+        pertcpmGraph.buildGraph(activities);
+
+        Graph<Activity, Integer> graph = pertcpmGraph.getGraph();
+
+        System.out.println("Graph built successfully:");
+        System.out.println("Number of vertices: " + graph.numVertices());
+        System.out.println("Number of edges: " + graph.numEdges());
+        System.out.println("\nVertices:");
+        for (Activity activity : graph.vertices()) {
+            System.out.println(activity);
+        }
+
+        System.out.println("\nEdges:");
+        for (Edge<Activity, Integer> edge : graph.edges()) {
+            System.out.printf("%s -> %s (Duration: %d %s)\n",
+                    edge.getVOrig(),
+                    edge.getVDest(),
+                    edge.getWeight(),
+                    edge.getVOrig().getDurationUnit()); // Using origin's duration unit for simplicity
+        }
     }
 
 }

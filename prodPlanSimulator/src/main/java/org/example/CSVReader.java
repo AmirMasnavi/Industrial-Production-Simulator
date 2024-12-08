@@ -1,5 +1,7 @@
 package org.example;
 
+import org.example.sprint3.*;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -179,5 +181,55 @@ public class CSVReader {
         }
 
         return new BooDataResult(booData, itemQuantities);
+    }
+
+    public static List<Activity> readActivitiesFromCsv(String filePath) {
+        List<Activity> activities = new ArrayList<>();
+        HashMap<Integer, Activity> activityMap = new HashMap<>();
+
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+            String line;
+
+            // Skip header
+            line = br.readLine();
+
+            while ((line = br.readLine()) != null) {
+                String[] parts = line.split(";");
+                if (parts.length < 6) {
+                    throw new IllegalArgumentException("Invalid CSV format");
+                }
+
+                int id = Integer.parseInt(parts[0]);
+                String description = parts[1];
+                int duration = Integer.parseInt(parts[2]);
+                String durationUnit = parts[3];
+                double cost = Double.parseDouble(parts[4]);
+                String costUnit = parts[5];
+
+                List<Integer> dependencies = new ArrayList<>();
+                for (int i = 6; i < parts.length; i++) {
+                    dependencies.add(Integer.parseInt(parts[i]));
+                }
+
+                Activity activity = new Activity(id, description, duration, durationUnit, cost, costUnit, dependencies);
+                activities.add(activity);
+                activityMap.put(id, activity);
+            }
+
+            // Validate dependencies
+            for (Activity activity : activities) {
+                for (int dependency : activity.getDependencies()) {
+                    if (!activityMap.containsKey(dependency)) {
+                        throw new IllegalArgumentException("Invalid dependency for activity " + activity.getId());
+                    }
+                }
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Error reading CSV file", e);
+        }
+
+        return activities;
     }
 }
