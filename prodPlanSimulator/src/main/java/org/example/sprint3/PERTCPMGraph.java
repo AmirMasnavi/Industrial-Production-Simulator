@@ -1,8 +1,6 @@
 package org.example.sprint3;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class PERTCPMGraph {
     private final Graph<Activity, Integer> graph;
@@ -42,6 +40,76 @@ public class PERTCPMGraph {
             }
         }
     }
+
+    /**
+     * Performs a topological sort of the project activities.
+     * @return A list of activities in topological order.
+     * @throws IllegalStateException if the graph contains a cycle.
+     */
+    public List<Activity> topologicalSort() {
+        // Map to store in-degree of each vertex
+        Map<Activity, Integer> inDegree = new HashMap<>();
+        for (Activity activity : graph.vertices()) {
+            inDegree.put(activity, 0);
+        }
+
+        // Calculate in-degrees
+        for (Activity activity : graph.vertices()) {
+            for (Activity neighbor : graph.adjVertices(activity)) {
+                inDegree.put(neighbor, inDegree.get(neighbor) + 1);
+            }
+        }
+
+        // Queue for vertices with in-degree 0
+        Queue<Activity> queue = new LinkedList<>();
+        for (Map.Entry<Activity, Integer> entry : inDegree.entrySet()) {
+            if (entry.getValue() == 0) {
+                queue.add(entry.getKey());
+            }
+        }
+
+        // List to store the topological order
+        List<Activity> topologicalOrder = new ArrayList<>();
+
+        // Process vertices in the queue
+        while (!queue.isEmpty()) {
+            Activity current = queue.poll();
+            topologicalOrder.add(current);
+
+            // Reduce in-degree of neighbors
+            for (Activity neighbor : graph.adjVertices(current)) {
+                inDegree.put(neighbor, inDegree.get(neighbor) - 1);
+                if (inDegree.get(neighbor) == 0) {
+                    queue.add(neighbor);
+                }
+            }
+        }
+
+        // Check if all vertices are processed
+        if (topologicalOrder.size() != graph.vertices().size()) {
+            throw new IllegalStateException("Graph contains a cycle! Topological sort not possible.");
+        }
+
+        return topologicalOrder;
+    }
+
+    /**
+     * Returns the topological sort result as a formatted string of activity IDs.
+     * @return A string representing the topological order (e.g., "1 -> 2 -> 3").
+     * @throws IllegalStateException if the graph contains a cycle.
+     */
+    public String getTopologicalSortAsString() {
+        List<Activity> sortedActivities = topologicalSort();
+        StringBuilder result = new StringBuilder();
+        for (int i = 0; i < sortedActivities.size(); i++) {
+            result.append(sortedActivities.get(i).getId());
+            if (i < sortedActivities.size() - 1) {
+                result.append(" -> ");
+            }
+        }
+        return result.toString();
+    }
+
 
     /**
      * Recursive helper method for DFS-based cycle detection.
