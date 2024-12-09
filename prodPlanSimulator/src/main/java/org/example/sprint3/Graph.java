@@ -26,4 +26,5 @@ public interface Graph<V, E> extends Cloneable {
     boolean removeVertex(V vert);
     boolean removeEdge(V vOrig, V vDest);
     Graph<V, E> clone();
+
 }

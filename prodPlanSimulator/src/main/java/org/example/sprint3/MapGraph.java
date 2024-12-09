@@ -113,10 +113,13 @@ public class MapGraph<V, E> extends CommonGraph<V, E> {
 
     @Override
     public boolean addVertex(V vert) {
-
         if (vert == null) throw new RuntimeException("Vertices cannot be null!");
-        if (validVertex(vert))
-            return false;
+
+        // Check if vertex already exists
+        if (mapVertices.containsKey(vert)) {
+            System.out.println("Vertex already exists: " + vert);
+            return false; // Duplicate vertex detected
+        }
 
         MapVertex<V, E> mv = new MapVertex<>(vert);
         vertices.add(vert);
@@ -125,6 +128,7 @@ public class MapGraph<V, E> extends CommonGraph<V, E> {
 
         return true;
     }
+
 
     @Override
     public boolean addEdge(V vOrig, V vDest, E weight) {
@@ -210,6 +214,8 @@ public class MapGraph<V, E> extends CommonGraph<V, E> {
         }
         return true;
     }
+
+
 
     //Returns a clone of the graph
     @Override

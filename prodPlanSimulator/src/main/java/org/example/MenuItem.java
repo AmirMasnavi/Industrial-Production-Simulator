@@ -715,9 +715,18 @@ public class MenuItem {
         PERTCPMGraph pertcpmGraph = new PERTCPMGraph();
         pertcpmGraph.buildGraph(activities);
 
+        // Validate for circular dependencies
+        try {
+            pertcpmGraph.validateNoCircularDependencies();
+            System.out.println("No circular dependencies detected. The project graph is valid.");
+        } catch (IllegalStateException e) {
+            System.err.println(e.getMessage());
+            return; // Stop further processing
+        }
+
         Graph<Activity, Integer> graph = pertcpmGraph.getGraph();
 
-        System.out.println("Graph built successfully:");
+        System.out.println("\nGraph built successfully:");
         System.out.println("Number of vertices: " + graph.numVertices());
         System.out.println("Number of edges: " + graph.numEdges());
         System.out.println("\nVertices:");
@@ -737,7 +746,7 @@ public class MenuItem {
         // Export the graph to DOT format
         String dotFilePath = "./pert_cpm_graph.dot";
         GraphVizExporter.exportToDot(graph, dotFilePath);
-        System.out.println("DOT file created: " + dotFilePath);
+        System.out.println("\nDOT file created: " + dotFilePath);
 
         // Generate the image using GraphViz
         String outputImagePath = "./pert_cpm_graph.png";
@@ -751,6 +760,23 @@ public class MenuItem {
 
         // Optionally display the image
 //        displayImage(outputImagePath);
+
+//        // Perform topological sort
+//            List<Activity> sortedActivities = pertcpmGraph.topologicalSort();
+//            System.out.println("\nTopological Sort Result1:");
+//            for (Activity activity : sortedActivities) {
+//                System.out.println(activity);
+//            }
+        // Perform topological sort and print in the desired format
+            String topologicalOrder = pertcpmGraph.getTopologicalSortAsString();
+            System.out.println("\nTopological Sort Result:");
+            System.out.println(topologicalOrder);
+
+        // Calculate times
+        System.out.println("\nEarliest and Latest Start and Finish Times:");
+        pertcpmGraph.calculateEarliestAndLatestTimes();
+        // Print results
+        pertcpmGraph.printActivityTimes();
 
 
     }
