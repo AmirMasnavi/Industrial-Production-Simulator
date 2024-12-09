@@ -110,6 +110,68 @@ public class PERTCPMGraph {
         return result.toString();
     }
 
+    public void calculateEarliestAndLatestTimes() {
+        List<Activity> sortedActivities = topologicalSort();
+        if (sortedActivities == null) {
+            throw new IllegalStateException("The graph contains cycles and is invalid.");
+        }
+
+        // Initialize times
+        for (Activity activity : graph.vertices()) {
+            activity.setEarliestStart(0);
+            activity.setEarliestFinish(0);
+            activity.setLatestStart(Integer.MAX_VALUE);
+            activity.setLatestFinish(Integer.MAX_VALUE);
+        }
+
+        // Forward Pass: Calculate ES and EF
+        for (Activity activity : sortedActivities) {
+            int es = 0;
+            for (Edge<Activity, Integer> edge : graph.incomingEdges(activity)) {
+                Activity predecessor = edge.getVOrig();
+                es = Math.max(es, predecessor.getEarliestFinish());
+            }
+            activity.setEarliestStart(es);
+            activity.setEarliestFinish(es + activity.getDuration());
+        }
+
+        // Backward Pass: Calculate LS and LF
+        ListIterator<Activity> iterator = sortedActivities.listIterator(sortedActivities.size());
+        while (iterator.hasPrevious()) {
+            Activity activity = iterator.previous();
+            if (graph.outDegree(activity) == 0) { // End activities
+                activity.setLatestFinish(activity.getEarliestFinish());
+            }
+            int lf = activity.getLatestFinish();
+            for (Edge<Activity, Integer> edge : graph.outgoingEdges(activity)) {
+                Activity successor = edge.getVDest();
+                lf = Math.min(lf, successor.getLatestStart());
+            }
+            activity.setLatestFinish(lf);
+            activity.setLatestStart(lf - activity.getDuration());
+        }
+
+        // Calculate Slack
+        for (Activity activity : graph.vertices()) {
+            int slack = activity.getLatestStart() - activity.getEarliestStart();
+            activity.setSlack(slack);
+        }
+    }
+
+    public void printActivityTimes() {
+        System.out.println("ID | ES | EF | LS | LF | Slack");
+        for (Activity activity : graph.vertices()) {
+            System.out.printf("%2d | %2d | %2d | %2d | %2d | %2d%n",
+                    activity.getId(),
+                    activity.getEarliestStart(),
+                    activity.getEarliestFinish(),
+                    activity.getLatestStart(),
+                    activity.getLatestFinish(),
+                    activity.getSlack());
+        }
+    }
+
+
 
     /**
      * Recursive helper method for DFS-based cycle detection.

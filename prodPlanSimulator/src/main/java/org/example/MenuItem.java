@@ -761,16 +761,22 @@ public class MenuItem {
         // Optionally display the image
 //        displayImage(outputImagePath);
 
-        // Perform topological sort
-            List<Activity> sortedActivities = pertcpmGraph.topologicalSort();
-            System.out.println("\nTopological Sort Result1:");
-            for (Activity activity : sortedActivities) {
-                System.out.println(activity);
-            }
+//        // Perform topological sort
+//            List<Activity> sortedActivities = pertcpmGraph.topologicalSort();
+//            System.out.println("\nTopological Sort Result1:");
+//            for (Activity activity : sortedActivities) {
+//                System.out.println(activity);
+//            }
         // Perform topological sort and print in the desired format
             String topologicalOrder = pertcpmGraph.getTopologicalSortAsString();
-            System.out.println("\nTopological Sort Result2:");
+            System.out.println("\nTopological Sort Result:");
             System.out.println(topologicalOrder);
+
+        // Calculate times
+        System.out.println("\nEarliest and Latest Start and Finish Times:");
+        pertcpmGraph.calculateEarliestAndLatestTimes();
+        // Print results
+        pertcpmGraph.printActivityTimes();
 
 
     }

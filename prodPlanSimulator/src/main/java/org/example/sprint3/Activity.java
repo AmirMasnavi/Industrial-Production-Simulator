@@ -11,6 +11,13 @@ public class Activity {
     private final String costUnit;
     private final List<Integer> dependencies;
 
+    // Add fields for ES, EF, LS, LF, and slack
+    private int earliestStart;
+    private int earliestFinish;
+    private int latestStart;
+    private int latestFinish;
+    private int slack;
+
     public Activity(int id, String description, int duration, String durationUnit, double cost, String costUnit, List<Integer> dependencies) {
         this.id = id;
         this.description = description;
@@ -47,6 +54,46 @@ public class Activity {
 
     public List<Integer> getDependencies() {
         return dependencies;
+    }
+
+    public int getEarliestStart() {
+        return earliestStart;
+    }
+
+    public void setEarliestStart(int earliestStart) {
+        this.earliestStart = earliestStart;
+    }
+
+    public int getLatestStart() {
+        return latestStart;
+    }
+
+    public void setLatestStart(int latestStart) {
+        this.latestStart = latestStart;
+    }
+
+    public int getEarliestFinish() {
+        return earliestFinish;
+    }
+
+    public void setEarliestFinish(int earliestFinish) {
+        this.earliestFinish = earliestFinish;
+    }
+
+    public int getLatestFinish() {
+        return latestFinish;
+    }
+
+    public void setLatestFinish(int latestFinish) {
+        this.latestFinish = latestFinish;
+    }
+
+    public int getSlack() {
+        return slack;
+    }
+
+    public void setSlack(int slack) {
+        this.slack = slack;
     }
 
     @Override
