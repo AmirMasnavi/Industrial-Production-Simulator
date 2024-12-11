@@ -242,4 +242,21 @@ public class PERTCPMGraph {
             System.err.println("Error writing schedule to CSV: " + e.getMessage());
         }
     }
+
+    public List<Activity> identifyCriticalPath(List<Activity> activities) {
+        List<Activity> criticalPath = new ArrayList<>();
+        int maxDuration = 0;
+
+        for (Activity activity : activities) {
+            if (activity.getSlack() == 0) {
+                criticalPath.add(activity);
+            }
+            maxDuration = Math.max(maxDuration, activity.getLatestFinish());
+        }
+
+        System.out.println("\nTotal project duration: " + maxDuration + " days");
+
+        return criticalPath;
+    }
+
 }

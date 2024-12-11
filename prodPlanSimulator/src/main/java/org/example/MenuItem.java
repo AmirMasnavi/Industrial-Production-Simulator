@@ -767,6 +767,23 @@ public class MenuItem {
         System.out.println();
         String scheduleFilePath = "./schedule.csv";
         pertcpmGraph.exportScheduleToCsv(scheduleFilePath);
+
+        //USEI22
+        List<Activity> criticalPath = pertcpmGraph.identifyCriticalPath(activities);
+        System.out.println("\nCritical Path: ");
+        for (Activity activity : criticalPath) {
+            System.out.printf(
+                    "ID: %d, Name: %s, Duration: %d days, ES: %d, EF: %d, LS: %d, LF: %d\n",
+                    activity.getId(),
+                    activity.getDescription(),
+                    activity.getDuration(),
+                    activity.getEarliestStart(),
+                    activity.getEarliestFinish(),
+                    activity.getLatestStart(),
+                    activity.getLatestFinish()
+            );
+        }
+
     }
 
     /**
