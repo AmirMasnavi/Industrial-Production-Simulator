@@ -231,14 +231,14 @@ public class MapGraph<V, E> extends CommonGraph<V, E> {
     //string representation
     @Override
     public String toString() {
-        String s;
+        StringBuilder s;
         if (numVerts == 0) {
-            s = "\nGraph not defined!!";
+            s = new StringBuilder("\nGraph not defined!!");
         } else {
-            s = "Graph: " + numVerts + " vertices, " + numEdges + " edges\n";
+            s = new StringBuilder("Graph: " + numVerts + " vertices, " + numEdges + " edges\n");
             for (MapVertex<V, E> mv : mapVertices.values())
-                s += mv + "\n";
+                s.append(mv).append("\n");
         }
-        return s;
+        return s.toString();
     }
 }

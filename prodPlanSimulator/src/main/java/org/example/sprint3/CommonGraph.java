@@ -98,12 +98,12 @@ public abstract class CommonGraph <V,E> implements Graph<V,E> {
         // graph must have same vertices
         Collection<V> tvc = this.vertices();
         tvc.removeAll(otherGraph.vertices());
-        if (tvc.size() > 0 ) return false;
+        if (!tvc.isEmpty()) return false;
 
         // graph must have same edges
         Collection<Edge<V, E>> tec = this.edges();
         tec.removeAll(otherGraph.edges());
-        return (tec.size() == 0);
+        return (tec.isEmpty());
     }
 
     public abstract Graph<V, E> clone();

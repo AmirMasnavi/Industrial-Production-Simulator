@@ -43,11 +43,11 @@ public class MapVertex<V, E> {
 
     @Override
     public String toString() {
-        String st = element + ": \n";
+        StringBuilder st = new StringBuilder(element + ": \n");
         if (!outVerts.isEmpty())
             for (V vert : outVerts.keySet())
-                st += outVerts.get(vert);
+                st.append(outVerts.get(vert));
 
-        return st;
+        return st.toString();
     }
 }

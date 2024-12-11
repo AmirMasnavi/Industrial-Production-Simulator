@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -95,7 +96,7 @@ public class MapGraphTest {
 
         cs = instance.vertices();
         assertEquals(1, cs.size(), "Must have 1 vertice1");
-        cs.removeAll(Arrays.asList("B"));
+        cs.removeAll(List.of("B"));
         assertEquals(0, cs.size(), "Vertice should be B");
 
         instance.removeVertex("B");
@@ -501,7 +502,7 @@ public class MapGraphTest {
             assertEquals(cw.get(i), ecu.getWeight());
         }
 
-        instance.removeEdge(co.get(0), cd.get(0));
+        instance.removeEdge(co.getFirst(), cd.getFirst());
 
         for (int i = 1; i < co.size(); i++) {
             Edge<String, Integer> ec = instance.edge(co.get(i), cd.get(i));
