@@ -1,5 +1,7 @@
 package org.example.sprint3;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 
 public class PERTCPMGraph {
@@ -209,5 +211,35 @@ public class PERTCPMGraph {
 
     public Graph<Activity, Integer> getGraph() {
         return graph;
+    }
+
+    public void exportScheduleToCsv(String filePath) {
+        try (FileWriter writer = new FileWriter(filePath)) {
+            writer.write("act_id,cost,duration,es,ls,ef,lf,slack,prev_act_id1,...,prev_act_idN\n");
+
+            for (Activity activity : graph.vertices()) {
+                StringBuilder line = new StringBuilder();
+
+                line.append(activity.getId()).append(";")
+                        .append(activity.getCost()).append(";")
+                        .append(activity.getDuration()).append(";")
+                        .append(activity.getEarliestStart()).append(";")
+                        .append(activity.getLatestStart()).append(";")
+                        .append(activity.getEarliestFinish()).append(";")
+                        .append(activity.getLatestFinish()).append(";")
+                        .append(activity.getSlack());
+
+                for (int dependency : activity.getDependencies()) {
+                    line.append(";").append(dependency);
+                }
+
+                writer.write(line.append("\n").toString());
+            }
+
+            System.out.println("Schedule exported successfully to: " + filePath);
+
+        } catch (IOException e) {
+            System.err.println("Error writing schedule to CSV: " + e.getMessage());
+        }
     }
 }
