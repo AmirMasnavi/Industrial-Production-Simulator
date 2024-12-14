@@ -3,13 +3,12 @@ package org.example.sprint3;
 import java.util.List;
 
 public class Activity {
-    private final int id;
+    private final String id;
     private final String description;
     private final int duration;
     private final String durationUnit;
     private final double cost;
-    private final String costUnit;
-    private final List<Integer> dependencies;
+    private final List<String> dependencies;
 
     // Add fields for ES, EF, LS, LF, and slack
     private int earliestStart;
@@ -18,17 +17,16 @@ public class Activity {
     private int latestFinish;
     private int slack;
 
-    public Activity(int id, String description, int duration, String durationUnit, double cost, String costUnit, List<Integer> dependencies) {
+    public Activity(String id, String description, int duration, String durationUnit, double cost, List<String> dependencies) {
         this.id = id;
         this.description = description;
         this.duration = duration;
         this.durationUnit = durationUnit;
         this.cost = cost;
-        this.costUnit = costUnit;
         this.dependencies = dependencies;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
@@ -48,11 +46,8 @@ public class Activity {
         return cost;
     }
 
-    public String getCostUnit() {
-        return costUnit;
-    }
 
-    public List<Integer> getDependencies() {
+    public List<String> getDependencies() {
         return dependencies;
     }
 
@@ -98,7 +93,7 @@ public class Activity {
 
     @Override
     public String toString() {
-        return String.format("Activity %d (%s, %d %s, %.2f %s)",
-                id, description, duration, durationUnit, cost, costUnit);
+        return String.format("Activity %s (%s, %d %s, %.2f)",
+                id, description, duration, durationUnit, cost);
     }
 }

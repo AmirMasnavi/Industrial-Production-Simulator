@@ -6,7 +6,8 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
-
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 /**
  * Utility class for reading data from CSV files and converting them into structured Java objects.
  * <p>
@@ -183,32 +184,44 @@ public class CSVReader {
         return new BooDataResult(booData, itemQuantities);
     }
 
+
+
+
+
     public static List<Activity> readActivitiesFromCsv(String filePath) {
         List<Activity> activities = new ArrayList<>();
-        HashMap<Integer, Activity> activityMap = new HashMap<>();
+        HashMap<String, Activity> activityMap = new HashMap<>();
 
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             String line;
 
             // Skip header
             line = br.readLine();
+            System.out.println("CSV Header: " + line);
 
             while ((line = br.readLine()) != null) {
-                String[] parts = line.split(";");
-                if (parts.length < 6) {
+                System.out.println("Processing line: " + line);
+
+                // Parse the line using regex to handle quoted fields
+                String[] parts = parseCsvLine(line);
+                if (parts.length < 5) {
                     throw new IllegalArgumentException("Invalid CSV format: Insufficient fields on line: " + line);
                 }
 
-                int id = Integer.parseInt(parts[0]);
-                String description = parts[1];
-                int duration = Integer.parseInt(parts[2]);
-                String durationUnit = parts[3];
-                double cost = Double.parseDouble(parts[4]);
-                String costUnit = parts[5];
+                String id = parts[0].trim();
+                String description = parts[1].trim();
+                int duration = Integer.parseInt(parts[2].trim());
+                String durationUnit = parts[3].trim();
+                double cost = Double.parseDouble(parts[4].trim());
 
-                List<Integer> dependencies = new ArrayList<>();
-                for (int i = 6; i < parts.length; i++) {
-                    dependencies.add(Integer.parseInt(parts[i]));
+                List<String> dependencies = new ArrayList<>();
+                if (parts.length > 5 && !parts[5].trim().isEmpty()) {
+                    String dependencyField = parts[5].trim();
+                    System.out.println("Raw dependencies: " + dependencyField);
+
+                    // Parse dependencies
+                    dependencies = parseDependencies(dependencyField);
+                    System.out.println("Parsed dependencies for activity " + id + ": " + dependencies);
                 }
 
                 // Check for duplicate activities
@@ -219,21 +232,20 @@ public class CSVReader {
                     if (!existing.getDescription().equals(description) ||
                             existing.getDuration() != duration ||
                             !existing.getDurationUnit().equals(durationUnit) ||
-                            existing.getCost() != cost ||
-                            !existing.getCostUnit().equals(costUnit)) {
+                            existing.getCost() != cost) {
                         throw new IllegalArgumentException("Duplicate activity ID with conflicting details: " + id);
                     }
 
                     // Merge dependencies
-                    List<Integer> existingDependencies = existing.getDependencies();
-                    for (int dep : dependencies) {
+                    List<String> existingDependencies = existing.getDependencies();
+                    for (String dep : dependencies) {
                         if (!existingDependencies.contains(dep)) {
                             existingDependencies.add(dep);
                         }
                     }
                     System.out.println("Merged dependencies for activity ID: " + id);
                 } else {
-                    Activity activity = new Activity(id, description, duration, durationUnit, cost, costUnit, dependencies);
+                    Activity activity = new Activity(id, description, duration, durationUnit, cost, dependencies);
                     activities.add(activity);
                     activityMap.put(id, activity);
                 }
@@ -241,8 +253,10 @@ public class CSVReader {
 
             // Validate dependencies
             for (Activity activity : activities) {
-                for (int dependency : activity.getDependencies()) {
+                System.out.println("Validating dependencies for activity " + activity.getId() + ": " + activity.getDependencies());
+                for (String dependency : activity.getDependencies()) {
                     if (!activityMap.containsKey(dependency)) {
+                        System.err.println("Invalid dependency detected: " + dependency + " for activity " + activity.getId());
                         throw new IllegalArgumentException("Invalid dependency for activity " + activity.getId() + ": " + dependency);
                     }
                 }
@@ -255,5 +269,48 @@ public class CSVReader {
 
         return activities;
     }
+
+    /**
+     * Parses a CSV line, handling quoted fields correctly.
+     *
+     * @param line The raw CSV line.
+     * @return An array of parsed fields.
+     */
+    private static String[] parseCsvLine(String line) {
+        List<String> fields = new ArrayList<>();
+        Matcher matcher = Pattern.compile("\"([^\"]*)\"|([^,]+)").matcher(line);
+        while (matcher.find()) {
+            if (matcher.group(1) != null) {
+                fields.add(matcher.group(1)); // Quoted value
+            } else {
+                fields.add(matcher.group(2)); // Unquoted value
+            }
+        }
+        return fields.toArray(new String[0]);
+    }
+
+    /**
+     * Parses a dependency string, handling quoted fields and splitting correctly.
+     *
+     * @param dependencyField The raw dependency field from the CSV.
+     * @return A list of dependencies.
+     */
+    private static List<String> parseDependencies(String dependencyField) {
+        List<String> dependencies = new ArrayList<>();
+
+        // Remove surrounding quotes, if present
+        if (dependencyField.startsWith("\"") && dependencyField.endsWith("\"")) {
+            dependencyField = dependencyField.substring(1, dependencyField.length() - 1);
+        }
+
+        // Split by commas
+        String[] parts = dependencyField.split(",");
+        for (String part : parts) {
+            dependencies.add(part.trim());
+        }
+
+        return dependencies;
+    }
+
 
 }

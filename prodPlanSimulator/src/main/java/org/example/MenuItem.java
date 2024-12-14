@@ -710,7 +710,7 @@ public class MenuItem {
 
     public static void buildPertCpmGraph() {
 
-        List<Activity> activities = CSVReader.readActivitiesFromCsv("./activities.csv");
+        List<Activity> activities = CSVReader.readActivitiesFromCsv("./small_project.csv");
 
         PERTCPMGraph pertcpmGraph = new PERTCPMGraph();
         pertcpmGraph.buildGraph(activities);
@@ -742,6 +742,21 @@ public class MenuItem {
                     edge.getWeight(),
                     edge.getVOrig().getDurationUnit()); // Using origin's duration unit for simplicity
         }
+
+//        // Export the graph to DOT format
+//        String dotFilePath = "./pert_cpm_graph.dot";
+//        GraphVizExporter.exportToDot(graph, dotFilePath);
+//        System.out.println("\nDOT file created: " + dotFilePath);
+//
+//        // Generate the image using GraphViz
+//        String outputImagePath = "./pert_cpm_graph.png";
+//        try {
+//            generateGraphImage(dotFilePath, outputImagePath);
+//            System.out.println("Image generated: " + outputImagePath);
+//        } catch (IOException | InterruptedException e) {
+//            e.printStackTrace();
+//            System.err.println("Error generating the graph image.");
+//        }
 
         // Optionally display the image
 //        displayImage(outputImagePath);

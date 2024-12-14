@@ -19,7 +19,7 @@ public class PERTCPMGraph {
 
         // Add edges based on dependencies
         for (Activity activity : activities) {
-            for (int depId : activity.getDependencies()) {
+            for (String depId : activity.getDependencies()) {
                 Activity depActivity = findActivityById(activities, depId);
                 if (depActivity != null) {
                     graph.addEdge(depActivity, activity, activity.getDuration());
@@ -163,7 +163,7 @@ public class PERTCPMGraph {
     public void printActivityTimes() {
         System.out.println("ID | ES | EF | LS | LF | Slack");
         for (Activity activity : graph.vertices()) {
-            System.out.printf("%2d | %2d | %2d | %2d | %2d | %2d%n",
+            System.out.printf("%s | %2d | %2d | %2d | %2d | %2d%n",
                     activity.getId(),
                     activity.getEarliestStart(),
                     activity.getEarliestFinish(),
@@ -205,8 +205,8 @@ public class PERTCPMGraph {
         return false;
     }
 
-    private Activity findActivityById(List<Activity> activities, int id) {
-        return activities.stream().filter(a -> a.getId() == id).findFirst().orElse(null);
+    private Activity findActivityById(List<Activity> activities, String id) {
+        return activities.stream().filter(a -> a.getId().equals(id)).findFirst().orElse(null);
     }
 
     public Graph<Activity, Integer> getGraph() {
@@ -229,7 +229,7 @@ public class PERTCPMGraph {
                         .append(activity.getLatestFinish()).append(";")
                         .append(activity.getSlack());
 
-                for (int dependency : activity.getDependencies()) {
+                for (String dependency : activity.getDependencies()) {
                     line.append(";").append(dependency);
                 }
 
