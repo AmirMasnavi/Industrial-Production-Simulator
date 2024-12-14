@@ -197,10 +197,10 @@ public class CSVReader {
 
             // Skip header
             line = br.readLine();
-            System.out.println("CSV Header: " + line);
+//            System.out.println("CSV Header: " + line);
 
             while ((line = br.readLine()) != null) {
-                System.out.println("Processing line: " + line);
+//                System.out.println("Processing line: " + line);
 
                 // Parse the line using regex to handle quoted fields
                 String[] parts = parseCsvLine(line);
@@ -217,11 +217,11 @@ public class CSVReader {
                 List<String> dependencies = new ArrayList<>();
                 if (parts.length > 5 && !parts[5].trim().isEmpty()) {
                     String dependencyField = parts[5].trim();
-                    System.out.println("Raw dependencies: " + dependencyField);
+//                    System.out.println("Raw dependencies: " + dependencyField);
 
                     // Parse dependencies
                     dependencies = parseDependencies(dependencyField);
-                    System.out.println("Parsed dependencies for activity " + id + ": " + dependencies);
+//                    System.out.println("Parsed dependencies for activity " + id + ": " + dependencies);
                 }
 
                 // Check for duplicate activities
@@ -243,7 +243,7 @@ public class CSVReader {
                             existingDependencies.add(dep);
                         }
                     }
-                    System.out.println("Merged dependencies for activity ID: " + id);
+//                    System.out.println("Merged dependencies for activity ID: " + id);
                 } else {
                     Activity activity = new Activity(id, description, duration, durationUnit, cost, dependencies);
                     activities.add(activity);
@@ -253,10 +253,10 @@ public class CSVReader {
 
             // Validate dependencies
             for (Activity activity : activities) {
-                System.out.println("Validating dependencies for activity " + activity.getId() + ": " + activity.getDependencies());
+//                System.out.println("Validating dependencies for activity " + activity.getId() + ": " + activity.getDependencies());
                 for (String dependency : activity.getDependencies()) {
                     if (!activityMap.containsKey(dependency)) {
-                        System.err.println("Invalid dependency detected: " + dependency + " for activity " + activity.getId());
+//                        System.err.println("Invalid dependency detected: " + dependency + " for activity " + activity.getId());
                         throw new IllegalArgumentException("Invalid dependency for activity " + activity.getId() + ": " + dependency);
                     }
                 }
