@@ -196,7 +196,7 @@ public class CSVReader {
             String line;
 
             // Skip header
-            line = br.readLine();
+           br.readLine();
 //            System.out.println("CSV Header: " + line);
 
             while ((line = br.readLine()) != null) {
