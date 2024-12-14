@@ -16,10 +16,10 @@ class PERTCPMGraphTest {
     void setUp() {
         graph = new PERTCPMGraph();
         validActivities = List.of(
-                new Activity(1, "A", 3, "days", 100, "USD", List.of()),  // No dependencies
-                new Activity(2, "B", 2, "days", 200, "USD", List.of(1)), // Depends on A
-                new Activity(3, "C", 4, "days", 150, "USD", List.of(1)), // Depends on A
-                new Activity(4, "D", 2, "days", 300, "USD", List.of(2, 3)) // Depends on B and C
+                new Activity("A", "A", 3, "days", 100,  List.of()),  // No dependencies
+                new Activity("B", "B", 2, "days", 200,  List.of("A")), // Depends on A
+                new Activity("C", "C", 4, "days", 150,  List.of("A")), // Depends on A
+                new Activity("D", "D", 2, "days", 300,  List.of("B", "C")) // Depends on B and C
         );
 
         emptyActivities = List.of(); // Empty activity list
@@ -54,9 +54,9 @@ class PERTCPMGraphTest {
     @Test
     void validateNoCircularDependencies_withCyclicGraph() {
         List<Activity> cyclicActivities = List.of(
-                new Activity(1, "A", 3, "days", 100, "USD", List.of(3)), // A depends on C
-                new Activity(2, "B", 2, "days", 200, "USD", List.of(1)), // B depends on A
-                new Activity(3, "C", 4, "days", 150, "USD", List.of(2))  // C depends on B (cycle)
+                new Activity("A", "A", 3, "days", 100, List.of("C")), // A depends on C
+                new Activity("B", "B", 2, "days", 200, List.of("A")), // B depends on A
+                new Activity("C", "C", 4, "days", 150, List.of("B"))  // C depends on B (cycle)
         );
         graph.buildGraph(cyclicActivities);
 
@@ -71,7 +71,7 @@ class PERTCPMGraphTest {
 
         // Validate order
         assertEquals(4, sorted.size(), "Topological sort should include all activities.");
-        assertEquals(List.of(1, 2, 3, 4), sorted.stream().map(Activity::getId).toList(), "Topological sort order should be correct.");
+        assertEquals(List.of("A", "B", "C", "D"), sorted.stream().map(Activity::getId).toList(), "Topological sort order should be correct.");
     }
 
     @Test
@@ -88,7 +88,7 @@ class PERTCPMGraphTest {
         graph.buildGraph(validActivities);
         String result = graph.getTopologicalSortAsString();
 
-        assertEquals("1 -> 2 -> 3 -> 4", result, "Topological sort string representation should be correct.");
+        assertEquals("A -> B -> C -> D", result, "Topological sort string representation should be correct.");
     }
 
     @Test
