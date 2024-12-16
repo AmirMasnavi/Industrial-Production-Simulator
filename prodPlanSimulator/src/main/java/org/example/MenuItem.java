@@ -80,6 +80,7 @@ public class MenuItem {
             System.out.println("18. Calculate Earliest and Latest Times");
             System.out.println("19. Export Project Schedule to CSV");
             System.out.println("20. Identify Critical Path");
+            System.out.println("21. Identify Bottleneck Activities");
             System.out.println("0. Exit");
 
             System.out.print("\nChoose an option: ");
@@ -145,6 +146,9 @@ public class MenuItem {
                     break;
                 case 20:
                     identifyCriticalPath();
+                    break;
+                case 21:
+                    identifyBottleneckActivities();
                     break;
                 case 0:
                     System.out.println("Exiting...");
@@ -772,6 +776,23 @@ public class MenuItem {
         List<Activity> criticalPath = pertcpmGraph.identifyCriticalPath(activities);
         System.out.println("\nCritical Path: ");
         for (Activity activity : criticalPath) {
+            System.out.printf(
+                    "ID: %s, Name: %s, Duration: %d days, ES: %d, EF: %d, LS: %d, LF: %d\n",
+                    activity.getId(),
+                    activity.getDescription(),
+                    activity.getDuration(),
+                    activity.getEarliestStart(),
+                    activity.getEarliestFinish(),
+                    activity.getLatestStart(),
+                    activity.getLatestFinish()
+            );
+        }
+    }
+
+    private static void identifyBottleneckActivities() {
+        List<Activity> bottleneckActivities = pertcpmGraph.identifyBottleneckActivities();
+        System.out.println("\nBottleneck Activities: ");
+        for (Activity activity : bottleneckActivities) {
             System.out.printf(
                     "ID: %s, Name: %s, Duration: %d days, ES: %d, EF: %d, LS: %d, LF: %d\n",
                     activity.getId(),

@@ -276,4 +276,33 @@ public class PERTCPMGraph {
         return criticalPath;
     }
 
+    public List<Activity> identifyBottleneckActivities() {
+        Map<Activity, Integer> dependencyCount = new HashMap<>();
+
+        // Initialize dependency count for each activity
+        for (Activity activity : graph.vertices()) {
+            dependencyCount.put(activity, 0);
+        }
+
+        // Count the number of dependent activities for each activity
+        for (Activity activity : graph.vertices()) {
+            for (Activity neighbor : graph.adjVertices(activity)) {
+                dependencyCount.put(neighbor, dependencyCount.get(neighbor) + 1);
+            }
+        }
+
+        // Find the maximum dependency count
+        int maxDependencies = Collections.max(dependencyCount.values());
+
+        // Identify activities with the maximum dependency count
+        List<Activity> bottleneckActivities = new ArrayList<>();
+        for (Map.Entry<Activity, Integer> entry : dependencyCount.entrySet()) {
+            if (entry.getValue() == maxDependencies) {
+                bottleneckActivities.add(entry.getKey());
+            }
+        }
+
+        return bottleneckActivities;
+    }
+
 }
