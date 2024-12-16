@@ -236,7 +236,7 @@ public class PERTCPMGraph {
                 writer.write(line.append("\n").toString());
             }
 
-            System.out.println("Schedule exported successfully to: " + filePath);
+            System.out.println("\nSchedule exported successfully to: " + filePath);
 
         } catch (IOException e) {
             System.err.println("Error writing schedule to CSV: " + e.getMessage());
@@ -244,14 +244,31 @@ public class PERTCPMGraph {
     }
 
     public List<Activity> identifyCriticalPath(List<Activity> activities) {
+        // Calculate earliest and latest times
+        calculateEarliestAndLatestTimes();
+
         List<Activity> criticalPath = new ArrayList<>();
         int maxDuration = 0;
 
+        // Identify activities on the critical path
         for (Activity activity : activities) {
             if (activity.getSlack() == 0) {
                 criticalPath.add(activity);
             }
             maxDuration = Math.max(maxDuration, activity.getLatestFinish());
+        }
+
+        // Print key metrics for activities on the critical path
+        System.out.println("\nCritical Path Activities:");
+        System.out.println("ID | ES | EF | LS | LF | Slack");
+        for (Activity activity : criticalPath) {
+            System.out.printf("%s | %2d | %2d | %2d | %2d | %2d%n",
+                    activity.getId(),
+                    activity.getEarliestStart(),
+                    activity.getEarliestFinish(),
+                    activity.getLatestStart(),
+                    activity.getLatestFinish(),
+                    activity.getSlack());
         }
 
         System.out.println("\nTotal project duration: " + maxDuration + " days");

@@ -17,15 +17,9 @@ public class MenuItem {
     private static SimulatorNoPriorities simulatorNoPriorites;
     private static boolean lastSimulationWithPriorities;
     private static BooDataResult booDataResult;
+    private static PERTCPMGraph pertcpmGraph = new PERTCPMGraph(); // Single instance of PERTCPMGraph
+    private static List<Activity> activities; // List to store activities
 
-
-    /**
-     * Displays the main menu and handles user selections.
-     * <p>
-     * The menu options allow the user to list items and machines, run simulations,
-     * and view simulation statistics. It continues to prompt the user until they choose to exit.
-     * </p>
-     */
     static void menu() {
         Scanner scanner = new Scanner(System.in);
         boolean running = true;
@@ -44,7 +38,6 @@ public class MenuItem {
         ProductionTreeSearcher searcher = new ProductionTreeSearcher();
         searcher.indexTree(rootNode);
 
-
         MaterialBST materialBST = new MaterialBST();
         for (Map.Entry<Integer, Double> entry : booDataResult.itemQuantities.entrySet()) {
             int itemId = entry.getKey();
@@ -62,6 +55,8 @@ public class MenuItem {
         QualityCheckManager qualityCheckManager = new QualityCheckManager();
         qualityCheckManager.addQualityCheckBasedOnDepth(rootNode, 1);
 
+        // Read activities from CSV file at the beginning
+        activities = CSVReader.readActivitiesFromCsv("./small_project.csv");
 
         while (running) {
             System.out.println("\n=== MENU ===\n");
@@ -80,8 +75,11 @@ public class MenuItem {
             System.out.println("13. Critical Path Operation");
             System.out.println("14. Run Simulation Tree");
             System.out.println("15. List Products and View BOM or BOO (LAPR3)");
-            System.out.println("16. Build a PERT-CPM graph");
-
+            System.out.println("\n16. Build PERT-CPM Graph");
+            System.out.println("17. Activities Topological Sort");
+            System.out.println("18. Calculate Earliest and Latest Times");
+            System.out.println("19. Export Project Schedule to CSV");
+            System.out.println("20. Identify Critical Path");
             System.out.println("0. Exit");
 
             System.out.print("\nChoose an option: ");
@@ -135,6 +133,18 @@ public class MenuItem {
                     break;
                 case 16:
                     buildPertCpmGraph();
+                    break;
+                case 17:
+                    performTopologicalSort();
+                    break;
+                case 18:
+                    calculateEarliestAndLatestTimes();
+                    break;
+                case 19:
+                    exportScheduleToCsv();
+                    break;
+                case 20:
+                    identifyCriticalPath();
                     break;
                 case 0:
                     System.out.println("Exiting...");
@@ -708,21 +718,9 @@ public class MenuItem {
         runSimulationWithoutPriorities(new_articles, new_machines);
     }
 
-    public static void buildPertCpmGraph() {
-
-        List<Activity> activities = CSVReader.readActivitiesFromCsv("./small_project.csv");
-
-        PERTCPMGraph pertcpmGraph = new PERTCPMGraph();
+    private static void buildPertCpmGraph() {
         pertcpmGraph.buildGraph(activities);
-
-        // Validate for circular dependencies
-        try {
-            pertcpmGraph.validateNoCircularDependencies();
-            System.out.println("No circular dependencies detected. The project graph is valid.");
-        } catch (IllegalStateException e) {
-            System.err.println(e.getMessage());
-            return; // Stop further processing
-        }
+        validateNoCircularDependencies();
 
         Graph<Activity, Integer> graph = pertcpmGraph.getGraph();
 
@@ -740,8 +738,52 @@ public class MenuItem {
                     edge.getVOrig(),
                     edge.getVDest(),
                     edge.getWeight(),
-                    edge.getVOrig().getDurationUnit()); // Using origin's duration unit for simplicity
+                    edge.getVOrig().getDurationUnit());
         }
+    }
+
+    private static void validateNoCircularDependencies() {
+        try {
+            pertcpmGraph.validateNoCircularDependencies();
+            System.out.println("No circular dependencies detected. The project graph is valid.");
+        } catch (IllegalStateException e) {
+            System.err.println(e.getMessage());
+        }
+    }
+
+    private static void performTopologicalSort() {
+        String topologicalOrder = pertcpmGraph.getTopologicalSortAsString();
+        System.out.println("\nTopological Sort Result:");
+        System.out.println(topologicalOrder);
+    }
+
+    private static void calculateEarliestAndLatestTimes() {
+        System.out.println("\nEarliest and Latest Start and Finish Times:");
+        pertcpmGraph.calculateEarliestAndLatestTimes();
+        pertcpmGraph.printActivityTimes();
+    }
+
+    private static void exportScheduleToCsv() {
+        String scheduleFilePath = "./schedule.csv";
+        pertcpmGraph.exportScheduleToCsv(scheduleFilePath);
+    }
+
+    private static void identifyCriticalPath() {
+        List<Activity> criticalPath = pertcpmGraph.identifyCriticalPath(activities);
+        System.out.println("\nCritical Path: ");
+        for (Activity activity : criticalPath) {
+            System.out.printf(
+                    "ID: %s, Name: %s, Duration: %d days, ES: %d, EF: %d, LS: %d, LF: %d\n",
+                    activity.getId(),
+                    activity.getDescription(),
+                    activity.getDuration(),
+                    activity.getEarliestStart(),
+                    activity.getEarliestFinish(),
+                    activity.getLatestStart(),
+                    activity.getLatestFinish()
+            );
+        }
+    }
 
 //        // Export the graph to DOT format
 //        String dotFilePath = "./pert_cpm_graph.dot";
@@ -761,45 +803,6 @@ public class MenuItem {
         // Optionally display the image
 //        displayImage(outputImagePath);
 
-//        // Perform topological sort
-//            List<Activity> sortedActivities = pertcpmGraph.topologicalSort();
-//            System.out.println("\nTopological Sort Result1:");
-//            for (Activity activity : sortedActivities) {
-//                System.out.println(activity);
-//            }
-        // Perform topological sort and print in the desired format
-            String topologicalOrder = pertcpmGraph.getTopologicalSortAsString();
-            System.out.println("\nTopological Sort Result:");
-            System.out.println(topologicalOrder);
-
-        // Calculate times
-        System.out.println("\nEarliest and Latest Start and Finish Times:");
-        pertcpmGraph.calculateEarliestAndLatestTimes();
-        // Print results
-        pertcpmGraph.printActivityTimes();
-
-        //USEI21
-        System.out.println();
-        String scheduleFilePath = "./schedule.csv";
-        pertcpmGraph.exportScheduleToCsv(scheduleFilePath);
-
-        //USEI22
-        List<Activity> criticalPath = pertcpmGraph.identifyCriticalPath(activities);
-        System.out.println("\nCritical Path: ");
-        for (Activity activity : criticalPath) {
-            System.out.printf(
-                    "ID: %d, Name: %s, Duration: %d days, ES: %d, EF: %d, LS: %d, LF: %d\n",
-                    activity.getId(),
-                    activity.getDescription(),
-                    activity.getDuration(),
-                    activity.getEarliestStart(),
-                    activity.getEarliestFinish(),
-                    activity.getLatestStart(),
-                    activity.getLatestFinish()
-            );
-        }
-
-    }
 
     /**
      * Generates a graph image from a DOT file using GraphViz.
@@ -834,10 +837,5 @@ public class MenuItem {
         });
     }
 
-    private static void createScheduleCSV(){
-        String scheduleFilePath = "./schedule.csv";
-        PERTCPMGraph pertcpmGraph = new PERTCPMGraph();
-        pertcpmGraph.exportScheduleToCsv(scheduleFilePath);
-    }
 
 }
