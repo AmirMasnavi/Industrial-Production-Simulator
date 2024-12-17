@@ -12,7 +12,7 @@ public class PERTCPMGraph {
     }
 
     public void buildGraph(List<Activity> activities) {
-        // Add vertices
+        // Add vertices for all activities
         for (Activity activity : activities) {
             graph.addVertex(activity);
         }
@@ -26,7 +26,39 @@ public class PERTCPMGraph {
                 }
             }
         }
+
+        // Step 1: Create Start and End vertices
+        Activity startActivity = new Activity("START", "Project Start", 0, "week", 0, List.of());
+        Activity endActivity = new Activity("END", "Project End", 0, "week", 0, List.of());
+
+        graph.addVertex(startActivity);
+        graph.addVertex(endActivity);
+
+        // Step 2: Connect Start to activities that have no predecessors
+        for (Activity activity : activities) {
+            if (activity.getDependencies().isEmpty()) {
+                graph.addEdge(startActivity, activity, 0);  // No duration for Start to activity
+            }
+        }
+
+        // Step 3: Connect activities that have no successors to End
+        HashSet<Activity> activitiesWithSuccessors = new HashSet<>();
+        for (Activity activity : activities) {
+            for (String depId : activity.getDependencies()) {
+                Activity depActivity = findActivityById(activities, depId);
+                if (depActivity != null) {
+                    activitiesWithSuccessors.add(depActivity);
+                }
+            }
+        }
+
+        for (Activity activity : activities) {
+            if (!activitiesWithSuccessors.contains(activity)) {
+                graph.addEdge(activity, endActivity, 0);  // No duration for activity to End
+            }
+        }
     }
+
 
     /**
      * Validates the graph for circular dependencies using DFS.
@@ -161,8 +193,12 @@ public class PERTCPMGraph {
     }
 
     public void printActivityTimes() {
+
         System.out.println("ID | ES | EF | LS | LF | Slack");
         for (Activity activity : graph.vertices()) {
+            if (Objects.equals(activity.getId(), "START") || Objects.equals(activity.getId(), "END")) {
+                continue;
+            }
             System.out.printf("%s | %2d | %2d | %2d | %2d | %2d%n",
                     activity.getId(),
                     activity.getEarliestStart(),
