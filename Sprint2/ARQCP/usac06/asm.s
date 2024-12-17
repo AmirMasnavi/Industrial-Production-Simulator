@@ -28,7 +28,7 @@ dequeue_value:
     jne ok               # If tail != length, proceed to ok
 
     # If head == length, reset head to 0 (wraparound)
-    movl $0, (%rdx)            # Reset head to 0
+    movl $0, (%rdx)            # Reset tail to 0
 
 ok:
     movl $1, %eax              # Return 1 to indicate success

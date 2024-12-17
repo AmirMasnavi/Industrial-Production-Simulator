@@ -236,7 +236,7 @@ public class PERTCPMGraph {
                 writer.write(line.append("\n").toString());
             }
 
-            System.out.println("Schedule exported successfully to: " + filePath);
+            System.out.println("\nSchedule exported successfully to: " + filePath);
 
         } catch (IOException e) {
             System.err.println("Error writing schedule to CSV: " + e.getMessage());
@@ -244,9 +244,13 @@ public class PERTCPMGraph {
     }
 
     public List<Activity> identifyCriticalPath(List<Activity> activities) {
+        // Calculate earliest and latest times
+        calculateEarliestAndLatestTimes();
+
         List<Activity> criticalPath = new ArrayList<>();
         int maxDuration = 0;
 
+        // Identify activities on the critical path
         for (Activity activity : activities) {
             if (activity.getSlack() == 0) {
                 criticalPath.add(activity);
@@ -254,9 +258,51 @@ public class PERTCPMGraph {
             maxDuration = Math.max(maxDuration, activity.getLatestFinish());
         }
 
+        // Print key metrics for activities on the critical path
+        System.out.println("\nCritical Path Activities:");
+        System.out.println("ID | ES | EF | LS | LF | Slack");
+        for (Activity activity : criticalPath) {
+            System.out.printf("%s | %2d | %2d | %2d | %2d | %2d%n",
+                    activity.getId(),
+                    activity.getEarliestStart(),
+                    activity.getEarliestFinish(),
+                    activity.getLatestStart(),
+                    activity.getLatestFinish(),
+                    activity.getSlack());
+        }
+
         System.out.println("\nTotal project duration: " + maxDuration + " days");
 
         return criticalPath;
+    }
+
+    public List<Activity> identifyBottleneckActivities() {
+        Map<Activity, Integer> dependencyCount = new HashMap<>();
+
+        // Initialize dependency count for each activity
+        for (Activity activity : graph.vertices()) {
+            dependencyCount.put(activity, 0);
+        }
+
+        // Count the number of dependent activities for each activity
+        for (Activity activity : graph.vertices()) {
+            for (Activity neighbor : graph.adjVertices(activity)) {
+                dependencyCount.put(neighbor, dependencyCount.get(neighbor) + 1);
+            }
+        }
+
+        // Find the maximum dependency count
+        int maxDependencies = Collections.max(dependencyCount.values());
+
+        // Identify activities with the maximum dependency count
+        List<Activity> bottleneckActivities = new ArrayList<>();
+        for (Map.Entry<Activity, Integer> entry : dependencyCount.entrySet()) {
+            if (entry.getValue() == maxDependencies) {
+                bottleneckActivities.add(entry.getKey());
+            }
+        }
+
+        return bottleneckActivities;
     }
 
 }
