@@ -750,14 +750,15 @@ public class MenuItem {
         System.out.println("\nDOT file created: " + dotFilePath);
 
         // Generate the image using GraphViz
-        String outputImagePath = "./pert_cpm_graph.png";
+        String outputImagePath = "./pert_cpm_graph.svg"; // Change to SVG
         try {
             generateGraphImage(dotFilePath, outputImagePath);
-            System.out.println("Image generated: " + outputImagePath);
+            System.out.println("SVG image generated: " + outputImagePath);
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
             System.err.println("Error generating the graph image.");
         }
+
     }
 
     private static void validateNoCircularDependencies() {
@@ -828,19 +829,14 @@ public class MenuItem {
     /**
      * Generates a graph image from a DOT file using GraphViz.
      */
-    private static void generateGraphImage(String dotFilePath, String outputImagePath) throws IOException, InterruptedException {
-        ProcessBuilder processBuilder = new ProcessBuilder(
-                "dot", "-Tpng", dotFilePath, "-o", outputImagePath
-        );
+    public static void generateGraphImage(String dotFilePath, String outputImagePath) throws IOException, InterruptedException {
+        // Command to run GraphViz and output SVG
+        ProcessBuilder processBuilder = new ProcessBuilder("dot", "-Tsvg", dotFilePath, "-o", outputImagePath);
         processBuilder.redirectErrorStream(true);
         Process process = processBuilder.start();
-
-        // Wait for the process to complete
-        int exitCode = process.waitFor();
-        if (exitCode != 0) {
-            throw new RuntimeException("GraphViz process failed with exit code: " + exitCode);
-        }
+        process.waitFor();
     }
+
 
     /**
      * Displays the generated image using a simple Swing GUI.
