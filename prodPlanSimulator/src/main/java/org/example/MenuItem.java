@@ -76,11 +76,12 @@ public class MenuItem {
             System.out.println("14. Run Simulation Tree");
             System.out.println("15. List Products and View BOM or BOO (LAPR3)");
             System.out.println("\n16. Build PERT-CPM Graph");
-            System.out.println("17. Activities Topological Sort");
-            System.out.println("18. Calculate Earliest and Latest Times");
-            System.out.println("19. Export Project Schedule to CSV");
-            System.out.println("20. Identify Critical Path");
-            System.out.println("21. Identify Bottleneck Activities");
+            System.out.println("17. Detect Circular Dependencies");
+            System.out.println("18. Activities Topological Sort");
+            System.out.println("19. Calculate Earliest and Latest Times");
+            System.out.println("20. Export Project Schedule to CSV");
+            System.out.println("21. Identify Critical Path");
+            System.out.println("22. Identify Bottleneck Activities");
             System.out.println("0. Exit");
 
             System.out.print("\nChoose an option: ");
@@ -136,18 +137,21 @@ public class MenuItem {
                     buildPertCpmGraph();
                     break;
                 case 17:
-                    performTopologicalSort();
+                    validateNoCircularDependencies();
                     break;
                 case 18:
-                    calculateEarliestAndLatestTimes();
+                    performTopologicalSort();
                     break;
                 case 19:
-                    exportScheduleToCsv();
+                    calculateEarliestAndLatestTimes();
                     break;
                 case 20:
-                    identifyCriticalPath();
+                    exportScheduleToCsv();
                     break;
                 case 21:
+                    identifyCriticalPath();
+                    break;
+                case 22:
                     identifyBottleneckActivities();
                     break;
                 case 0:
@@ -724,7 +728,6 @@ public class MenuItem {
 
     private static void buildPertCpmGraph() {
         pertcpmGraph.buildGraph(activities);
-        validateNoCircularDependencies();
 
         Graph<Activity, Integer> graph = pertcpmGraph.getGraph();
 
