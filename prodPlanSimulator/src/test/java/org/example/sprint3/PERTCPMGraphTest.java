@@ -42,7 +42,7 @@ class PERTCPMGraphTest {
 
         // Assert empty graph
         assertEquals(2, graph.getGraph().vertices().size(), "Graph should only contain START and END vertices for an empty activity list.");
-        assertEquals(0, graph.getGraph().edges().size(), "Graph should have no edges for an empty activity list.");
+        assertEquals(1, graph.getGraph().edges().size(), "Graph should have Just START -> END for an empty activity list.");
     }
 
     @Test
@@ -98,7 +98,7 @@ class PERTCPMGraphTest {
         graph.buildGraph(emptyActivities);
         String result = graph.getTopologicalSortAsString();
 
-        assertEquals("END -> START", result, "Topological sort string representation should be START -> END for an empty graph.");
+        assertEquals("START -> END" , result, "Topological sort string representation should be START -> END for an empty graph.");
     }
 
     @Test
