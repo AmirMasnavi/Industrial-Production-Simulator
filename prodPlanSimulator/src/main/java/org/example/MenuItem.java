@@ -744,6 +744,20 @@ public class MenuItem {
                     edge.getWeight(),
                     edge.getVOrig().getDurationUnit());
         }
+        // Export the graph to DOT format
+        String dotFilePath = "./pert_cpm_graph.dot";
+        GraphVizExporter.exportToDot(graph, dotFilePath);
+        System.out.println("\nDOT file created: " + dotFilePath);
+
+        // Generate the image using GraphViz
+        String outputImagePath = "./pert_cpm_graph.png";
+        try {
+            generateGraphImage(dotFilePath, outputImagePath);
+            System.out.println("Image generated: " + outputImagePath);
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+            System.err.println("Error generating the graph image.");
+        }
     }
 
     private static void validateNoCircularDependencies() {
@@ -806,20 +820,6 @@ public class MenuItem {
         }
     }
 
-//        // Export the graph to DOT format
-//        String dotFilePath = "./pert_cpm_graph.dot";
-//        GraphVizExporter.exportToDot(graph, dotFilePath);
-//        System.out.println("\nDOT file created: " + dotFilePath);
-//
-//        // Generate the image using GraphViz
-//        String outputImagePath = "./pert_cpm_graph.png";
-//        try {
-//            generateGraphImage(dotFilePath, outputImagePath);
-//            System.out.println("Image generated: " + outputImagePath);
-//        } catch (IOException | InterruptedException e) {
-//            e.printStackTrace();
-//            System.err.println("Error generating the graph image.");
-//        }
 
         // Optionally display the image
 //        displayImage(outputImagePath);
