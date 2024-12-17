@@ -12,6 +12,13 @@ public class PERTCPMGraph {
     }
 
     public void buildGraph(List<Activity> activities) {
+
+
+        // Step 1: Create Start and End vertices
+        Activity startActivity = new Activity("START", "Project Start", 0, "week", 0, List.of());
+        Activity endActivity = new Activity("END", "Project End", 0, "week", 0, List.of());
+
+        graph.addVertex(startActivity);
         // Add vertices for all activities
         for (Activity activity : activities) {
             graph.addVertex(activity);
@@ -27,12 +34,15 @@ public class PERTCPMGraph {
             }
         }
 
-        // Step 1: Create Start and End vertices
-        Activity startActivity = new Activity("START", "Project Start", 0, "week", 0, List.of());
-        Activity endActivity = new Activity("END", "Project End", 0, "week", 0, List.of());
-
-        graph.addVertex(startActivity);
         graph.addVertex(endActivity);
+
+
+        // Handle the case where the activity list is empty
+        if (activities.isEmpty()) {
+            graph.addEdge(startActivity, endActivity, 0);  // Directly connect START to END
+            return;
+        }
+
 
         // Step 2: Connect Start to activities that have no predecessors
         for (Activity activity : activities) {
