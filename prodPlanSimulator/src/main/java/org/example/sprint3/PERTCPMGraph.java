@@ -204,12 +204,12 @@ public class PERTCPMGraph {
 
     public void printActivityTimes() {
 
-        System.out.println("ID | ES | EF | LS | LF | Slack");
+        System.out.println("ID\t|\tES\t|\tEF\t|\tLS\t|\tLF\t|\tSlack");
         for (Activity activity : graph.vertices()) {
             if (Objects.equals(activity.getId(), "START") || Objects.equals(activity.getId(), "END")) {
                 continue;
             }
-            System.out.printf("%s | %2d | %2d | %2d | %2d | %2d%n",
+            System.out.printf("%s\t|\t%2d\t|\t%2d\t|\t%2d\t|\t%2d\t|\t%2d%n",
                     activity.getId(),
                     activity.getEarliestStart(),
                     activity.getEarliestFinish(),
