@@ -749,12 +749,12 @@ public class MenuItem {
         }
         /*
         // Export the graph to DOT format
-        String dotFilePath = "./pert_cpm_graph.dot";
+        String dotFilePath = "./trash/pert_cpm_graph.dot";
         GraphVizExporter.exportToDot(graph, dotFilePath);
         System.out.println("\nDOT file created: " + dotFilePath);
 
         // Generate the image using GraphViz
-        String outputImagePath = "./pert_cpm_graph.svg"; // Change to SVG
+        String outputImagePath = "./trash/pert_cpm_graph.svg"; // Change to SVG
         try {
             generateGraphImage(dotFilePath, outputImagePath);
             System.out.println("SVG image generated: " + outputImagePath);
@@ -789,7 +789,7 @@ public class MenuItem {
     }
 
     private static void exportScheduleToCsv() {
-        String scheduleFilePath = "./schedule.csv";
+        String scheduleFilePath = "./trash/schedule.csv";
         pertcpmGraph.exportScheduleToCsv(scheduleFilePath);
     }
 
