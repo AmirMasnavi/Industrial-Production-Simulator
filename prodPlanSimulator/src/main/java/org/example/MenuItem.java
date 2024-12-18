@@ -789,12 +789,12 @@ public class MenuItem {
     }
 
     private static void exportScheduleToCsv() {
-        String scheduleFilePath = "./trash/schedule.csv";
+        String scheduleFilePath = "./schedule.csv";
         pertcpmGraph.exportScheduleToCsv(scheduleFilePath);
     }
 
     private static void identifyCriticalPath() {
-       pertcpmGraph.identifyCriticalPath(activities);
+       pertcpmGraph.identifyCriticalPath();
     }
 
     private static void identifyBottleneckActivities() {
