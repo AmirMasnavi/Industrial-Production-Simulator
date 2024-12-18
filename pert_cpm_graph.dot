@@ -1,5 +1,6 @@
 digraph PERTCPM {
   rankdir=LR;
+  "START" [label="Project Start\n(Duration: 0 week\nCost: 0.00)"];
   "A" [label="High level analysis\n(Duration: 1 week\nCost: 30.00)"];
   "B" [label="Order Hardware platform\n(Duration: 4 week\nCost: 2500.00)"];
   "C" [label="Installation and commissioning of hardware\n(Duration: 2 week\nCost: 1250.00)"];
@@ -12,6 +13,9 @@ digraph PERTCPM {
   "J" [label="Application Manual\n(Duration: 1 week\nCost: 550.00)"];
   "K" [label="User Manual\n(Duration: 1 week\nCost: 750.00)"];
   "L" [label="Core and supporting module training\n(Duration: 2 week\nCost: 1500.00)"];
+  "END" [label="Project End\n(Duration: 0 week\nCost: 0.00)"];
+  "START" -> "A" [label="0 week"];
+  "START" -> "B" [label="0 week"];
   "A" -> "D" [label="3 week"];
   "B" -> "C" [label="2 week"];
   "C" -> "F" [label="4 week"];
@@ -25,5 +29,7 @@ digraph PERTCPM {
   "G" -> "K" [label="1 week"];
   "H" -> "L" [label="2 week"];
   "I" -> "L" [label="2 week"];
+  "J" -> "END" [label="0 week"];
   "K" -> "L" [label="2 week"];
+  "L" -> "END" [label="0 week"];
 }

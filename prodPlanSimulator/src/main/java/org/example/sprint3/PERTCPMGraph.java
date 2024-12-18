@@ -306,18 +306,19 @@ public class PERTCPMGraph {
 
         // Print key metrics for activities on the critical path
         System.out.println("\nCritical Path Activities:");
-        System.out.println("ID | ES | EF | LS | LF | Slack");
+        System.out.println("ID | ES | EF | LS | LF | SL | Duration");
         for (Activity activity : criticalPath) {
-            System.out.printf("%s | %2d | %2d | %2d | %2d | %2d%n",
+            System.out.printf("%s  | %2d | %2d | %2d | %2d | %2d | %d%n",
                     activity.getId(),
                     activity.getEarliestStart(),
                     activity.getEarliestFinish(),
                     activity.getLatestStart(),
                     activity.getLatestFinish(),
-                    activity.getSlack());
+                    activity.getSlack(),
+                    activity.getDuration());
         }
 
-        System.out.println("\nTotal project duration: " + maxDuration + " days");
+        System.out.println("\nTotal project duration: " + maxDuration + " weeks\n");
 
         return criticalPath;
     }
