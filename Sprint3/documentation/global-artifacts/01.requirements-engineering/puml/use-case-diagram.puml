@@ -1,0 +1,60 @@
+@startuml
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+left to right direction
+
+skinparam rectangle{
+    BorderColor yellow
+}
+
+actor "Product Owner" as PO
+actor "Plant Floor Manager" as PFM
+actor "Product Manager" as PM
+
+usecase "UCBD 001 - Create a data dictionary/glossary" as UC1
+PO --> UC1
+usecase "UCBD 002 - Create the relational model (logical level)" as UC2
+PO --> UC2
+usecase "UCBD 003 - Create the relational model (physical level)" as UC3
+PO --> UC3
+usecase "UCBD 004 - import data from a legacy system and deliver it on a spreadsheet" as UC4
+PO --> UC4
+usecase "UCBD 005 - associate with each product, orders to be delivered (customer, product, quantity, date) within a certain deadline" as UC5
+PO --> UC5
+usecase "UCBD 006 - discover the types of workstations used in a certain order" as UC6
+PO --> UC6
+usecase "UCBD 007 - discover the materials/components that must be ordered to fulfill a given production order, including the quantity of each material/component" as UC7
+PO --> UC7
+
+usecase "UCBD 008 - discover the different operations that factory supports" as UC8
+PFM --> UC8
+usecase "UCBD 009 -  get the sequence of operations as well as obtaining the respective type of job, from a BOO of a given product" as UC9
+PFM --> UC9
+
+usecase "UCLP 001 - Create the domain model" as UC18
+PO --> UC18
+usecase "UCLP 002 - Present the functionality of simulation tools and results through a user-friendly text-based interface" as UC19
+PO --> UC19
+usecase "UCLP 003 - Visualize the Product Struture (graphically) for a given article" as UC20
+PO --> UC20
+
+usecase "UCEI 001 - Define the adequate data structures to store the information imported from the files" as UC10
+PM --> UC10
+usecase "UCEI 002 - Implement a simulator that processes all the items" as UC11
+PM --> UC11
+usecase "UCEI 003 - Calculate the total production time for the items" as UC12
+PM --> UC12
+usecase "UCEI 004 - Calculate execution times by each operation" as UC13
+PM --> UC13
+usecase "UCEI 005 - Present a list of machines with total time of operation, and percentages relative to the operation time and total execution time, sorted in ascending order of the percentage of execution time relative to the total time" as UC14
+PM --> UC14
+usecase "UCEI 006 - Present average execution times per operation and the corresponding waiting times" as UC15
+PM --> UC15
+usecase "UCEI 007 - Produce a listing representing the flow dependency between machines" as UC16
+PM --> UC16
+usecase "UCEI 008 - Consider an improvement to the simulator developed that takes into account a processing order based on priority" as UC17
+PM --> UC17
+
+@enduml
