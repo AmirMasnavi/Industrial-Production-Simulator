@@ -22,10 +22,9 @@ public class GraphVizExporter {
 
             // Write edges
             for (Edge<Activity, Integer> edge : graph.edges()) {
-                writer.write(String.format("  \"%s\" -> \"%s\" [label=\"%d %s\"];\n",
+                writer.write(String.format("  \"%s\" -> \"%s\";\n",
                         edge.getVOrig().getId(),
                         edge.getVDest().getId(),
-                        edge.getWeight(),
                         edge.getVOrig().getDurationUnit())); // Use origin's duration unit for clarity
             }
 

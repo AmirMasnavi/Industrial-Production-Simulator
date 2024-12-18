@@ -732,9 +732,9 @@ public class MenuItem {
         Graph<Activity, Integer> graph = pertcpmGraph.getGraph();
 
         System.out.println("\nGraph built successfully:");
-        System.out.println("Number of vertices: " + graph.numVertices());
+        System.out.println("Number of Nodes: " + graph.numVertices());
         System.out.println("Number of edges: " + graph.numEdges());
-        System.out.println("\nVertices:");
+        System.out.println("\nNodes:");
         for (Activity activity : graph.vertices()) {
             System.out.println(activity);
         }
