@@ -1,5 +1,7 @@
 package org.example;
 
+import java.sql.SQLException;
+
 import static org.example.MenuItem.menu;
 
 /**
@@ -11,7 +13,7 @@ import static org.example.MenuItem.menu;
  */
 public class Main {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws SQLException {
         menu();
     }
 }

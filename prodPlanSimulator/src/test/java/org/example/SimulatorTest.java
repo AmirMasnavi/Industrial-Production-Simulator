@@ -19,6 +19,7 @@ public class SimulatorTest {
     private Simulator simulator;
     private List<Article> articles;
     private List<Machine> machines;
+    private DatabaseConnection dbConnection;
 
     /**
      * Sets up the test environment before each test execution.
@@ -43,7 +44,7 @@ public class SimulatorTest {
         articles.add(new Article("Item2", Article.Priority.HIGH, List.of("Operation2", "Operation1")));
 
         // Initializing the simulator with the items and machines
-        simulator = new Simulator(articles, machines);
+        simulator = new Simulator(articles, machines, dbConnection);
     }
 
     /**

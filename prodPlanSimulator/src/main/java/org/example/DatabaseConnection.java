@@ -1,8 +1,6 @@
 package org.example;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.sql.*;
 
 /**
  * Utility class for managing database connections.
@@ -43,4 +41,25 @@ public class DatabaseConnection {
             throw new SQLException("Oracle JDBC Driver not found.", e);
         }
     }
+
+    public void executeUpdate(Connection connection, String query, Object[] params) throws SQLException {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            for (int i = 0; i < params.length; i++) {
+                preparedStatement.setObject(i + 1, params[i]);
+            }
+            preparedStatement.executeUpdate();
+        }
+    }
+    public ResultSet executeQuery(Connection connection, String query, Object[] params) throws SQLException {
+        PreparedStatement preparedStatement = connection.prepareStatement(query);
+        for (int i = 0; i < params.length; i++) {
+            preparedStatement.setObject(i + 1, params[i]);
+        }
+        return preparedStatement.executeQuery();
+    }
+
+
+
+
 }
+
