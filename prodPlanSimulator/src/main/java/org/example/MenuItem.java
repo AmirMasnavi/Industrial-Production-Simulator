@@ -3,7 +3,9 @@ package org.example;
 import org.example.sprint3.*;
 
 import javax.swing.*;
+import javax.xml.crypto.Data;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.*;
 
 /**
@@ -20,7 +22,7 @@ public class MenuItem {
     private static PERTCPMGraph pertcpmGraph = new PERTCPMGraph(); // Single instance of PERTCPMGraph
     private static List<Activity> activities; // List to store activities
 
-    static void menu() {
+    static void menu() throws SQLException {
         Scanner scanner = new Scanner(System.in);
         boolean running = true;
         Visualiser visualiser = new Visualiser();
@@ -319,11 +321,12 @@ public class MenuItem {
      * and executes the simulation.
      * </p>
      */
-    private static void runSimulation() {
+    private static void runSimulation() throws SQLException {
         List<Article> articles = CSVReader.readArticlesFromCSV("./articles.csv");
         List<Machine> machines = CSVReader.readMachinesFromCSV("./workstations.csv");
+        DatabaseConnection dbConnection = new DatabaseConnection();
 
-        simulator = new Simulator(articles, machines);
+        simulator = new Simulator(articles, machines, dbConnection);
         simulator.runSimulation();
         lastSimulationWithPriorities = true;
         System.out.println("\nSimulation with priorities completed.");
