@@ -5,7 +5,7 @@ import java.util.List;
 public class Activity {
     private final String id;
     private final String description;
-    private final int duration;
+    private int duration;
     private final String durationUnit;
     private final double cost;
     private final List<String> dependencies;
@@ -40,6 +40,10 @@ public class Activity {
 
     public String getDurationUnit() {
         return durationUnit;
+    }
+
+    public void setDuration(int duration) {
+        this.duration = duration;
     }
 
     public double getCost() {
@@ -95,5 +99,9 @@ public class Activity {
     public String toString() {
         return String.format("Activity %s (%s, %d %s, %.2f)",
                 id, description, duration, durationUnit, cost);
+    }
+
+    public static Activity findActivityById(List<Activity> activities, String id) {
+        return activities.stream().filter(a -> a.getId().equals(id)).findFirst().orElse(null);
     }
 }

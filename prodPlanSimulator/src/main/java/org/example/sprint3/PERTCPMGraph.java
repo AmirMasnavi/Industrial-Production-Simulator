@@ -290,7 +290,7 @@ public class PERTCPMGraph {
         }
     }
 
-    public List<Activity> identifyCriticalPath() {
+    public List<Activity> identifyCriticalPath(List<Activity> activities) {
         // Calculate earliest and latest times
         calculateEarliestAndLatestTimes();
 
@@ -298,7 +298,7 @@ public class PERTCPMGraph {
         int maxDuration = 0;
 
         // Identify activities on the critical path
-        for (Activity activity : graph.vertices()) {
+        for (Activity activity : activities) {
             if (activity.getSlack() == 0) {
                 criticalPath.add(activity);
             }

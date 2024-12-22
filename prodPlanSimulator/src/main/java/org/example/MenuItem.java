@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.*;
 
+import static org.example.sprint3.Activity.findActivityById;
+
 /**
  * This class represents the menu system for the application.
  * It provides methods to display options to the user and handle user input for various functionalities,
@@ -84,6 +86,7 @@ public class MenuItem {
             System.out.println("20. Export Project Schedule to CSV");
             System.out.println("21. Identify Critical Path");
             System.out.println("22. Identify Bottleneck Activities");
+            System.out.println("23. Simulate Project Delays");
             System.out.println("0. Exit");
 
             System.out.print("\nChoose an option: ");
@@ -155,6 +158,9 @@ public class MenuItem {
                     break;
                 case 22:
                     identifyBottleneckActivities();
+                    break;
+                case 23:
+                    simulateProjectDelaysMenu();
                     break;
                 case 0:
                     System.out.println("Exiting...");
@@ -797,7 +803,7 @@ public class MenuItem {
     }
 
     private static void identifyCriticalPath() {
-       pertcpmGraph.identifyCriticalPath();
+       pertcpmGraph.identifyCriticalPath(activities);
     }
 
     private static void identifyBottleneckActivities() {
@@ -819,7 +825,7 @@ public class MenuItem {
 
 
         // Optionally display the image
-//        displayImage(outputImagePath);
+        // displayImage(outputImagePath);
 
 
     /**
@@ -849,6 +855,82 @@ public class MenuItem {
             frame.setVisible(true);
         });
     }
+
+    private static void simulateProjectDelaysMenu() {
+        Scanner scanner = new Scanner(System.in);
+        boolean backToMenu = false;
+
+        while (!backToMenu) {
+            System.out.println("\n=== SIMULATE PROJECT DELAYS ===\n");
+            System.out.println("1. Change Activity Duration");
+            System.out.println("2. Build PERT-CPM Graph");
+            System.out.println("3. Perform Topological Sort");
+            System.out.println("4. Calculate Earliest and Latest Times");
+            System.out.println("5. Export Schedule to CSV");
+            System.out.println("6. Identify Critical Path");
+            System.out.println("7. Identify Bottleneck Activities");
+            System.out.println("0. Back to Main Menu");
+
+            System.out.print("\nChoose an option: ");
+            int option = scanner.nextInt();
+
+            switch (option) {
+                case 1:
+                    changeActivityDuration();
+                    break;
+                case 2:
+                    buildPertCpmGraph();
+                    break;
+                case 3:
+                    performTopologicalSort();
+                    break;
+                case 4:
+                    calculateEarliestAndLatestTimes();
+                    break;
+                case 5:
+                    exportScheduleToCsv();
+                    break;
+                case 6:
+                    identifyCriticalPath();
+                    break;
+                case 7:
+                    identifyBottleneckActivities();
+                    break;
+                case 0:
+                    backToMenu = true;
+                    break;
+                default:
+                    System.out.println("Invalid option.");
+            }
+        }
+    }
+
+    private static void changeActivityDuration() {
+        Scanner scanner = new Scanner(System.in);
+        Activity activity = null;
+
+        while (activity == null) {
+            System.out.print("Enter the ID of the activity to change: ");
+            String activityId = scanner.next();
+            activity = findActivityById(activities, activityId);
+
+            if (activity == null) {
+                System.out.println("Activity ID not found. Please try again.");
+            }
+        }
+
+        System.out.print("Enter the new duration for the activity: ");
+        int newDuration = scanner.nextInt();
+
+        activity.setDuration(newDuration);
+        System.out.println("Activity duration updated.");
+
+        // Recalculate the graph
+        pertcpmGraph.buildGraph(activities);
+        pertcpmGraph.calculateEarliestAndLatestTimes();
+    }
+
+
 
 
 }
