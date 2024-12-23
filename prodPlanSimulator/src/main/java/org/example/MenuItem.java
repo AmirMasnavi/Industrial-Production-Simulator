@@ -803,7 +803,7 @@ public class MenuItem {
     }
 
     private static void identifyCriticalPath() {
-       pertcpmGraph.identifyCriticalPath(activities);
+       pertcpmGraph.identifyCriticalPath();
     }
 
     private static void identifyBottleneckActivities() {

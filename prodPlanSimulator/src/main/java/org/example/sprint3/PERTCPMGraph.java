@@ -22,13 +22,11 @@ public class PERTCPMGraph {
         if (!hasStart || !hasEnd) {
             startActivity = new Activity("START", "Project Start", 0, "week", 0, List.of());
             endActivity = new Activity("END", "Project End", 0, "week", 0, List.of());
-            System.out.println("Added START and END vertices to graph.");
         }
 
 
         if (!hasStart) {
             graph.addVertex(startActivity);
-            System.out.println("Added START vertex to graph.");
         }
         // Add vertices for all activities
         for (Activity activity : activities) {
@@ -303,7 +301,7 @@ public class PERTCPMGraph {
         }
     }
 
-    public List<Activity> identifyCriticalPath(List<Activity> activities) {
+    public List<Activity> identifyCriticalPath() {
         // Calculate earliest and latest times
         calculateEarliestAndLatestTimes();
 
@@ -311,7 +309,7 @@ public class PERTCPMGraph {
         int maxDuration = 0;
 
         // Identify activities on the critical path
-        for (Activity activity : activities) {
+        for (Activity activity : graph.vertices()) {
             if (activity.getSlack() == 0) {
                 criticalPath.add(activity);
             }
@@ -320,9 +318,9 @@ public class PERTCPMGraph {
 
         // Print key metrics for activities on the critical path
         System.out.println("\nCritical Path Activities:");
-        System.out.println("ID | ES | EF | LS | LF | SL | Duration");
+        System.out.println("ID\t|\tES\t|\tEF\t|\tLS\t|\tLF\t|\tSL\t|\tDuration");
         for (Activity activity : criticalPath) {
-            System.out.printf("%s  | %2d | %2d | %2d | %2d | %2d | %d%n",
+            System.out.printf("%s\t|\t%2d\t|\t%2d\t|\t%2d\t|\t%2d\t|\t%2d\t|\t%d%n",
                     activity.getId(),
                     activity.getEarliestStart(),
                     activity.getEarliestFinish(),

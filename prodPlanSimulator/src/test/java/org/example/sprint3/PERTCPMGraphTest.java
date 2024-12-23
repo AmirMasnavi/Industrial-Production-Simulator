@@ -149,7 +149,7 @@ class PERTCPMGraphTest {
     @Test
     void identifyCriticalPath_withValidGraph() {
         graph.buildGraph(validActivities);
-        List<Activity> criticalPath = graph.identifyCriticalPath(validActivities);
+        List<Activity> criticalPath = graph.identifyCriticalPath();
 
         assertEquals(List.of("A", "C", "D"), criticalPath.stream().map(Activity::getId).toList(), "Critical path should only include activities with slack of 0.");
     }
