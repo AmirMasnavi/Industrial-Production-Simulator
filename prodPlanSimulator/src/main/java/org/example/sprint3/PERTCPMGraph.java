@@ -12,13 +12,24 @@ public class PERTCPMGraph {
     }
 
     public void buildGraph(List<Activity> activities) {
-
+        Activity startActivity = null;
+        Activity endActivity = null;
+        // Check if START or END already exists
+        boolean hasStart = graph.vertices().stream().anyMatch(activity -> activity.getId().equals("START"));
+        boolean hasEnd = graph.vertices().stream().anyMatch(activity -> activity.getId().equals("END"));
 
         // Step 1: Create Start and End vertices
-        Activity startActivity = new Activity("START", "Project Start", 0, "week", 0, List.of());
-        Activity endActivity = new Activity("END", "Project End", 0, "week", 0, List.of());
+        if (!hasStart || !hasEnd) {
+            startActivity = new Activity("START", "Project Start", 0, "week", 0, List.of());
+            endActivity = new Activity("END", "Project End", 0, "week", 0, List.of());
+            System.out.println("Added START and END vertices to graph.");
+        }
 
-        graph.addVertex(startActivity);
+
+        if (!hasStart) {
+            graph.addVertex(startActivity);
+            System.out.println("Added START vertex to graph.");
+        }
         // Add vertices for all activities
         for (Activity activity : activities) {
             graph.addVertex(activity);
@@ -34,7 +45,9 @@ public class PERTCPMGraph {
             }
         }
 
-        graph.addVertex(endActivity);
+        if (!hasEnd) {
+            graph.addVertex(endActivity);
+        }
 
 
         // Handle the case where the activity list is empty
@@ -46,7 +59,7 @@ public class PERTCPMGraph {
 
         // Step 2: Connect Start to activities that have no predecessors
         for (Activity activity : activities) {
-            if (activity.getDependencies().isEmpty()) {
+            if (activity.getDependencies().isEmpty() && startActivity != null) {
                 graph.addEdge(startActivity, activity, 0);  // No duration for Start to activity
             }
         }
@@ -63,7 +76,7 @@ public class PERTCPMGraph {
         }
 
         for (Activity activity : activities) {
-            if (!activitiesWithSuccessors.contains(activity)) {
+            if (!activitiesWithSuccessors.contains(activity) && endActivity != null) {
                 graph.addEdge(activity, endActivity, 0);  // No duration for activity to End
             }
         }
