@@ -354,6 +354,9 @@ public class PERTCPMGraph {
             maxDuration = Math.max(maxDuration, activity.getLatestFinish());
         }
 
+        // Sort critical path activities by earliest start time
+        criticalPath.sort(Comparator.comparingInt(Activity::getEarliestStart));
+
         // Print critical path activities
         System.out.println("\nCritical Path Activities:");
         System.out.println("ID\t|\tES\t|\tEF\t|\tLS\t|\tLF\t|\tSL\t|\tDuration");
