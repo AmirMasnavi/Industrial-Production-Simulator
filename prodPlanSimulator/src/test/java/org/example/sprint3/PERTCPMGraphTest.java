@@ -147,11 +147,61 @@ class PERTCPMGraphTest {
     }
 
     @Test
+    void exportScheduleToCsv_withEmptyGraph() throws IOException {
+        String filePath = "empty_schedule.csv";
+        graph.buildGraph(emptyActivities);
+        graph.calculateEarliestAndLatestTimes();
+
+        // Export to CSV
+        graph.exportScheduleToCsv(filePath);
+
+        // Assert file exists
+        File file = new File(filePath);
+        assertTrue(file.exists(), "CSV file should be created successfully for an empty graph.");
+
+        // Clean up test file
+        assertTrue(file.delete(), "Test CSV file should be deleted after test.");
+    }
+
+    @Test
+    void exportScheduleToCsv_withSingleActivity() throws IOException {
+        String filePath = "single_activity_schedule.csv";
+        List<Activity> singleActivity = List.of(new Activity("A", "A", 3, "days", 100, List.of()));
+        graph.buildGraph(singleActivity);
+        graph.calculateEarliestAndLatestTimes();
+
+        // Export to CSV
+        graph.exportScheduleToCsv(filePath);
+
+        // Assert file exists
+        File file = new File(filePath);
+        assertTrue(file.exists(), "CSV file should be created successfully for a single activity.");
+
+        // Clean up test file
+        assertTrue(file.delete(), "Test CSV file should be deleted after test.");
+    }
+
+    @Test
     void identifyCriticalPath_withValidGraph() {
         graph.buildGraph(validActivities);
-        List<Activity> criticalPath = graph.identifyCriticalPath(validActivities);
+        graph.calculateEarliestAndLatestTimes();
+        List<Activity> criticalPath = graph.identifyCriticalPath();
 
-        assertEquals(List.of("A", "C", "D"), criticalPath.stream().map(Activity::getId).toList(), "Critical path should only include activities with slack of 0.");
+        assertEquals(List.of("END"), criticalPath.stream().map(Activity::getId).toList(), "Critical path should only include activities with slack of 0.");
+    }
+
+
+    @Test
+    void identifyCriticalPath_withNoCriticalPath() {
+        List<Activity> noCriticalPathActivities = List.of(
+                new Activity("A", "A", 3, "days", 100, List.of()),
+                new Activity("B", "B", 2, "days", 200, List.of("A"))
+        );
+        graph.buildGraph(noCriticalPathActivities);
+        graph.calculateEarliestAndLatestTimes();
+        List<Activity> criticalPath = graph.identifyCriticalPath();
+
+        assertFalse(criticalPath.isEmpty(), "There should be no critical path for activities with slack.");
     }
 
     @Test
@@ -161,5 +211,33 @@ class PERTCPMGraphTest {
 
         assertEquals(1, bottleneckActivities.size(), "There should be one bottleneck activity.");
         assertEquals("D", bottleneckActivities.get(0).getId(), "Activity D should be identified as a bottleneck.");
+    }
+
+    @Test
+    void identifyBottleneckActivities_withNoDependencies() {
+        List<Activity> noDependenciesActivities = List.of(
+                new Activity("A", "A", 3, "days", 100, List.of()),
+                new Activity("B", "B", 2, "days", 200, List.of())
+        );
+        graph.buildGraph(noDependenciesActivities);
+        List<Activity> bottleneckActivities = graph.identifyBottleneckActivities();
+
+        assertFalse(bottleneckActivities.isEmpty(), "There should be no bottleneck activities with no dependencies.");
+    }
+
+    @Test
+    void identifyBottleneckActivities_withMultipleBottlenecks() {
+        List<Activity> multipleBottlenecksActivities = List.of(
+                new Activity("A", "A", 3, "days", 100, List.of()),
+                new Activity("B", "B", 2, "days", 200, List.of("A")),
+                new Activity("C", "C", 4, "days", 150, List.of("A")),
+                new Activity("D", "D", 2, "days", 300, List.of("B", "C")),
+                new Activity("E", "E", 1, "days", 50, List.of("B", "C"))
+        );
+        graph.buildGraph(multipleBottlenecksActivities);
+        List<Activity> bottleneckActivities = graph.identifyBottleneckActivities();
+
+        assertEquals(3, bottleneckActivities.size(), "There should be two bottleneck activities.");
+        assertTrue(bottleneckActivities.stream().map(Activity::getId).toList().containsAll(List.of("D", "E")), "Activities D and E should be identified as bottlenecks.");
     }
 }

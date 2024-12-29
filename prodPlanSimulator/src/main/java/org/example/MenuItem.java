@@ -3,10 +3,10 @@ package org.example;
 import org.example.sprint3.*;
 
 import javax.swing.*;
-import javax.xml.crypto.Data;
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.*;
+
+import static org.example.sprint3.Activity.findActivityById;
 
 /**
  * This class represents the menu system for the application.
@@ -19,10 +19,10 @@ public class MenuItem {
     private static SimulatorNoPriorities simulatorNoPriorites;
     private static boolean lastSimulationWithPriorities;
     private static BooDataResult booDataResult;
-    private static PERTCPMGraph pertcpmGraph = new PERTCPMGraph(); // Single instance of PERTCPMGraph
+    private static final PERTCPMGraph pertcpmGraph = new PERTCPMGraph(); // Single instance of PERTCPMGraph
     private static List<Activity> activities; // List to store activities
 
-    static void menu() throws SQLException {
+    static void menu(){
         Scanner scanner = new Scanner(System.in);
         boolean running = true;
         Visualiser visualiser = new Visualiser();
@@ -84,6 +84,7 @@ public class MenuItem {
             System.out.println("20. Export Project Schedule to CSV");
             System.out.println("21. Identify Critical Path");
             System.out.println("22. Identify Bottleneck Activities");
+            System.out.println("23. Simulate Project Delays");
             System.out.println("0. Exit");
 
             System.out.print("\nChoose an option: ");
@@ -155,6 +156,9 @@ public class MenuItem {
                     break;
                 case 22:
                     identifyBottleneckActivities();
+                    break;
+                case 23:
+                    simulateProjectDelaysMenu();
                     break;
                 case 0:
                     System.out.println("Exiting...");
@@ -321,7 +325,7 @@ public class MenuItem {
      * and executes the simulation.
      * </p>
      */
-    private static void runSimulation() throws SQLException {
+    private static void runSimulation(){
         List<Article> articles = CSVReader.readArticlesFromCSV("./articles.csv");
         List<Machine> machines = CSVReader.readMachinesFromCSV("./workstations.csv");
         DatabaseConnection dbConnection = new DatabaseConnection();
@@ -642,6 +646,11 @@ public class MenuItem {
             printer.printOperationTree(rootNode);
         }
     }
+
+    /**
+     *Calculates Tree Depth for a given node recursively and returns the depth.
+     * @param node The root node of the production tree.
+     */
     private static int calculateTreeDepth(ProductionTreeNode node) {
         if (node == null || node.getChildren().isEmpty()) {
             return 1; // Base case: a single node has depth 1
@@ -729,7 +738,34 @@ public class MenuItem {
         runSimulationWithoutPriorities(new_articles, new_machines);
     }
 
+    /**
+     * Builds the PERT-CPM graph based on the selected project file.
+     * Prompts the user to choose between predefined project files and
+     * constructs a graph using the activities defined in the selected file.
+     * Displays graph details, including the number of nodes, edges, and their attributes.
+     */
     private static void buildPertCpmGraph() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Choose the project file to build the PERT-CPM graph:");
+        System.out.println("1. small_project.csv");
+        System.out.println("2. large_project.csv");
+        System.out.print("Enter your choice: ");
+        int choice = scanner.nextInt();
+
+        String filePath;
+        if (choice == 1) {
+            filePath = "./small_project.csv";
+        } else if (choice == 2) {
+            filePath = "./large_project.csv";
+        } else {
+            System.out.println("Invalid choice. Defaulting to small_project.csv.");
+            filePath = "./small_project.csv";
+        }
+
+        // Read activities from the chosen file
+        activities = CSVReader.readActivitiesFromCsv(filePath);
+
+        // Build the graph
         pertcpmGraph.buildGraph(activities);
 
         Graph<Activity, Integer> graph = pertcpmGraph.getGraph();
@@ -750,26 +786,30 @@ public class MenuItem {
                     edge.getWeight(),
                     edge.getVOrig().getDurationUnit());
         }
+
         /*
-        // Export the graph to DOT format
-        String dotFilePath = "./trash/pert_cpm_graph.dot";
-        GraphVizExporter.exportToDot(graph, dotFilePath);
-        System.out.println("\nDOT file created: " + dotFilePath);
-
-        // Generate the image using GraphViz
-        String outputImagePath = "./trash/pert_cpm_graph.svg"; // Change to SVG
-        try {
-            generateGraphImage(dotFilePath, outputImagePath);
-            System.out.println("SVG image generated: " + outputImagePath);
-        } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
-            System.err.println("Error generating the graph image.");
-        }
-
+         * Exports the graph to DOT format for visualization and generates an image
+         * if uncommented. These operations are currently disabled.
+         *
+         * String dotFilePath = "./trash/pert_cpm_graph.dot";
+         * GraphVizExporter.exportToDot(graph, dotFilePath);
+         * System.out.println("\nDOT file created: " + dotFilePath);
+         *
+         * String outputImagePath = "./trash/pert_cpm_graph.svg";
+         * try {
+         *     generateGraphImage(dotFilePath, outputImagePath);
+         *     System.out.println("SVG image generated: " + outputImagePath);
+         * } catch (IOException | InterruptedException e) {
+         *     e.printStackTrace();
+         *     System.err.println("Error generating the graph image.");
+         * }
          */
-
     }
 
+    /**
+     * Validates the PERT-CPM graph for circular dependencies.
+     * Throws an exception if cycles are detected in the graph.
+     */
     private static void validateNoCircularDependencies() {
         try {
             pertcpmGraph.validateNoCircularDependencies();
@@ -779,27 +819,45 @@ public class MenuItem {
         }
     }
 
+    /**
+     * Performs a topological sort of the activities in the graph
+     * and displays the resulting order.
+     */
     private static void performTopologicalSort() {
         String topologicalOrder = pertcpmGraph.getTopologicalSortAsString();
         System.out.println("\nTopological Sort Result:");
         System.out.println(topologicalOrder);
     }
 
+    /**
+     * Calculates the earliest and latest start and finish times
+     * for each activity in the PERT-CPM graph and prints the results.
+     */
     private static void calculateEarliestAndLatestTimes() {
         System.out.println("\nEarliest and Latest Start and Finish Times:");
         pertcpmGraph.calculateEarliestAndLatestTimes();
         pertcpmGraph.printActivityTimes();
     }
 
+    /**
+     * Exports the current project schedule to a CSV file.
+     */
     private static void exportScheduleToCsv() {
         String scheduleFilePath = "./schedule.csv";
         pertcpmGraph.exportScheduleToCsv(scheduleFilePath);
     }
 
+    /**
+     * Identifies and marks the critical path in the PERT-CPM graph.
+     */
     private static void identifyCriticalPath() {
-       pertcpmGraph.identifyCriticalPath();
+        pertcpmGraph.identifyCriticalPath();
     }
 
+    /**
+     * Identifies bottleneck activities in the project, which are activities
+     * that limit the overall project timeline, and displays their details.
+     */
     private static void identifyBottleneckActivities() {
         List<Activity> bottleneckActivities = pertcpmGraph.identifyBottleneckActivities();
         System.out.println("\nBottleneck Activities: ");
@@ -817,25 +875,23 @@ public class MenuItem {
         }
     }
 
-
-        // Optionally display the image
-//        displayImage(outputImagePath);
-
-
     /**
      * Generates a graph image from a DOT file using GraphViz.
+     * @param dotFilePath Path to the DOT file.
+     * @param outputImagePath Path to save the generated image.
+     * @throws IOException If an error occurs during file operations.
+     * @throws InterruptedException If the GraphViz process is interrupted.
      */
     public static void generateGraphImage(String dotFilePath, String outputImagePath) throws IOException, InterruptedException {
-        // Command to run GraphViz and output SVG
         ProcessBuilder processBuilder = new ProcessBuilder("dot", "-Tsvg", dotFilePath, "-o", outputImagePath);
         processBuilder.redirectErrorStream(true);
         Process process = processBuilder.start();
         process.waitFor();
     }
 
-
     /**
-     * Displays the generated image using a simple Swing GUI.
+     * Displays the generated graph image using a Swing GUI.
+     * @param imagePath Path to the image file to display.
      */
     private static void displayImage(String imagePath) {
         javax.swing.SwingUtilities.invokeLater(() -> {
@@ -850,5 +906,87 @@ public class MenuItem {
         });
     }
 
+    /**
+     * Displays a menu for simulating project delays and allows
+     * users to perform various actions, such as modifying activity durations,
+     * recalculating the graph, and identifying critical elements.
+     */
+    private static void simulateProjectDelaysMenu() {
+        Scanner scanner = new Scanner(System.in);
+        boolean backToMenu = false;
+
+        while (!backToMenu) {
+            System.out.println("\n=== SIMULATE PROJECT DELAYS ===\n");
+            System.out.println("1. Change Activity Duration");
+            System.out.println("2. Build PERT-CPM Graph");
+            System.out.println("3. Perform Topological Sort");
+            System.out.println("4. Calculate Earliest and Latest Times");
+            System.out.println("5. Export Schedule to CSV");
+            System.out.println("6. Identify Critical Path");
+            System.out.println("7. Identify Bottleneck Activities");
+            System.out.println("0. Back to Main Menu");
+
+            System.out.print("\nChoose an option: ");
+            int option = scanner.nextInt();
+
+            switch (option) {
+                case 1:
+                    changeActivityDuration();
+                    break;
+                case 2:
+                    buildPertCpmGraph();
+                    break;
+                case 3:
+                    performTopologicalSort();
+                    break;
+                case 4:
+                    calculateEarliestAndLatestTimes();
+                    break;
+                case 5:
+                    exportScheduleToCsv();
+                    break;
+                case 6:
+                    identifyCriticalPath();
+                    break;
+                case 7:
+                    identifyBottleneckActivities();
+                    break;
+                case 0:
+                    backToMenu = true;
+                    break;
+                default:
+                    System.out.println("Invalid option.");
+            }
+        }
+    }
+
+    /**
+     * Modifies the duration of a specific activity and updates the project graph.
+     * Prompts the user to enter the activity ID and the new duration.
+     */
+    private static void changeActivityDuration() {
+        Scanner scanner = new Scanner(System.in);
+        Activity activity = null;
+
+        while (activity == null) {
+            System.out.print("Enter the ID of the activity to change: ");
+            String activityId = scanner.next();
+            activity = findActivityById(activities, activityId);
+
+            if (activity == null) {
+                System.out.println("Activity ID not found. Please try again.");
+            }
+        }
+
+        System.out.print("Enter the new duration for the activity: ");
+        int newDuration = scanner.nextInt();
+
+        activity.setDuration(newDuration);
+        System.out.println("Activity duration updated.");
+
+        // Recalculate the graph
+        pertcpmGraph.buildGraph(activities);
+        pertcpmGraph.calculateEarliestAndLatestTimes();
+    }
 
 }
