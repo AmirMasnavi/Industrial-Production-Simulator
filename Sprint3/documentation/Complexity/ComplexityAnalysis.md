@@ -222,4 +222,236 @@ public List<Activity> topologicalSort() {
   - E = number of edges (dependencies).
 - **Overall complexity:** O(V + E).
 
+### USEI20
+> **calculateEarliestAndLatestTimes**
 
+`````java
+public void calculateEarliestAndLatestTimes() {
+  // Forward pass
+  List<Activity> sortedActivities = topologicalSort();
+  for (Activity activity : sortedActivities) {
+    int es = 0;
+    for (Edge<Activity, Integer> edge : graph.incomingEdges(activity)) {
+      Activity predecessor = edge.getVOrig();
+      es = Math.max(es, predecessor.getEarliestFinish());
+    }
+    activity.setEarliestStart(es);
+    activity.setEarliestFinish(es + activity.getDuration());
+  }
+
+  // Backward pass
+  ListIterator<Activity> iterator = sortedActivities.listIterator(sortedActivities.size());
+  while (iterator.hasPrevious()) {
+    Activity activity = iterator.previous();
+    if (graph.outDegree(activity) == 0) { // End activities
+      activity.setLatestFinish(activity.getEarliestFinish());
+    }
+    int lf = activity.getLatestFinish();
+    for (Edge<Activity, Integer> edge : graph.outgoingEdges(activity)) {
+      Activity successor = edge.getVDest();
+      lf = Math.min(lf, successor.getLatestStart());
+    }
+    activity.setLatestFinish(lf);
+    activity.setLatestStart(lf - activity.getDuration());
+  }
+
+  // Calculate slack
+  for (Activity activity : graph.vertices()) {
+    activity.setSlack(activity.getLatestStart() - activity.getEarliestStart());
+  }
+}
+``````
+***Complexity Analysis:***
+
+**Forward pass:**
+- Iterates through the activities in topological order to calculate the earliest start (ES) and earliest finish (EF) times.
+- For each activity, iterates through its predecessors to find the maximum EF.
+- **Complexity:**
+  - Iterating over activities: O(V).
+  - Checking predecessors: O(E).
+
+**Backward pass:**
+- Iterates through the activities in reverse topological order to calculate the latest start (LS) and latest finish (LF) times.
+- For each activity, iterates through its successors to find the minimum LS.
+- **Complexity:**
+  - Iterating over activities: O(V).
+  - Checking successors: O(E).
+
+**Calculating slack:**
+- Iterates over all activities to calculate slack times (LF - EF or LS - ES).
+- **Complexity:** O(V).
+
+**Total Complexity:**
+- Let:
+  - V = number of vertices (activities).
+  - E = number of edges (dependencies).
+- **Overall complexity:** O(V + E).
+
+### USEI21
+> **exportScheduleToCsv**
+
+`````java
+    public void exportScheduleToCsv(String filePath) {
+  try (FileWriter writer = new FileWriter(filePath)) {
+    // Write CSV header
+    writer.write("act_id,cost,duration,es,ls,ef,lf,slack,prev_act_id1,...,prev_act_idN\n");
+
+    // Write activity data
+    for (Activity activity : graph.vertices()) {
+      StringBuilder line = new StringBuilder();
+
+      line.append(activity.getId()).append(";")
+              .append(activity.getCost()).append(";")
+              .append(activity.getDuration()).append(";")
+              .append(activity.getEarliestStart()).append(";")
+              .append(activity.getLatestStart()).append(";")
+              .append(activity.getEarliestFinish()).append(";")
+              .append(activity.getLatestFinish()).append(";")
+              .append(activity.getSlack());
+
+      for (String dependency : activity.getDependencies()) {
+        line.append(";").append(dependency); // Append each dependency
+      }
+
+      writer.write(line.append("\n").toString());
+    }
+
+    System.out.println("\nSchedule exported successfully to: " + filePath);
+
+  } catch (IOException e) {
+    System.err.println("Error writing schedule to CSV: " + e.getMessage());
+  }
+}
+``````
+***Complexity Analysis:***
+
+**Formatting the output:**
+- Iterates over all activities to collect data (e.g., ID, cost, duration, ES, EF, LS, LF, dependencies).
+- **Complexity:** O(V + D), where D is the total number of dependencies.
+
+**Writing to a file:**
+- Outputs formatted data to the CSV file.
+- Writing each activity’s data: O(V).
+
+**Total Complexity:**
+- Let:
+  - V = number of vertices (activities).
+  - D = number of dependencies.
+- **Overall complexity:** O(V + D).
+
+### USEI22
+> **identifyCriticalPath**
+
+`````java
+ public List<Activity> identifyCriticalPath() {
+  // Ensure time calculations are up-to-date
+  calculateEarliestAndLatestTimes();
+
+  List<Activity> criticalPath = new ArrayList<>();
+  int maxDuration = 0;
+
+  // Collect activities with zero slack
+  for (Activity activity : graph.vertices()) {
+    if (activity.getSlack() == 0) {
+      criticalPath.add(activity);
+    }
+    maxDuration = Math.max(maxDuration, activity.getLatestFinish());
+  }
+
+  // Sort critical path activities by earliest start time
+  criticalPath.sort(Comparator.comparingInt(Activity::getEarliestStart));
+
+  // Print critical path activities
+  System.out.println("\nCritical Path Activities:");
+  System.out.println("ID\t|\tES\t|\tEF\t|\tLS\t|\tLF\t|\tSL\t|\tDuration");
+  for (Activity activity : criticalPath) {
+    System.out.printf("%s\t|\t%2d\t|\t%2d\t|\t%2d\t|\t%2d\t|\t%2d\t|\t%d%n",
+            activity.getId(),
+            activity.getEarliestStart(),
+            activity.getEarliestFinish(),
+            activity.getLatestStart(),
+            activity.getLatestFinish(),
+            activity.getSlack(),
+            activity.getDuration());
+  }
+
+  System.out.println("\nTotal project duration: " + maxDuration + " weeks\n");
+
+  return criticalPath;
+}
+``````
+***Complexity Analysis:***
+
+**Finding the critical path:**
+- Uses the results from `calculateEarliestAndLatestTimes` to identify activities with zero slack.
+- Iterates over all activities to check slack values and adds critical activities to the path.
+- **Complexity:**
+  - Checking slack: O(V).
+  - Adding to the critical path: O(1) per activity.
+
+**Sorting critical path:**
+- Sorts critical path activities by their earliest start times.
+- **Complexity:** O(C log C), where C is the number of activities on the critical path.
+
+**Total Complexity:**
+- Let:
+  - V = number of vertices (activities).
+  - C = number of activities on the critical path.
+- **Overall complexity:** O(V + C log C).
+
+
+### USEI23
+> **identifyBottleneckActivities**
+
+`````java
+  public List<Activity> identifyBottleneckActivities() {
+  Map<Activity, Integer> dependencyCount = new HashMap<>();
+
+  // Initialize dependency counts
+  for (Activity activity : graph.vertices()) {
+    dependencyCount.put(activity, 0);
+  }
+
+  // Count the dependencies for each activity
+  for (Activity activity : graph.vertices()) {
+    for (Activity neighbor : graph.adjVertices(activity)) {
+      dependencyCount.put(neighbor, dependencyCount.get(neighbor) + 1);
+    }
+  }
+
+  // Find the maximum number of dependencies
+  int maxDependencies = Collections.max(dependencyCount.values());
+
+  // Collect activities with the maximum dependency count
+  List<Activity> bottleneckActivities = new ArrayList<>();
+  for (Map.Entry<Activity, Integer> entry : dependencyCount.entrySet()) {
+    if (entry.getValue() == maxDependencies) {
+      bottleneckActivities.add(entry.getKey());
+    }
+  }
+
+  return bottleneckActivities;
+}
+
+``````
+***Complexity Analysis:***
+
+**Counting dependencies:**
+- Iterates over all vertices and their neighbors to count incoming edges for each activity.
+- **Complexity:**
+  - Iterating over vertices: O(V).
+  - Iterating over edges: O(E).
+
+**Finding maximum dependencies:**
+- Iterates over all activities to find the maximum dependency count.
+- **Complexity:** O(V).
+
+**Collecting bottleneck activities:**
+- Iterates over all activities to collect those with the maximum dependency count.
+- **Complexity:** O(V).
+
+**Total Complexity:**
+- Let:
+  - V = number of vertices (activities).
+  - E = number of edges (dependencies).
+- **Overall complexity:** O(V + E).
