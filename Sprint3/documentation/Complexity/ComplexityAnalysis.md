@@ -363,6 +363,41 @@ public void calculateEarliestAndLatestTimes() {
   - E = number of edges (dependencies).
 - **Overall complexity:** O(V + E).
 
+> **printActivityTimes**
+
+`````java
+
+public void printActivityTimes() {
+  System.out.println("ID\t|\tES\t|\tEF\t|\tLS\t|\tLF\t|\tSlack");
+  for (Activity activity : graph.vertices()) {
+    if (Objects.equals(activity.getId(), "START") || Objects.equals(activity.getId(), "END")) {
+      continue; // Skip pseudo-activities "START" and "END"
+    }
+    System.out.printf("%s\t|\t%2d\t|\t%2d\t|\t%2d\t|\t%2d\t|\t%2d%n",
+            activity.getId(),
+            activity.getEarliestStart(),
+            activity.getEarliestFinish(),
+            activity.getLatestStart(),
+            activity.getLatestFinish(),
+            activity.getSlack());
+  }
+}
+``````
+***Complexity Analysis:***
+
+**Formatting and printing times:**
+- Iterates over all activities in the graph to access their calculated values (ES, EF, LS, LF, Slack).
+- Skips pseudo-activities ("START" and "END").
+- Prints data for each valid activity.
+- **Complexity:**
+  - Iterating over vertices: O(V), where V is the number of vertices.
+  - Printing data: O(V), as each vertex is processed once.
+
+**Total Complexity:**
+- Let:
+  - V = number of vertices (activities).
+- **Overall complexity:** O(V).
+
 ### USEI21
 > **exportScheduleToCsv**
 
