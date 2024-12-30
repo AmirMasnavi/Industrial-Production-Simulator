@@ -145,6 +145,52 @@
   - E = number of edges (dependencies).
 - **Overall complexity:** O(V + E).
 
+> **dfsDetectCycle**
+
+`````java
+private boolean dfsDetectCycle(Activity activity, Set<Activity> visited, Set<Activity> recursionStack) {
+  // If the activity is in the recursion stack, a cycle exists
+  if (recursionStack.contains(activity)) {
+    return true;
+  }
+
+  // If the activity is already visited and not in the stack, no cycle
+  if (visited.contains(activity)) {
+    return false;
+  }
+
+  // Mark the activity as visited and add it to the recursion stack
+  visited.add(activity);
+  recursionStack.add(activity);
+
+  // Explore all adjacent vertices for cycles
+  for (Activity neighbor : graph.adjVertices(activity)) {
+    if (dfsDetectCycle(neighbor, visited, recursionStack)) {
+      return true;
+    }
+  }
+
+  // Remove the activity from the recursion stack after exploring all neighbors
+  recursionStack.remove(activity);
+  return false;
+}
+``````
+***Complexity Analysis:***
+
+**Detecting cycles:**
+- Implements Depth-First Search (DFS) to detect cycles in the graph.
+- Visits each vertex once during the DFS traversal.
+- For each vertex, checks all its outgoing edges.
+- **Complexity:**
+  - Visiting vertices: O(V), where V is the number of vertices.
+  - Checking edges: O(E), where E is the number of edges.
+
+**Total Complexity:**
+- Let:
+  - V = number of vertices.
+  - E = number of edges.
+- **Overall complexity:** O(V + E).
+
 ### USEI19
 > **topologicalSort**
 
@@ -221,6 +267,36 @@ public List<Activity> topologicalSort() {
   - V = number of vertices (activities).
   - E = number of edges (dependencies).
 - **Overall complexity:** O(V + E).
+
+> **getTopologicalSortAsString**
+
+`````java
+    public String getTopologicalSortAsString() {
+  List<Activity> sortedActivities = topologicalSort();
+  StringBuilder result = new StringBuilder();
+  for (int i = 0; i < sortedActivities.size(); i++) {
+    result.append(sortedActivities.get(i).getId());
+    if (i < sortedActivities.size() - 1) {
+      result.append(" -> ");
+    }
+  }
+  return result.toString();
+}
+``````
+***Complexity Analysis:***
+
+**Generating the output string:**
+- Uses the result of `topologicalSort` to retrieve the list of activities.
+- Iterates over the list to build the formatted string.
+- **Complexity:**
+  - Retrieving the sorted list: O(V), where V is the number of vertices.
+  - Iterating and formatting the string: O(V).
+
+**Total Complexity:**
+- Let:
+  - V = number of vertices.
+- **Overall complexity:** O(V).
+
 
 ### USEI20
 > **calculateEarliestAndLatestTimes**
