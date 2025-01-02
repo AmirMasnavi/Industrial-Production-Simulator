@@ -1,6 +1,6 @@
-# USEI06 - Display Average Execution and Waiting Times for Operations
+# USEI22 - Identify the Critical Path
 ## 2. Analysis
 
 ### 2.1. Relevant Domain Model Excerpt
 
-![Domain Model](svg/USEI06-domain-model.svg)
+![Domain Model](svg/USEI22-domain-model.svg)

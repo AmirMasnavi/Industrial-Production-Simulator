@@ -1,19 +1,23 @@
-# USEI06- Display Average Execution and Waiting Times for Operations
+# USEI22 - Identify the Critical Path
 
 ## 1. Requirements Engineering
 
 ### 1.1. User Story Descriptio
-As a Product Manager, I want to see the average execution times per operation and the corresponding waiting times
+As a Product Manager, I want to identify the critical path of the project so that I can focus on activities that directly affect the project completion time
 
 ### 1.2. Customer Specifications and Clarifications 
 
 **From the specifications document:**
 
->The production simulation should be capable of generating statistical information, including execution times and waiting times per operation.
+>The critical path is the sequence of activities that determines the total project duration. Activities in the critical path have:
+>>Zero slack time.
+>
+>>Dependencies that must be completed sequentially.
 
->The times must be calculated based on the imported data and should consider the production flow of operations across different workstations.
-
->The simulation must provide a clear view of the average execution times for each operation and the corresponding waiting times, allowing an analysis of efficiency and possible bottlenecks.
+>The system must:
+>>Identify the critical path(s) from the PERT/CPM graph.
+>
+>>Calculate the total project duration based on the critical path
 
 **From the client clarifications:**
 
@@ -31,36 +35,34 @@ As a Product Manager, I want to see the average execution times per operation an
 
 ### 1.3. Acceptance Criteria
 
-* **AC1:** The system must correctly calculate the waiting time associated with each operation.
-* **AC2:** The system must correctly calculate the average execution time for each operation based on the input data.
-* **AC3:**  The results must be presented to the user in a clear and readable format, allowing the user to view the execution and waiting times per operation.
-* **AC4:** The calculation must include all ongoing operations, and the results should reflect the current state of the system based on the provided inputs.
+* **AC1:** The system must identify all activities with zero slack time.
+* **AC2:** The system must construct the critical path(s) based on activity dependencies and zero slack times.
+* **AC3:** The system must calculate and display the total project duration based on the critical path.
+* **AC4:** The system must notify the user with a clear representation of the critical path(s) and project duration.
 
 ### 1.4. Found out Dependencies
 
-**USEI01**-Import and structure data from articles.csv and workstations.csv.
-
-**USEI04**-Calculation of execution times per operation.
-
-**USEI05**-Mapping of operations and percentages by workstation
+**USEI17-** The system must already support the construction of a PERT/CPM graph with activity dependencies.
+**USEI20-** The system must already calculate earliest and latest start/finish times and slack times for all activities.
 
 ### 1.5 Input and Output Data
 
 **Input Data:**
 
-* Uploaded File:
-  * workstations.csv
-  * articles.csv
-
+* PERT/CPM Graph containing:
+  * Activities with earliest and latest start/finish times.
+  * Dependencies.
 
 **Output Data:**
 
-* A list of operations with their average execution times.
-* A list of waiting times per operation.
+* Critical path(s), including:
+  * Sequence of activities in the critical path.
+  * Total project duration.
+* Notification to the user with a detailed critical path analysis report.
 
 ### 1.6. System Sequence Diagram (SSD)
 
-![System Sequence Diagram](svg/USEI06-system-sequence-diagram.svg)
+![System Sequence Diagram](svg/USEI22-system-sequence-diagram-System%20Sequence%20Diagram%20(SSD)%20-%20Identify%20the%20Critical%20Path.svg)
 
 ### 1.7 Other Relevant Remarks
 
