@@ -25,35 +25,6 @@ public class USLP06 {
     static String outputFilePath;
 
 
-    public static void main(String[] args) throws SQLException {
-        String csvFilePath = "/Users/diogogarrett/IdeaProjects/sem3-pi-2024_25_G145_v2/orders.csv";
-        List<Order> orders = readOrdersFromCSV(csvFilePath);
-
-        Map<String, Integer> operationTimes;
-        try {
-            operationTimes = fetchOperationTimesFromDatabase();
-        } catch (SQLException e) {
-            System.err.println("Failed to fetch operation times from the database: " + e.getMessage());
-            return;
-        }
-
-        getArticles(orders);
-
-        if (operationTimes.isEmpty()) {
-            System.err.println("Operation times map is empty. Exiting.");
-            return;
-        }
-
-        try (DatabaseConnection connection = DatabaseConnection.createConnection()) {
-            simulateProduction(operationTimes, orders);
-        } catch (SQLException e) {
-            System.err.println("Error during simulation: " + e.getMessage());
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-
     private static void getArticles(List<Order> orders) {
         outputFilePath2 = "orderArticles.csv";
 
@@ -167,7 +138,7 @@ public class USLP06 {
     /**
      * Simulates production using orders and operation times.
      */
-    public static void simulateProduction(Map<String, Integer> operationTimes, List<Order> orders) throws SQLException {
+    public static void simulateProduction() throws SQLException {
         // Use the DatabaseConnection directly
         List<Article> articles = CSVReader.readArticlesFromCSV("./orderArticles.csv");
         List<Machine> machines = CSVReader.readMachinesFromCSV("./orderMachines.csv");

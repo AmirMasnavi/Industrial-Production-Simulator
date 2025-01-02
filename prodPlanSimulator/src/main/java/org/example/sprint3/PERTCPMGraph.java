@@ -185,8 +185,18 @@ public class PERTCPMGraph {
      * times for all activities in the graph using forward and backward passes.
      */
     public void calculateEarliestAndLatestTimes() {
-        // Forward pass
         List<Activity> sortedActivities = topologicalSort();
+        if (sortedActivities == null) {
+            throw new IllegalStateException("The graph contains cycles and is invalid.");
+        }
+        // Initialize times
+        for (Activity activity : graph.vertices()) {
+            activity.setEarliestStart(0);
+            activity.setEarliestFinish(0);
+            activity.setLatestStart(Integer.MAX_VALUE);
+            activity.setLatestFinish(Integer.MAX_VALUE);
+        }
+        // Forward Pass: Calculate ES and EF
         for (Activity activity : sortedActivities) {
             int es = 0;
             for (Edge<Activity, Integer> edge : graph.incomingEdges(activity)) {
@@ -196,8 +206,7 @@ public class PERTCPMGraph {
             activity.setEarliestStart(es);
             activity.setEarliestFinish(es + activity.getDuration());
         }
-
-        // Backward pass
+        // Backward Pass: Calculate LS and LF
         ListIterator<Activity> iterator = sortedActivities.listIterator(sortedActivities.size());
         while (iterator.hasPrevious()) {
             Activity activity = iterator.previous();
@@ -212,10 +221,10 @@ public class PERTCPMGraph {
             activity.setLatestFinish(lf);
             activity.setLatestStart(lf - activity.getDuration());
         }
-
-        // Calculate slack
+        // Calculate Slack
         for (Activity activity : graph.vertices()) {
-            activity.setSlack(activity.getLatestStart() - activity.getEarliestStart());
+            int slack = activity.getLatestStart() - activity.getEarliestStart();
+            activity.setSlack(slack);
         }
     }
 
