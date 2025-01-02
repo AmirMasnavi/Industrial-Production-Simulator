@@ -34,7 +34,7 @@ public class CSVReader {
                 try {
                     articles.add(Article.fromCSV(line));
                 } catch (IllegalArgumentException e) {
-                    System.err.println("Error parsing line: " + line + ". " + e.getMessage());
+                    //System.err.println("This product:" + line + " does not have any operations, because it already is a final product --" + e.getMessage());
                 }
             });
         } catch (IOException e) {
@@ -310,6 +310,28 @@ public class CSVReader {
         }
 
         return dependencies;
+    }
+    public static List<Order> readOrdersFromCSV(String filePath) {
+        List<Order> orders = new ArrayList<>();
+
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            br.readLine();
+            while ((line = br.readLine()) != null) {
+                String[] values = line.split(",");
+                if (values.length >= 3) {
+                    String orderId = values[0].trim();
+                    String productId = values[1].trim();
+                    String priority = values[2].trim();
+                    int quantity = Integer.parseInt(values[3].trim());
+                    orders.add(new Order(orderId, productId, priority, quantity));
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Error reading the CSV file: " + e.getMessage());
+        }
+
+        return orders;
     }
 
 

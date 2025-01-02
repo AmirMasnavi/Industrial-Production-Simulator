@@ -1,6 +1,9 @@
 package org.example;
 
 import javax.xml.crypto.Data;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
@@ -122,7 +125,7 @@ public class Simulator {
 
         String getMaxSimulationIDQuery = "SELECT COALESCE(MAX(SimulationID), 0) AS MaxSimulationID FROM Simulation";
         try {
-            ResultSet resultSet = dbConnection.executeQuery(dbConnection.getConnection(), getMaxSimulationIDQuery, new Object[]{});
+            ResultSet resultSet = dbConnection.executeQuery( getMaxSimulationIDQuery, new Object[]{});
             if (resultSet.next()) {
                 currentSimulationID = resultSet.getInt("MaxSimulationID") + 1;
             }
@@ -137,7 +140,6 @@ public class Simulator {
         String simulationInsertQuery = "INSERT INTO Simulation (SimulationID, SimulationDate) VALUES (?, ?)";
         try {
             dbConnection.executeUpdate(
-                    dbConnection.getConnection(),
                     simulationInsertQuery,
                     new Object[] { currentSimulationID, new java.sql.Date(System.currentTimeMillis()) }
             );
@@ -184,7 +186,7 @@ public class Simulator {
                         taskCount            // Task_Count for insert
                 };
 
-                dbConnection.executeUpdate(dbConnection.getConnection(), updateQuery, params);
+                dbConnection.executeUpdate(updateQuery, params);
 
                 System.out.printf(
                         "Updated database for operation '%s': Total Exec Time = %d, Total Wait Time = %d, Task Count = %d%n",
@@ -212,7 +214,7 @@ public class Simulator {
                 "WHERE SimulationID = ?";
 
         try {
-            ResultSet resultSet = dbConnection.executeQuery(dbConnection.getConnection(), query, new Object[]{simulationID});
+            ResultSet resultSet = dbConnection.executeQuery(query, new Object[]{simulationID});
             System.out.println("\n=== Average Times Report ===");
 
             while (resultSet.next()) {
@@ -236,7 +238,7 @@ public class Simulator {
                 "WHERE SimulationID = ?";
 
         try {
-            ResultSet resultSet = dbConnection.executeQuery(dbConnection.getConnection(), query, new Object[]{simulationID});
+            ResultSet resultSet = dbConnection.executeQuery(query, new Object[]{simulationID});
             if (resultSet.next()) {
                 int totalExecTime = resultSet.getInt("TotalExecTime");
                 int totalWaitTime = resultSet.getInt("TotalWaitTime");
@@ -253,7 +255,7 @@ public class Simulator {
                 // Inserir na nova tabela
                 String insertQuery = "INSERT INTO Simulation_Average_Production_Time (SimulationID, Average_Production_Time) " +
                         "VALUES (?, ?)";
-                dbConnection.executeUpdate(dbConnection.getConnection(), insertQuery, new Object[]{simulationID, averageProductionTime});
+                dbConnection.executeUpdate(insertQuery, new Object[]{simulationID, averageProductionTime});
 
                 System.out.printf("Simulação %d: Average Production Time = %.2f%n", simulationID, averageProductionTime);
             }
@@ -315,39 +317,70 @@ public class Simulator {
          * @param task    The task to be assigned.
          * @param machine The machine to which the task is assigned.
          */
-        private void assignTaskToMachine (Task task, Machine machine){
-            busyMachines.put(machine.getIdMachine(), task);
-            int taskDuration = machine.getTime();
-            machine.setBusyUntil(currentTime + taskDuration);
-            totalProductionTime += taskDuration;
 
-            // Updates the total time spent on the item
-            String itemId = task.getItem().getIdItem();
-            totalTimePerItem.put(itemId, totalTimePerItem.getOrDefault(itemId, 0) + taskDuration);
+    private void assignTaskToMachine(Task task, Machine machine) {
+        busyMachines.put(machine.getIdMachine(), task);
+        int taskDuration = machine.getTime();
+        machine.setBusyUntil(currentTime + taskDuration);
+        totalProductionTime += taskDuration;
 
-            // Track execution time for each operation
-            operationExecutionTimes.putIfAbsent(task.getOperation(), new ArrayList<>());
-            operationExecutionTimes.get(task.getOperation()).add(taskDuration);
+        // Updates the total time spent on the item
+        String itemId = task.getItem().getIdItem();
+        totalTimePerItem.put(itemId, totalTimePerItem.getOrDefault(itemId, 0) + taskDuration);
 
-            // Increment the task count for this operation
-            operationTaskCounts.put(task.getOperation(), operationTaskCounts.getOrDefault(task.getOperation(), 0) + 1);
+        // Track execution time for each operation
+        operationExecutionTimes.putIfAbsent(task.getOperation(), new ArrayList<>());
+        operationExecutionTimes.get(task.getOperation()).add(taskDuration);
 
-            machineOperationTimes.put(machine.getIdMachine(),
-                    machineOperationTimes.get(machine.getIdMachine()) + taskDuration);
+        // Increment the task count for this operation
+        operationTaskCounts.put(task.getOperation(), operationTaskCounts.getOrDefault(task.getOperation(), 0) + 1);
 
-            // Update the workstation history for the item
-            itemWorkstationHistory.get(task.getItem()).add(machine.getIdMachine());
+        machineOperationTimes.put(machine.getIdMachine(),
+                machineOperationTimes.get(machine.getIdMachine()) + taskDuration);
 
-            // Log the task assignment
-            System.out.println("--------------------------------------------------");
-            System.out.printf("Time: %d - Machine %s is processing:\n", currentTime, machine.getIdMachine());
-            System.out.printf("   Item: %s (Priority: %s)\n", task.getItem().getIdItem(), task.getItem().getPriority());
-            System.out.printf("   Operation: %s (%d units of time)\n", task.getOperation(), taskDuration);
-            System.out.printf("   Expected to finish by time: %d\n", machine.getAvailableTime());
-            System.out.println("--------------------------------------------------");
+        // Update the workstation history for the item
+        itemWorkstationHistory.get(task.getItem()).add(machine.getIdMachine());
+
+        // Log the task assignment
+        System.out.println("--------------------------------------------------");
+        System.out.printf("Time: %d - Machine %s is processing:\n", currentTime, machine.getIdMachine());
+        System.out.printf("   Item: %s (Priority: %s)\n", task.getItem().getIdItem(), task.getItem().getPriority());
+        System.out.printf("   Operation: %s (%d units of time)\n", task.getOperation(), taskDuration);
+        System.out.printf("   Expected to finish by time: %d\n", machine.getAvailableTime());
+        System.out.println("--------------------------------------------------");
+
+        // Write task assignment to CSV
+        writeTaskToCsv(machine.getIdMachine(), task.getItem().getIdItem(), task.getOperation(), currentTime, taskDuration);
+    }
+
+    /**
+     * Writes a task assignment to the plannerSimulator.csv file.
+     *
+     * @param machineId    the ID of the machine
+     * @param itemId       the ID of the item
+     * @param operation    the name of the operation
+     * @param startTime    the start time of the task
+     * @param duration     the duration of the task
+     */
+    private void writeTaskToCsv(String machineId, String itemId, String operation, int startTime, int duration) {
+        String csvFile = "plannerSimulator.csv"; // File path
+        File file = new File(csvFile);
+
+        try (FileWriter writer = new FileWriter(file, true)) {
+            // If the file is new or empty, write the header
+            if (file.length() == 0) {
+                writer.append("Machine_ID,Item_ID,Operation_Name,Start_Time,Duration\n");
+            }
+
+            // Append a new line to the CSV file
+            writer.append(String.format("%s,%s,%s,%d,%d%n", machineId, itemId, operation, startTime, duration));
+        } catch (IOException e) {
+            System.err.println("Error writing to plannerSimulator.csv: " + e.getMessage());
         }
+    }
 
-        /**
+
+    /**
          * Updates the availability of machines that are finishing tasks at the current time.
          */
         private void updateMachineAvailability () {

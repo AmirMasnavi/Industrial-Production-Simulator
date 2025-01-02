@@ -10,39 +10,35 @@ import java.sql.*;
  * for demonstration purposes.
  * <p>
  */
-public class DatabaseConnection {
+public class DatabaseConnection implements AutoCloseable {
+    private Connection connection;
 
-    /**
-     * Establishes and returns a connection to the Oracle database.
-     * <p>
-     * The method uses the JDBC driver to connect to the Oracle database.
-     * Ensure that the Oracle JDBC driver is available in the classpath.
-     *
-     * @return a {@code Connection} object representing the database connection
-     * @throws SQLException if a database access error occurs or the JDBC driver is not found
-     */
-    public static Connection getConnection() throws SQLException {
-        // Database connection URL (using service name instead of SID)
+    public DatabaseConnection() throws SQLException {
+        this.connection = getConnection();
+    }
+
+    public static DatabaseConnection createConnection() throws SQLException {
+        return new DatabaseConnection();
+    }
+
+    static Connection getConnection() throws SQLException {
         String url = "jdbc:oracle:thin:@//localhost:1521/ORCLCDB";
-
-        // Database credentials
-        String user = "SYSTEM"; // Username
-        String password = "mypassword1"; // Password
+        String user = "SYSTEM";
+        String password = "mypassword1";
 
         try {
-            // Register the Oracle JDBC driver
             Class.forName("oracle.jdbc.OracleDriver");
-
-            // Establish the connection
             return DriverManager.getConnection(url, user, password);
         } catch (ClassNotFoundException e) {
-            // Handle the case where the Oracle JDBC driver is not available
-            e.printStackTrace();
             throw new SQLException("Oracle JDBC Driver not found.", e);
         }
     }
 
-    public void executeUpdate(Connection connection, String query, Object[] params) throws SQLException {
+    public Connection getInternalConnection() {
+        return connection;
+    }
+
+    public void executeUpdate(String query, Object[] params) throws SQLException {
         try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             for (int i = 0; i < params.length; i++) {
                 preparedStatement.setObject(i + 1, params[i]);
@@ -50,7 +46,8 @@ public class DatabaseConnection {
             preparedStatement.executeUpdate();
         }
     }
-    public ResultSet executeQuery(Connection connection, String query, Object[] params) throws SQLException {
+
+    public ResultSet executeQuery(String query, Object[] params) throws SQLException {
         PreparedStatement preparedStatement = connection.prepareStatement(query);
         for (int i = 0; i < params.length; i++) {
             preparedStatement.setObject(i + 1, params[i]);
@@ -58,8 +55,25 @@ public class DatabaseConnection {
         return preparedStatement.executeQuery();
     }
 
+    @Override
+    public void close() throws SQLException {
+        if (connection != null && !connection.isClosed()) {
+            connection.close();
+        }
+    }
 
+    public Statement createStatement() throws SQLException {
+        return connection.createStatement();
+    }
 
+    public CallableStatement prepareCall(String query) throws SQLException {
+        if (connection == null || connection.isClosed()) {
+            throw new SQLException("Connection is not established or is closed.");
+        }
+        return connection.prepareCall(query);
+    }
 
+    public PreparedStatement prepareStatement(String query) throws SQLException {
+        return getConnection().prepareStatement(query);
+    }
 }
-

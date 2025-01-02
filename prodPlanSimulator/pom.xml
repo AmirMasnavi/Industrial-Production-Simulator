@@ -45,6 +45,12 @@
             <version>19.8.0.0</version> <!-- Verifique a versão mais recente -->
         </dependency>
 
+        <dependency>
+            <groupId>com.opencsv</groupId>
+            <artifactId>opencsv</artifactId>
+            <version>5.7.1</version>
+        </dependency>
+
     </dependencies>
 
 
