@@ -1,0 +1,27 @@
+@startuml
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+title System Sequence Diagram (SSD) - Export Project Schedule to CSV
+
+autonumber
+
+actor "Project Manager" as ProjectManager
+participant ":System" as System
+
+activate ProjectManager
+
+    ProjectManager -> System : Request to export project schedule to CSV
+    activate System
+
+        System -> System : Retrieve project schedule data
+        System -> System : Format data for CSV output
+        System -> System : Write data to CSV file
+
+        System --> ProjectManager : Confirms successful export with file path
+
+    deactivate System
+deactivate ProjectManager
+
+@enduml

@@ -1,0 +1,29 @@
+@startuml
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+title System Sequence Diagram (SSD) - Detect Circular Dependencies
+
+autonumber
+
+actor "Project Manager" as ProjectManager
+participant ":System" as System
+
+activate ProjectManager
+
+    ProjectManager -> System : Request to validate graph for circular dependencies
+    activate System
+
+        System -> System : Analyze activity dependencies in the graph
+        System -> System : Check for cycles in the directed graph
+        alt Circular dependencies found
+            System --> ProjectManager : Returns error with details of the cycle
+        else No circular dependencies
+            System --> ProjectManager : Returns validation success
+        end
+
+    deactivate System
+deactivate ProjectManager
+
+@enduml

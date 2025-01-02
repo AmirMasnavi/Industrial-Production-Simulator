@@ -1,0 +1,29 @@
+@startuml
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+title System Sequence Diagram (SSD) - Build PERT-CPM Graph
+
+autonumber
+
+actor "Project Manager" as ProjectManager
+participant ":System" as System
+
+activate ProjectManager
+
+    ProjectManager -> System : Request to build PERT-CPM graph
+    activate System
+
+        System -> System : Import activities data from CSV
+        System -> System : Validate activity dependencies and data integrity
+        System -> System : Create directed graph structure
+        System -> System : Link activities based on dependencies
+        System -> System : Store PERT-CPM graph in memory
+
+        System --> ProjectManager : Returns graph successfully built
+
+    deactivate System
+deactivate ProjectManager
+
+@enduml
