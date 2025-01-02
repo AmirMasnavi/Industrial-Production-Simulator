@@ -1,0 +1,35 @@
+@startuml
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+
+hide circle
+hide methods
+
+title Domain Model - USEI21: Export Project Schedule to CSV
+
+class ProjectManager {
+    name
+    email
+    role
+    exportSchedule()
+}
+
+class CSVHandler {
+    writeCSV()
+}
+
+class PERTCPMGraph {
+    id
+    activities
+    dependencies
+    getScheduleData()
+}
+
+ProjectManager "1" - "1" PERTCPMGraph : requests schedule >
+PERTCPMGraph "1" - "1" CSVHandler : exports using >
+CSVHandler "1" - "*" Activity : writes >
+PERTCPMGraph "1" - "*" Activity : contains >
+
+@enduml

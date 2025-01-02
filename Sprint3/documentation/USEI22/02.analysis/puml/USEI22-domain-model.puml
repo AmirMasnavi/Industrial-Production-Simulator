@@ -1,0 +1,37 @@
+@startuml
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+
+hide circle
+hide methods
+
+title Domain Model - USEI22: Identify the Critical Path
+
+class ProjectManager {
+    name
+    email
+    role
+    identifyCriticalPath()
+}
+
+class PERTCPMGraph {
+    id
+    activities
+    dependencies
+    calculateCriticalPath()
+}
+
+class Activity {
+    id
+    description
+    duration
+    slack
+}
+
+ProjectManager "1" - "1" PERTCPMGraph : analyzes >
+PERTCPMGraph "1" - "*" Activity : contains >
+Activity "1" - "*" Activity : depends on >
+
+@enduml

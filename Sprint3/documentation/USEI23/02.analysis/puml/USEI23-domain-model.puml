@@ -1,0 +1,36 @@
+@startuml
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+
+hide circle
+hide methods
+
+title Domain Model - USEI23: Identify Bottleneck Activities
+
+class ProjectManager {
+    name
+    email
+    role
+    identifyBottlenecks()
+}
+
+class PERTCPMGraph {
+    id
+    activities
+    dependencies
+    analyzeBottlenecks()
+}
+
+class BottleneckAnalyzer {
+    identifyMostDependentActivities()
+    rankByImpact()
+}
+
+ProjectManager "1" - "1" PERTCPMGraph : requests >
+PERTCPMGraph "1" - "1" BottleneckAnalyzer : uses >
+PERTCPMGraph "1" - "*" Activity : contains >
+Activity "1" - "*" Activity : depends on >
+
+@enduml

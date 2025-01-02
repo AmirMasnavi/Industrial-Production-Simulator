@@ -1,0 +1,38 @@
+@startuml
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+
+hide circle
+hide methods
+
+title Domain Model - USEI24: Simulate Project Delays
+
+class ProjectManager {
+    name
+    email
+    role
+    simulateDelays()
+}
+
+class PERTCPMGraph {
+    id
+    activities
+    dependencies
+    updateActivityDuration()
+    recalculateCriticalPath()
+}
+
+class Activity {
+    id
+    description
+    duration
+    slack
+}
+
+ProjectManager "1" - "1" PERTCPMGraph : modifies >
+PERTCPMGraph "1" - "*" Activity : contains >
+Activity "1" - "*" Activity : depends on >
+
+@enduml

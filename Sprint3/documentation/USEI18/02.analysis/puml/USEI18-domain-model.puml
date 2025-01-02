@@ -1,0 +1,36 @@
+@startuml
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+
+hide circle
+hide methods
+
+title Domain Model - USEI18: Detect Circular Dependencies
+
+class ProjectManager {
+    name
+    email
+    role
+    detectCircularDependencies()
+}
+
+class PERTCPMGraph {
+    id
+    activities
+    dependencies
+    validateGraph()
+}
+
+class DependencyValidator {
+    validateDependencies()
+    detectCircularDependencies()
+}
+
+ProjectManager "1" - "1" PERTCPMGraph : validates >
+PERTCPMGraph "1" - "1" DependencyValidator : uses >
+PERTCPMGraph "1" - "*" Activity : contains >
+Activity "1" - "*" Activity : depends on >
+
+@enduml
