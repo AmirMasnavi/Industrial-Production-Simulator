@@ -1,0 +1,40 @@
+@startuml
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+
+hide circle
+hide methods
+
+title Domain Model - USEI20: Calculate Earliest and Latest Times
+
+class ProjectManager {
+    name
+    email
+    role
+    calculateTimes()
+}
+
+class PERTCPMGraph {
+    id
+    activities
+    dependencies
+    calculateForwardPass()
+    calculateBackwardPass()
+}
+
+class Activity {
+    id
+    description
+    duration
+    earliestStart
+    latestFinish
+    slack
+}
+
+ProjectManager "1" - "1" PERTCPMGraph : calculates >
+PERTCPMGraph "1" - "*" Activity : contains >
+Activity "1" - "*" Activity : depends on >
+
+@enduml

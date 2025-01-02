@@ -1,0 +1,40 @@
+@startuml
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+
+hide circle
+hide methods
+
+title Domain Model - USEI17: Build PERT-CPM Graph
+
+class ProjectManager {
+    name
+    email
+    role
+    buildGraph()
+}
+
+class PERTCPMGraph {
+    id
+    activities
+    dependencies
+    addActivity()
+    validateDependencies()
+    storeGraph()
+}
+
+class Activity {
+    id
+    description
+    duration
+    durationUnit
+    predecessors
+}
+
+ProjectManager "1" - "1" PERTCPMGraph : creates >
+PERTCPMGraph "1" - "*" Activity : contains >
+Activity "1" - "*" Activity : depends on >
+
+@enduml
