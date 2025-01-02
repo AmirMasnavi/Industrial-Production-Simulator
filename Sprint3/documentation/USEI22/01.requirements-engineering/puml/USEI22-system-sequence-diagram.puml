@@ -1,0 +1,27 @@
+@startuml
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+title System Sequence Diagram (SSD) - Identify the Critical Path
+
+autonumber
+
+actor "Project Manager" as ProjectManager
+participant ":System" as System
+
+activate ProjectManager
+
+    ProjectManager -> System : Request to identify the critical path
+    activate System
+
+        System -> System : Perform forward and backward pass calculations
+        System -> System : Identify activities with zero slack time
+        System -> System : Generate list of critical path activities
+
+        System --> ProjectManager : Returns critical path and project duration
+
+    deactivate System
+deactivate ProjectManager
+
+@enduml

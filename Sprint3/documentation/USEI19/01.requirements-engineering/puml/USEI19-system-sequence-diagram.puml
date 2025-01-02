@@ -1,0 +1,27 @@
+@startuml
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+title System Sequence Diagram (SSD) - Topological Sort of Project Activities
+
+autonumber
+
+actor "Project Manager" as ProjectManager
+participant ":System" as System
+
+activate ProjectManager
+
+    ProjectManager -> System : Request topological sort of project activities
+    activate System
+
+        System -> System : Analyze graph structure
+        System -> System : Perform topological sort of activities
+        System -> System : Verify sort validity (dependencies respected)
+
+        System --> ProjectManager : Returns sorted list of activities
+
+    deactivate System
+deactivate ProjectManager
+
+@enduml

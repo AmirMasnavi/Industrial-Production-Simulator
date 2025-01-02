@@ -1,0 +1,27 @@
+@startuml
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+title System Sequence Diagram (SSD) - Simulate Project Delays and Their Impact
+
+autonumber
+
+actor "Project Manager" as ProjectManager
+participant ":System" as System
+
+activate ProjectManager
+
+    ProjectManager -> System : Request to simulate delay for specific activity
+    activate System
+
+        System -> System : Update activity duration
+        System -> System : Recalculate critical path and slack times
+        System -> System : Update total project duration and dependencies
+
+        System --> ProjectManager : Returns updated schedule and critical path
+
+    deactivate System
+deactivate ProjectManager
+
+@enduml

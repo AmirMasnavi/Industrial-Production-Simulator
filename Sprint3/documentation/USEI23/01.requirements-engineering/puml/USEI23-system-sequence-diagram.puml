@@ -1,0 +1,28 @@
+@startuml
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+title System Sequence Diagram (SSD) - Identify Bottleneck Activities
+
+autonumber
+
+actor "Project Manager" as ProjectManager
+participant ":System" as System
+
+activate ProjectManager
+
+    ProjectManager -> System : Request to identify bottleneck activities
+    activate System
+
+        System -> System : Analyze graph dependencies
+        System -> System : Identify activities with highest number of dependents
+        System -> System : Identify activities appearing in most paths
+        System -> System : Rank activities by bottleneck impact
+
+        System --> ProjectManager : Returns bottleneck activities list
+
+    deactivate System
+deactivate ProjectManager
+
+@enduml

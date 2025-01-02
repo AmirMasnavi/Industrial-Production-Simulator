@@ -1,0 +1,28 @@
+@startuml
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+title System Sequence Diagram (SSD) - Calculate Earliest and Latest Start and Finish Times
+
+autonumber
+
+actor "Project Manager" as ProjectManager
+participant ":System" as System
+
+activate ProjectManager
+
+    ProjectManager -> System : Request calculation of earliest and latest times
+    activate System
+
+        System -> System : Perform forward pass (calculate ES and EF)
+        System -> System : Perform backward pass (calculate LS and LF)
+        System -> System : Calculate slack times for all activities
+        System -> System : Validate consistency of results
+
+        System --> ProjectManager : Returns activity times (ES, EF, LS, LF, slack)
+
+    deactivate System
+deactivate ProjectManager
+
+@enduml
