@@ -13,6 +13,7 @@ public class SimulatorNoPriorities {
     private final List<Machine> machines;  // List of available machines
     private final Queue<Task> taskQueue;  // Queue of tasks to be processed
     private final Map<String, Task> busyMachines;  // Map to track tasks currently being processed by machines
+
     private int currentTime;  // Current time step in the simulation
     private final Map<String, Integer> machineOperationTimes;  // Total operation times per machine
     private int totalProductionTime = 0;  // Total production time for all items
@@ -54,6 +55,7 @@ public class SimulatorNoPriorities {
 
         initializeTasks();
     }
+
 
     /**
      * Initialize the task queue with the first operation of each item.

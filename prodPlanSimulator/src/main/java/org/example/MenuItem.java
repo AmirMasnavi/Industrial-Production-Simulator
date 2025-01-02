@@ -1,10 +1,15 @@
 package org.example;
 
+import com.opencsv.CSVWriter;
 import org.example.sprint3.*;
 
 import javax.swing.*;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static org.example.sprint3.Activity.findActivityById;
 
@@ -15,14 +20,14 @@ import static org.example.sprint3.Activity.findActivityById;
  */
 public class MenuItem {
 
-    private static Simulator simulator;
+    static Simulator simulator;
     private static SimulatorNoPriorities simulatorNoPriorites;
     private static boolean lastSimulationWithPriorities;
     private static BooDataResult booDataResult;
     private static final PERTCPMGraph pertcpmGraph = new PERTCPMGraph(); // Single instance of PERTCPMGraph
     private static List<Activity> activities; // List to store activities
 
-    static void menu(){
+    static void menu() throws SQLException {
         Scanner scanner = new Scanner(System.in);
         boolean running = true;
         Visualiser visualiser = new Visualiser();
@@ -341,7 +346,7 @@ public class MenuItem {
      * and executes the simulation.
      * </p>
      */
-    private static void runSimulation(){
+    private static void runSimulation() throws SQLException {
         List<Article> articles = CSVReader.readArticlesFromCSV("./articles.csv");
         List<Machine> machines = CSVReader.readMachinesFromCSV("./workstations.csv");
         DatabaseConnection dbConnection = new DatabaseConnection();
@@ -350,7 +355,10 @@ public class MenuItem {
         simulator.runSimulation();
         lastSimulationWithPriorities = true;
         System.out.println("\nSimulation with priorities completed.");
+
     }
+
+
 
     /**
      * Runs a simulation considering item priorities.
