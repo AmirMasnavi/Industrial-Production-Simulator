@@ -1,5 +1,4 @@
-# USEI07 - Flow Dependency Between Workstations
-
+# USEI23: Identify Bottleneck Activities
 ## 2. Analysis
 
 ### 2.1. Relevant Domain Model Excerpt

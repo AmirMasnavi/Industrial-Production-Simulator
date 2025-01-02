@@ -1,25 +1,26 @@
-# US001 - Save data in a data structure
+# USEI24 - Simulate Project Delays and Their Impact
 
 ## 1. Requirements Engineering
 
 ### 1.1. User Story Description
-As a Product Manager I want to define the appropriate data structures to store the information imported from the files.
-
+As a Product Manager, I want to simulate delays in specific activities by increasing their durations, and I want to automatically recalculate the critical path, total project duration, and slack times to assess the potential impact of these delays on the overall project schedule.
 
 ### 1.2. Customer Specifications and Clarifications 
 
 **From the specifications document:**
 
->The information will be imported from two files: articles.csv and workstations.csv.
->>Format of articles.csv: <id_item, priority, name_oper1, name_oper2, ..., name_operN>.
->
->>Format of workstations.csv: <id_workstation, name_oper, time>.
+>The PERT/CPM graph will store all project activities and their dependencies.
 
->Id_item is a unique identifier for each article.
+>Each activity has:
+>>ID: A unique identifier for the activity.
+>>Description: A brief description of the task.
+>>Duration: The time required to complete the activity.
+>>Dependencies: The list of predecessor activities.
 
->Priority defines the production priority (high, normal, low) for each article.
-
->Workstations have an identifier (id_workstation), a specific operation they perform (name_oper), and the execution time (time) for each operation.
+>Changes in activity durations must trigger a full recalculation of:
+>>Earliest and latest start/finish times.
+>>Slack times.
+>>Critical path(s).
 
 **From the client clarifications:**
 
@@ -29,9 +30,10 @@ As a Product Manager I want to define the appropriate data structures to store t
 
 ### 1.3. Acceptance Criteria
 
-* **AC1:** The system must successfully import data from specified file types (e.g., CSV, JSON, XML) without errors.
-* **AC2:** The system must identify and handle duplicate entries according to the specified business rules.
-* **AC3:** Each field in the imported files must correctly map to the corresponding data structure attributes, ensuring data types match the specifications.
+* **AC1:** The system must allow the user to input a delay (increased duration) for a specific activity.
+* **AC2:** The system must recalculate the following after a delay is applied: The critical path(s), the total project duration, the earliest and latest start/finish times for all activities, slack times for non-critical activities.
+* **AC3:** The system must notify the user of the updated schedule, including any impacted critical paths or durations.
+* **AC3:** The system must validate that the new duration does not violate data integrity or dependency constraints
 
 ### 1.4. Found out Dependencies
 
@@ -41,17 +43,20 @@ As a Product Manager I want to define the appropriate data structures to store t
 
 **Input Data:**
 
-* Uploaded File:
-    * workstations.csv
-    * articles.csv
+* Activity ID: Identifier of the activity whose duration needs to be increased.
+* New Duration: The updated duration of the activity.
 
 **Output Data:**
 
-* Confirmation of (in)success of the operation
+* Updated project schedule:
+  Critical path(s).
+  Total project duration.
+  Earliest and latest start/finish times.
+  Slack times for all activities.
 
 ### 1.6. System Sequence Diagram (SSD)
 
-![System Sequence Diagram](svg/USEI01-system-sequence-diagram.svg)
+![System Sequence Diagram](svg/USEI24-system-sequence-diagram-System%20Sequence%20Diagram%20(SSD)%20-%20Simulate%20Project%20Delays%20and%20Their%20Impact.svg)
 
 ### 1.7 Other Relevant Remarks
 
