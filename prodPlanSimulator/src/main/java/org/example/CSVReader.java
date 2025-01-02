@@ -60,7 +60,7 @@ public class CSVReader {
                 try {
                     machines.add(Machine.fromCSV(line));
                 } catch (IllegalArgumentException e) {
-                    System.err.println("Error parsing line: " + line + ". " + e.getMessage());
+                    //System.err.println("Error parsing line: " + line + ". " + e.getMessage());
                 }
             });
         } catch (IOException e) {
@@ -89,7 +89,8 @@ public class CSVReader {
                     String name = fields[1];
                     items.add(new Item(id, name));
                 } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
-                    System.err.println("Error parsing line: " + line + ". " + e.getMessage());
+                   //
+                    //System.err.println("Error parsing line: " + line + ". " + e.getMessage());
                 }
             });
         } catch (IOException e) {
@@ -118,7 +119,7 @@ public class CSVReader {
                     String name = fields[1];
                     operations.add(new Operation(id, name));
                 } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
-                    System.err.println("Error parsing line: " + line + ". " + e.getMessage());
+                   // System.err.println("Error parsing line: " + line + ". " + e.getMessage());
                 }
             });
         } catch (IOException e) {
@@ -174,7 +175,7 @@ public class CSVReader {
                     }
                     booData.put(itemId, subcomponents);
                 } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
-                    System.err.println("Error parsing line: " + line + ". " + e.getMessage());
+                   // System.err.println("Error parsing line: " + line + ". " + e.getMessage());
                 }
             });
         } catch (IOException e) {

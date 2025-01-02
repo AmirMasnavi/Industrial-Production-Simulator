@@ -11,6 +11,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static org.example.Article.Priority.*;
 import static org.example.sprint3.Activity.findActivityById;
 
 /**
@@ -76,30 +77,32 @@ public class MenuItem {
             System.out.println("🔹 3. Run Simulation 🎮");
             System.out.println("🔹 4. Run Simulation With Priorities ⚙️");
             System.out.println("🔹 5. Show Simulation Statistics 📊");
+            System.out.println("🔹 6. Simulator with csv 📂");
 
             System.out.println("\n\u001B[36m🌳 Production Tree\u001B[0m");
-            System.out.println("🔹 6. Build Production Tree 🌳");
-            System.out.println("🔹 7. Search for Operation or Material 🔍");
-            System.out.println("🔹 8. Display Materials by Quantity 📦");
-            System.out.println("🔹 9. Perform Quality Checks by Priority ✅");
-            System.out.println("🔹 10. Update Material Quantity 🛠️");
-            System.out.println("🔹 11. Total Material Quantity 📈");
-            System.out.println("🔹 12. Total Material Quantity.2 📉");
-            System.out.println("🔹 13. Critical Path Operation 🚀");
-            System.out.println("🔹 14. Run Simulation Tree 🧬");
+            System.out.println("🔹 7. Build Production Tree 🌳");
+            System.out.println("🔹 8. Search for Operation or Material 🔍");
+            System.out.println("🔹 9. Display Materials by Quantity 📦");
+            System.out.println("🔹 10. Perform Quality Checks by Priority ✅");
+            System.out.println("🔹 11. Update Material Quantity 🛠️");
+            System.out.println("🔹 12. Total Material Quantity 📈");
+            System.out.println("🔹 13. Total Material Quantity.2 📉");
+            System.out.println("🔹 14. Critical Path Operation 🚀");
+            System.out.println("🔹 15. Run Simulation Tree 🧬");
 
             System.out.println("\n\u001B[36m📦 Product BOM/BOO Management\u001B[0m");
-            System.out.println("🔹 15. List Products and BOM/BOO (LAPR3) 🛒");
+            System.out.println("🔹 16. List Products and BOM/BOO (LAPR3) 🛒");
 
             System.out.println("\n\u001B[31m🚩 Project Management Options\u001B[0m");
-            System.out.println("🔹 16. Build PERT-CPM Graph 🖋️");
-            System.out.println("🔹 17. Detect Circular Dependencies 🔄");
-            System.out.println("🔹 18. Activities Topological Sort 🗺️");
-            System.out.println("🔹 19. Calculate Earliest and Latest Times ⏳");
-            System.out.println("🔹 20. Export Project Schedule to CSV 📤");
-            System.out.println("🔹 21. Identify Critical Path 📍");
-            System.out.println("🔹 22. Identify Bottleneck Activities 📌");
-            System.out.println("🔹 23. Simulate Project Delays ⌛");
+            System.out.println("🔹 17. Build PERT-CPM Graph 🖋️");
+            System.out.println("🔹 18. Detect Circular Dependencies 🔄");
+            System.out.println("🔹 19. Activities Topological Sort 🗺️");
+            System.out.println("🔹 20. Calculate Earliest and Latest Times ⏳");
+            System.out.println("🔹 21. Export Project Schedule to CSV 📤");
+            System.out.println("🔹 22. Identify Critical Path 📍");
+            System.out.println("🔹 23. Identify Bottleneck Activities 📌");
+            System.out.println("🔹 24. Simulate Project Delays ⌛");
+
 
             System.out.println("\n\u001B[31m0️⃣  Exit\u001B[0m 🚪");
 
@@ -124,57 +127,60 @@ public class MenuItem {
                     showStatistics();
                     break;
                 case 6:
-                    productionTree();
+                    openNewSimulator();
                     break;
                 case 7:
-                    searchOperationOrMaterial(searcher);
+                    productionTree();
                     break;
                 case 8:
-                    displayMaterialsByQuantity(materialBST);
+                    searchOperationOrMaterial(searcher);
                     break;
                 case 9:
-                    performQualityChecks(qualityCheckManager);
+                    displayMaterialsByQuantity(materialBST);
                     break;
                 case 10:
-                    updateMaterialQuantity(searcher, materialBST);
+                    performQualityChecks(qualityCheckManager);
                     break;
                 case 11:
-                    displayTotalMaterials(rootNode);
+                    updateMaterialQuantity(searcher, materialBST);
                     break;
                 case 12:
-                    displayTotalMaterials2(materialBST);
+                    displayTotalMaterials(rootNode);
                     break;
                 case 13:
-                    criticalPathOperations();
+                    displayTotalMaterials2(materialBST);
                     break;
                 case 14:
-                    runSimulationTree();
+                    criticalPathOperations();
                     break;
                 case 15:
-                    listAndShowProducts(visualiser);
+                    runSimulationTree();
                     break;
                 case 16:
-                    buildPertCpmGraph();
+                    listAndShowProducts(visualiser);
                     break;
                 case 17:
-                    validateNoCircularDependencies();
+                    buildPertCpmGraph();
                     break;
                 case 18:
-                    performTopologicalSort();
+                    validateNoCircularDependencies();
                     break;
                 case 19:
-                    calculateEarliestAndLatestTimes();
+                    performTopologicalSort();
                     break;
                 case 20:
-                    exportScheduleToCsv();
+                    calculateEarliestAndLatestTimes();
                     break;
                 case 21:
-                    identifyCriticalPath();
+                    exportScheduleToCsv();
                     break;
                 case 22:
-                    identifyBottleneckActivities();
+                    identifyCriticalPath();
                     break;
                 case 23:
+                    identifyBottleneckActivities();
+                    break;
+                case 24:
                     simulateProjectDelaysMenu();
                     break;
                 case 0:
@@ -185,6 +191,116 @@ public class MenuItem {
                     System.out.println("Invalid option.");
             }
         }
+    }
+
+    private static void openNewSimulator() throws SQLException {
+        Scanner sc = new Scanner(System.in);
+        System.out.println("\n" + "═".repeat(40));
+        System.out.println("🎯  \u001B[1mLAPR SIMULATION MENU\u001B[0m  🎯");
+        System.out.println("═".repeat(40) + "\n");
+
+        System.out.println("🔹 1. Run Simulation with csv file 📂");
+        System.out.println("🔹 2. Place an order manually and run simulation ✍️");
+        System.out.println("🔹 3. Print AVL tree 🌴");
+        System.out.println("\n\u001B[31m0️⃣  Return to main menu\u001B[0m 🚪");
+
+        int option;
+
+        System.out.println("Choose an option: ");
+        option = sc.nextInt();
+
+        switch(option){
+            case 1:
+                USLP06.simulateProduction();
+                break;
+            case 2:
+                List<Machine> machines = CSVReader.readMachinesFromCSV("./orderMachines.csv");
+                System.out.println("Available Products:\n");
+                System.out.printf("AS12945T22\n" +
+                        "AS12945S22\n" +
+                        "AS12945S20\n" +
+                        "AS12945S17\n" +
+                        "AS12945P17\n" +
+                        "AS12945S48\n" +
+                        "AS12945G48\n" +
+                        "AS12946S22\n" +
+                        "AS12947S22\n" +
+                        "AS12946S20");
+                System.out.println();
+                System.out.println("Choose the product: ");
+                String productID = sc.next();
+
+                System.out.println("Priority: ");
+                System.out.println("1. High\n2. Normal\n3. Low");
+                System.out.println("Choose the number: ");
+                int priorityOption = sc.nextInt();
+                Article.Priority priority = null;
+                switch(priorityOption){
+                    case 1:
+                         priority = HIGH;
+                        break;
+                    case 2:
+                        priority = NORMAL;
+                    case 3:
+                         priority = LOW;
+                }
+                System.out.println("Number of operations: ");
+                List<String> operations = new ArrayList<>();
+                int numOfOper = sc.nextInt();
+                if(numOfOper <= 6 && numOfOper >= 1){
+                    for (int i = 0; i < numOfOper; i++) {
+                        System.out.println("Operações disponíveis por ID:");
+                        System.out.printf("5647\n" +
+                                "5649\n" +
+                                "5651\n" +
+                                "5653\n" +
+                                "5659\n" +
+                                "5647\n" +
+                                "5655\n" +
+                                "5657\n" +
+                                "5661\n" +
+                                "5667\n" +
+                                "5663\n" +
+                                "5647\n" +
+                                "5649\n" +
+                                "5651\n" +
+                                "5653\n" +
+                                "5659\n" +
+                                "5647\n" +
+                                "5655\n" +
+                                "5657\n" +
+                                "5661\n" +
+                                "5667\n" +
+                                "5663\n");
+                        System.out.println("Choose the operation: ");
+                        String oper = sc.next();
+                        operations.add(oper);
+
+                    }
+                } else if (numOfOper < 1) {
+                    System.out.println("Sorry, numOfOperation has to be greater than 1");
+                } else if (numOfOper > 6) {
+                    System.out.println("Sorry, 6 is the max number of operations possible");
+                }else{
+                    System.out.println("It needs to be a number between 1 and 6");
+                }
+                System.out.println("How many of these do you want?");
+                System.out.println("Type here: ");
+                int quantity = sc.nextInt();
+                List<Article> articles = new ArrayList<>();
+                Article article = new Article(productID, priority, operations);
+                for (int i = 0; i < quantity; i++) {
+                    articles.add(article);
+                }
+            Simulator simulator = new Simulator(articles, machines, DatabaseConnection.createConnection());
+            simulator.runSimulation();
+            break;
+            case 3:
+                break;
+            case 0:
+                menu();
+        }
+
     }
 
     /**
@@ -279,17 +395,17 @@ public class MenuItem {
                     break;
                 case 2:
                     articles = articles.stream()
-                            .filter(item -> item.getPriority() == Article.Priority.LOW)
+                            .filter(item -> item.getPriority() == LOW)
                             .toList();
                     break;
                 case 3:
                     articles = articles.stream()
-                            .filter(item -> item.getPriority() == Article.Priority.NORMAL)
+                            .filter(item -> item.getPriority() == NORMAL)
                             .toList();
                     break;
                 case 4:
                     articles = articles.stream()
-                            .filter(item -> item.getPriority() == Article.Priority.HIGH)
+                            .filter(item -> item.getPriority() == HIGH)
                             .toList();
                     break;
                 case 0:
@@ -931,7 +1047,7 @@ public class MenuItem {
      * @param imagePath Path to the image file to display.
      */
     private static void displayImage(String imagePath) {
-        javax.swing.SwingUtilities.invokeLater(() -> {
+        SwingUtilities.invokeLater(() -> {
             JFrame frame = new JFrame("PERT/CPM Graph");
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.setSize(800, 600);
