@@ -61,31 +61,43 @@ public class MenuItem {
         activities = CSVReader.readActivitiesFromCsv("./small_project.csv");
 
         while (running) {
-            System.out.println("\n=== MENU ===\n");
-            System.out.println("1. List Items");
-            System.out.println("2. List Available Machines");
-            System.out.println("3. Run Simulation");
-            System.out.println("4. Run Simulation With Priorities");
-            System.out.println("5. Show Simulation Statistics");
-            System.out.println("6. Build Production Tree");
-            System.out.println("7. Search for Specific Operation or Material");
-            System.out.println("8. Display Materials by Quantity");
-            System.out.println("9. Perform Quality Checks by Priority");
-            System.out.println("10. Update Material Quantity");
-            System.out.println("11. Total Material Quantity");
-            System.out.println("12. Total Material Quantity.2");
-            System.out.println("13. Critical Path Operation");
-            System.out.println("14. Run Simulation Tree");
-            System.out.println("15. List Products and View BOM or BOO (LAPR3)");
-            System.out.println("\n16. Build PERT-CPM Graph");
-            System.out.println("17. Detect Circular Dependencies");
-            System.out.println("18. Activities Topological Sort");
-            System.out.println("19. Calculate Earliest and Latest Times");
-            System.out.println("20. Export Project Schedule to CSV");
-            System.out.println("21. Identify Critical Path");
-            System.out.println("22. Identify Bottleneck Activities");
-            System.out.println("23. Simulate Project Delays");
-            System.out.println("0. Exit");
+            System.out.println("\n" + "═".repeat(40));
+            System.out.println("🎯  \u001B[1mPRODUCTION SYSTEM MENU\u001B[0m  🎯");
+            System.out.println("═".repeat(40) + "\n");
+
+            System.out.println("\u001B[36m🔧 Production Simulation\u001B[0m");
+            System.out.println("🔹 1. List Items 🗂️");
+            System.out.println("🔹 2. List Available Machines 🏭");
+            System.out.println("🔹 3. Run Simulation 🎮");
+            System.out.println("🔹 4. Run Simulation With Priorities ⚙️");
+            System.out.println("🔹 5. Show Simulation Statistics 📊");
+
+            System.out.println("\n\u001B[36m🌳 Production Tree\u001B[0m");
+            System.out.println("🔹 6. Build Production Tree 🌳");
+            System.out.println("🔹 7. Search for Operation or Material 🔍");
+            System.out.println("🔹 8. Display Materials by Quantity 📦");
+            System.out.println("🔹 9. Perform Quality Checks by Priority ✅");
+            System.out.println("🔹 10. Update Material Quantity 🛠️");
+            System.out.println("🔹 11. Total Material Quantity 📈");
+            System.out.println("🔹 12. Total Material Quantity.2 📉");
+            System.out.println("🔹 13. Critical Path Operation 🚀");
+            System.out.println("🔹 14. Run Simulation Tree 🧬");
+
+            System.out.println("\n\u001B[36m📦 Product BOM/BOO Management\u001B[0m");
+            System.out.println("🔹 15. List Products and BOM/BOO (LAPR3) 🛒");
+
+            System.out.println("\n\u001B[31m🚩 Project Management Options\u001B[0m");
+            System.out.println("🔹 16. Build PERT-CPM Graph 🖋️");
+            System.out.println("🔹 17. Detect Circular Dependencies 🔄");
+            System.out.println("🔹 18. Activities Topological Sort 🗺️");
+            System.out.println("🔹 19. Calculate Earliest and Latest Times ⏳");
+            System.out.println("🔹 20. Export Project Schedule to CSV 📤");
+            System.out.println("🔹 21. Identify Critical Path 📍");
+            System.out.println("🔹 22. Identify Bottleneck Activities 📌");
+            System.out.println("🔹 23. Simulate Project Delays ⌛");
+
+            System.out.println("\n\u001B[31m0️⃣  Exit\u001B[0m 🚪");
+
 
             System.out.print("\nChoose an option: ");
             int option = scanner.nextInt();
@@ -238,12 +250,16 @@ public class MenuItem {
 
             List<Article> articles = new ArrayList<>(originalArticles);
 
-            System.out.println("\n=== Select Priority ===");
-            System.out.println("1. List all items (ordered by priority)");
-            System.out.println("2. List items with priority LOW");
-            System.out.println("3. List items with priority NORMAL");
-            System.out.println("4. List items with priority HIGH");
-            System.out.println("0. Go back to Menu");
+            System.out.println("\n" + "═".repeat(40));
+            System.out.println("🔍  \u001B[1mSELECT PRIORITY MENU\u001B[0m");
+            System.out.println("═".repeat(40) + "\n");
+
+            System.out.println("🔹 1. List all items (ordered by priority) 🗂️");
+            System.out.println("🔹 2. List items with priority \u001B[34mLOW\u001B[0m ⬇️");
+            System.out.println("🔹 3. List items with priority \u001B[33mNORMAL\u001B[0m ➖");
+            System.out.println("🔹 4. List items with priority \u001B[31mHIGH\u001B[0m 🔺");
+            System.out.println("\n\u001B[31m0️⃣  Go back to Menu\u001B[0m 🚪");
+
 
             System.out.print("\nChoose an option: ");
             int priorityOption = scanner.nextInt();
@@ -473,16 +489,21 @@ public class MenuItem {
      * Auxiliary method to prevent repeated code on both Simulators Statistics Menu
      */
     private static void printStatisticsMenu(String title) {
-        System.out.println("\n=== " + title + " ===");
-        System.out.println("1. Show Total Time Spent Per Item");
-        System.out.println("2. Show Total Time Spent Per Operation");
-        System.out.println("3. Show Machine Utilization Report");
-        System.out.println("4. Show Operation Execution and Waiting Times Report");
-        System.out.println("5. Show Workstation Flow Dependency Report");
-        System.out.println("6. Show Total Waiting Time Per Item");
-        System.out.println("0. Go back to Menu");
+        System.out.println("\n" + "═".repeat(40));
+        System.out.println("📊  \u001B[1m" + title.toUpperCase() + "\u001B[0m");
+        System.out.println("═".repeat(40) + "\n");
+
+        System.out.println("🔹 1. Show Total Time Spent Per Item ⏱️");
+        System.out.println("🔹 2. Show Total Time Spent Per Operation ⚙️");
+        System.out.println("🔹 3. Show Machine Utilization Report 🏭");
+        System.out.println("🔹 4. Show Operation Execution and Waiting Times Report 📈");
+        System.out.println("🔹 5. Show Workstation Flow Dependency Report 🔗");
+        System.out.println("🔹 6. Show Total Waiting Time Per Item ⌛");
+        System.out.println("\n\u001B[31m0️⃣  Go back to Menu\u001B[0m 🚪");
+
         System.out.print("\nChoose an option: ");
     }
+
 
 
     /**
@@ -516,9 +537,13 @@ public class MenuItem {
     private static void displayMaterialsByQuantity(MaterialBST materialBST) {
 
         Scanner scanner = new Scanner(System.in);
-        System.out.println("\nChoose the order to display materials:");
-        System.out.println("1. Increasing order of quantity");
-        System.out.println("2. Decreasing order of quantity");
+        System.out.println("\n" + "═".repeat(40));
+        System.out.println("📦  \u001B[1mMATERIAL DISPLAY ORDER\u001B[0m");
+        System.out.println("═".repeat(40) + "\n");
+
+        System.out.println("🔹 1. Increasing order of quantity 📈");
+        System.out.println("🔹 2. Decreasing order of quantity 📉");
+
 
         int orderChoice = scanner.nextInt();
 
@@ -746,10 +771,14 @@ public class MenuItem {
      */
     private static void buildPertCpmGraph() {
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Choose the project file to build the PERT-CPM graph:");
-        System.out.println("1. small_project.csv");
-        System.out.println("2. large_project.csv");
-        System.out.print("Enter your choice: ");
+        System.out.println("\n" + "═".repeat(40));
+        System.out.println("📐  \u001B[1mBUILD PERT-CPM GRAPH\u001B[0m");
+        System.out.println("═".repeat(40) + "\n");
+
+        System.out.println("🔹 1. small_project.csv 📄");
+        System.out.println("🔹 2. large_project.csv 📄");
+        System.out.print("\nChoose an option: ");
+
         int choice = scanner.nextInt();
 
         String filePath;
@@ -916,15 +945,19 @@ public class MenuItem {
         boolean backToMenu = false;
 
         while (!backToMenu) {
-            System.out.println("\n=== SIMULATE PROJECT DELAYS ===\n");
-            System.out.println("1. Change Activity Duration");
-            System.out.println("2. Build PERT-CPM Graph");
-            System.out.println("3. Perform Topological Sort");
-            System.out.println("4. Calculate Earliest and Latest Times");
-            System.out.println("5. Export Schedule to CSV");
-            System.out.println("6. Identify Critical Path");
-            System.out.println("7. Identify Bottleneck Activities");
-            System.out.println("0. Back to Main Menu");
+            System.out.println("\n" + "═".repeat(40));
+            System.out.println("⌛  \u001B[1mSIMULATE PROJECT DELAYS\u001B[0m");
+            System.out.println("═".repeat(40) + "\n");
+
+            System.out.println("🔹 1. Change Activity Duration ⏳");
+            System.out.println("🔹 2. Build PERT-CPM Graph 📐");
+            System.out.println("🔹 3. Perform Topological Sort 🗺️");
+            System.out.println("🔹 4. Calculate Earliest and Latest Times ⏱️");
+            System.out.println("🔹 5. Export Schedule to CSV 📤");
+            System.out.println("🔹 6. Identify Critical Path 📍");
+            System.out.println("🔹 7. Identify Bottleneck Activities 📌");
+            System.out.println("\n\u001B[31m0️⃣  Back to Main Menu\u001B[0m 🚪");
+
 
             System.out.print("\nChoose an option: ");
             int option = scanner.nextInt();
