@@ -1,11 +1,14 @@
 package org.example;
 
 import com.opencsv.CSVWriter;
+import oracle.jdbc.internal.OracleTypes;
 import org.example.sprint3.*;
 
 import javax.swing.*;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.sql.CallableStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -33,8 +36,8 @@ public class MenuItem {
         boolean running = true;
         Visualiser visualiser = new Visualiser();
 
-        List<Article> articles = CSVReader.readArticlesFromCSV("./articles.csv");
-        List<Machine> machines = CSVReader.readMachinesFromCSV("./workstations.csv");
+        List<Article> articles = CSVReader.readArticlesFromCSV("./orderArticles.csv");
+        List<Machine> machines = CSVReader.readMachinesFromCSV("./orderMachines.csv");
         List<Item> items = CSVReader.readItemsFromCSV("./items.csv");
         List<Operation> operations = CSVReader.readOperationsFromCSV("./operations.csv");
         Map<Integer, Integer> operationToItemMap = new HashMap<>();
@@ -194,114 +197,219 @@ public class MenuItem {
     }
 
     private static void openNewSimulator() throws SQLException {
-        Scanner sc = new Scanner(System.in);
-        System.out.println("\n" + "═".repeat(40));
-        System.out.println("🎯  \u001B[1mLAPR SIMULATION MENU\u001B[0m  🎯");
-        System.out.println("═".repeat(40) + "\n");
+        Scanner sc = new Scanner(System.in);  // Create a scanner for user input
+        System.out.println("\n" + "═".repeat(40));  // Print a line for separation
+        System.out.println("🎯  \u001B[1mLAPR SIMULATION MENU\u001B[0m  🎯");  // Display the simulation menu title
+        System.out.println("═".repeat(40) + "\n");  // Print another line for separation
 
+        // Display menu options
         System.out.println("🔹 1. Run Simulation with csv file 📂");
         System.out.println("🔹 2. Place an order manually and run simulation ✍️");
         System.out.println("🔹 3. Print AVL tree 🌴");
         System.out.println("\n\u001B[31m0️⃣  Return to main menu\u001B[0m 🚪");
 
-        int option;
+        int option;  // Variable to hold the user's choice
 
+        // Prompt the user to choose an option
         System.out.println("Choose an option: ");
-        option = sc.nextInt();
+        option = sc.nextInt();  // Read the user's input
 
+        // Switch case to handle different options based on user choice
         switch(option){
             case 1:
+                // Run simulation based on the CSV file
                 USLP06.simulateProduction();
                 break;
             case 2:
-                List<Machine> machines = CSVReader.readMachinesFromCSV("./orderMachines.csv");
-                System.out.println("Available Products:\n");
-                System.out.printf("AS12945T22\n" +
-                        "AS12945S22\n" +
-                        "AS12945S20\n" +
-                        "AS12945S17\n" +
-                        "AS12945P17\n" +
-                        "AS12945S48\n" +
-                        "AS12945G48\n" +
-                        "AS12946S22\n" +
-                        "AS12947S22\n" +
-                        "AS12946S20");
-                System.out.println();
-                System.out.println("Choose the product: ");
-                String productID = sc.next();
+                // Handle manual order placement and simulation with improved interface
+                List<Machine> machines = CSVReader.readMachinesFromCSV("./orderMachines.csv");  // Read available machines from CSV
 
-                System.out.println("Priority: ");
-                System.out.println("1. High\n2. Normal\n3. Low");
-                System.out.println("Choose the number: ");
-                int priorityOption = sc.nextInt();
+                // Clear and structured display of available products
+                System.out.println("\n" + "═".repeat(40));  // Print a separator line
+                System.out.println("🎯  \u001B[1mAvailable Products for Order\u001B[0m");
+                System.out.println("═".repeat(40) + "\n");
+
+                // Display the list of available products with bullet points for clarity
+                System.out.println("🔹 AS12945T22");
+                System.out.println("🔹 AS12945S22");
+                System.out.println("🔹 AS12945S20");
+                System.out.println("🔹 AS12945S17");
+                System.out.println("🔹 AS12945P17");
+                System.out.println("🔹 AS12945S48");
+                System.out.println("🔹 AS12945G48");
+                System.out.println("🔹 AS12946S22");
+                System.out.println("🔹 AS12947S22");
+                System.out.println("🔹 AS12946S20");
+                System.out.println();  // Add some space for readability
+
+                // Prompt user to choose a product
+                System.out.println("\u001B[1mChoose the Product ID from the list above:\u001B[0m");
+                String productID = sc.next();  // Read the product ID chosen by the user
+
+                // Display priority selection instructions
+                System.out.println("\n\u001B[1mSelect Priority Level:\u001B[0m");
+                System.out.println("🔹 1. High");
+                System.out.println("🔹 2. Normal");
+                System.out.println("🔹 3. Low");
+                System.out.println("\n\u001B[1mChoose a priority number:\u001B[0m");
+                int priorityOption = sc.nextInt();  // Read the priority choice from the user
                 Article.Priority priority = null;
+
+                // Set the priority based on the user's choice
                 switch(priorityOption){
                     case 1:
-                         priority = HIGH;
+                        priority = Article.Priority.HIGH;
                         break;
                     case 2:
-                        priority = NORMAL;
+                        priority = Article.Priority.NORMAL;
+                        break;
                     case 3:
-                         priority = LOW;
+                        priority = Article.Priority.LOW;
+                        break;
+                    default:
+                        System.out.println("\u001B[31mInvalid selection! Defaulting to Normal priority.\u001B[0m");
+                        priority = Article.Priority.NORMAL;
+                        break;
                 }
-                System.out.println("Number of operations: ");
-                List<String> operations = new ArrayList<>();
-                int numOfOper = sc.nextInt();
-                if(numOfOper <= 6 && numOfOper >= 1){
-                    for (int i = 0; i < numOfOper; i++) {
-                        System.out.println("Operações disponíveis por ID:");
-                        System.out.printf("5647\n" +
-                                "5649\n" +
-                                "5651\n" +
-                                "5653\n" +
-                                "5659\n" +
-                                "5647\n" +
-                                "5655\n" +
-                                "5657\n" +
-                                "5661\n" +
-                                "5667\n" +
-                                "5663\n" +
-                                "5647\n" +
-                                "5649\n" +
-                                "5651\n" +
-                                "5653\n" +
-                                "5659\n" +
-                                "5647\n" +
-                                "5655\n" +
-                                "5657\n" +
-                                "5661\n" +
-                                "5667\n" +
-                                "5663\n");
-                        System.out.println("Choose the operation: ");
-                        String oper = sc.next();
-                        operations.add(oper);
 
+                // Ask for the number of operations required with a better layout
+                System.out.println("\n\u001B[1mHow many operations do you need?\u001B[0m");
+                System.out.println("\n⚠️ The maximum allowed is 6 operations.");
+                List<String> operations = new ArrayList<>();
+                int numOfOper = sc.nextInt();  // Read the number of operations
+
+                // Check if the number of operations is within the valid range
+                if(numOfOper <= 6 && numOfOper >= 1){
+                    // Loop through to collect the operations
+                    for (int i = 0; i < numOfOper; i++) {
+                        System.out.println("\n\u001B[1mAvailable Operations (Choose by ID):\u001B[0m");
+                        System.out.println("🔹 5647");
+                        System.out.println("🔹 5649");
+                        System.out.println("🔹 5651");
+                        System.out.println("🔹 5653");
+                        System.out.println("🔹 5659");
+                        System.out.println("🔹 5655");
+                        System.out.println("🔹 5657");
+                        System.out.println("🔹 5661");
+                        System.out.println("🔹 5667");
+                        System.out.println("🔹 5663");
+                        System.out.println("\n\u001B[1mChoose operation ID for Operation " + (i + 1) + ":\u001B[0m");
+                        String oper = sc.next();  // Read the operation ID from the user
+                        operations.add(oper);  // Add the operation to the list
                     }
                 } else if (numOfOper < 1) {
-                    System.out.println("Sorry, numOfOperation has to be greater than 1");
+                    System.out.println("\u001B[31m⚠️ Invalid number! Operations must be greater than 1.\u001B[0m");
                 } else if (numOfOper > 6) {
-                    System.out.println("Sorry, 6 is the max number of operations possible");
-                }else{
-                    System.out.println("It needs to be a number between 1 and 6");
+                    System.out.println("\u001B[31m⚠️ The maximum number of operations is 6.\u001B[0m");
+                } else {
+                    System.out.println("\u001B[31m⚠️ Please enter a valid number between 1 and 6.\u001B[0m");
                 }
-                System.out.println("How many of these do you want?");
-                System.out.println("Type here: ");
-                int quantity = sc.nextInt();
+
+                // Ask the user for the quantity of products
+                System.out.println("\n\u001B[1mHow many units of the selected product would you like to order?\u001B[0m");
+                System.out.print("Type a number: ");
+                int quantity = sc.nextInt();  // Read the quantity from the user
+
+                // Create a list of articles based on the user's input
                 List<Article> articles = new ArrayList<>();
                 Article article = new Article(productID, priority, operations);
                 for (int i = 0; i < quantity; i++) {
-                    articles.add(article);
+                    articles.add(article);  // Add the article to the list for the specified quantity
                 }
-            Simulator simulator = new Simulator(articles, machines, DatabaseConnection.createConnection());
-            simulator.runSimulation();
-            break;
-            case 3:
+
+                // Simulate the production with the user's orders
+                Simulator simulator = new Simulator(articles, machines, DatabaseConnection.createConnection());
+                simulator.runSimulation();
                 break;
+
+            case 3:
+                // Print the AVL tree of orders
+                try {
+                    List<Order> orders = CSVReader.readOrdersFromCSV("./orders.csv");  // Read orders from CSV file
+                    buildAndPrintBalancedTrees(orders);  // Call method to build and print the AVL tree
+                } catch (SQLException e) {
+                    // Handle SQL exceptions and print detailed error message
+                    System.err.println("SQL Error: " + e.getMessage());
+                    e.printStackTrace();  // Print stack trace for debugging
+                } catch (Exception e) {
+                    // Handle any other unexpected exceptions
+                    System.err.println("Unexpected Error: " + e.getMessage());
+                    e.printStackTrace();  // Print stack trace for debugging
+                }
+                break;
+
             case 0:
+                // Return to the main menu if option 0 is selected
                 menu();
         }
-
     }
+
+    /**
+     * This method retrieves the subparts (components) of a product from the database.
+     * It executes a database function that returns a list of subparts used in the product.
+     * @param productId The product ID for which the subparts are to be fetched.
+     * @param connection The database connection object.
+     * @return A map containing the part numbers and their quantities.
+     * @throws SQLException If there is an error in querying the database.
+     */
+    public static Map<String, Double> getSubparts(String productId, DatabaseConnection connection) throws SQLException {
+        Map<String, Double> subparts = new HashMap<>();  // Create a map to store subparts
+
+        // Prepare the callable statement to execute the function in the database
+        String functionCall = "{ ? = call list_parts_used_product(?) }";
+        try (CallableStatement stmt = connection.getInternalConnection().prepareCall(functionCall)) {
+            stmt.registerOutParameter(1, OracleTypes.CURSOR);  // Register the output cursor
+            stmt.setString(2, productId);  // Set the input parameter (product ID)
+
+            stmt.execute();  // Execute the stored function
+
+            // Retrieve the cursor result set from the function's output
+            ResultSet rs = (ResultSet) stmt.getObject(1);
+            while (rs.next()) {
+                String partNumber = rs.getString("PartNumber");  // Get the part number
+                double quantity = rs.getDouble("Quantity");  // Get the quantity of the part
+                subparts.put(partNumber, quantity);  // Add the part and its quantity to the map
+            }
+        }
+
+        return subparts;  // Return the map of subparts
+    }
+
+    /**
+     * This method builds and prints a balanced tree of orders, where each order contains product subparts.
+     * It creates a tree structure to organize the products and their components.
+     * @param orders A list of orders to be processed.
+     * @throws SQLException If there is an error in querying the database.
+     */
+    public static void buildAndPrintBalancedTrees(List<Order> orders) throws SQLException {
+        DatabaseConnection connection = DatabaseConnection.createConnection();  // Create a database connection
+        BalancedTree tree = new BalancedTree();  // Create a balanced tree object
+
+        try {
+            for (Order order : orders) {
+                String productId = order.getProductId();  // Get the product ID from the order
+                Map<String, Double> subparts = getSubparts(productId, connection);  // Get the subparts for the product
+
+                // Insert the product node into the tree
+                tree.addNode(productId, productId, subparts);
+
+                // Insert the subparts into the tree
+                for (Map.Entry<String, Double> entry : subparts.entrySet()) {
+                    String partId = entry.getKey();  // Get the part ID
+                    double quantity = entry.getValue();  // Get the quantity of the part
+                    tree.addNode(partId, productId, subparts);  // Add the part to the tree
+                }
+            }
+
+            // Print the entire tree
+            System.out.println("Árvore de Subcomponentes do Produto (Unificada):");
+            tree.traverseInOrder();  // Traverse the tree in order and print its content
+        } finally {
+            connection.close();  // Ensure the database connection is closed after use
+        }
+    }
+
+
 
     /**
      * Lists and shows available products to the user.
