@@ -100,15 +100,24 @@ public class PERTCPMGraph {
      * @throws IllegalStateException if a circular dependency is found.
      */
     public void validateNoCircularDependencies() {
+        // Title for validation process
+        System.out.println("\n" + "═".repeat(50));
+        System.out.println("🔍 \u001B[1mValidating Circular Dependencies\u001B[0m 🔍");
+        System.out.println("═".repeat(50));
+
+        // Sets to track visited nodes and recursion stack
         Set<Activity> visited = new HashSet<>();
         Set<Activity> recursionStack = new HashSet<>();
 
         for (Activity activity : graph.vertices()) {
             if (dfsDetectCycle(activity, visited, recursionStack)) {
+                System.out.println("❌ \u001B[1;31mValidation failed:\u001B[0m Circular dependency detected!");
                 throw new IllegalStateException("Circular dependency detected in the project graph.");
             }
         }
+
     }
+
 
     /**
      * Performs a topological sort of the project graph to determine an order of execution for activities.
@@ -169,16 +178,29 @@ public class PERTCPMGraph {
      * @throws IllegalStateException if the graph contains a cycle.
      */
     public String getTopologicalSortAsString() {
+        // Perform topological sort and store the result
         List<Activity> sortedActivities = topologicalSort();
+
+        // Initialize a StringBuilder for building the output
         StringBuilder result = new StringBuilder();
+
+        // Append each activity ID to the result with proper formatting
         for (int i = 0; i < sortedActivities.size(); i++) {
             result.append(sortedActivities.get(i).getId());
             if (i < sortedActivities.size() - 1) {
-                result.append(" -> ");
+                result.append(" \u2192 "); // Use a right arrow for a clearer representation
             }
         }
+
+        // Display the topological sort result
+        System.out.println("\n" + "═".repeat(50));
+        System.out.println("🔹 \u001B[1mTopological Sort Result\u001B[0m 🔹");
+        System.out.println("═".repeat(50));
+        System.out.println(result.toString());  // Print the topological sort as a string
+
         return result.toString();
     }
+
 
     /**
      * Calculates the earliest start (ES), earliest finish (EF), latest start (LS), and latest finish (LF)
@@ -234,11 +256,20 @@ public class PERTCPMGraph {
      * Activities with IDs "START" and "END" are excluded from the output.
      */
     public void printActivityTimes() {
+        // Print the table header with formatting
+        System.out.println("\n" + "═".repeat(45));
+        System.out.println("🔹 \u001B[1mActivity Times Summary\u001B[0m 🔹");
+        System.out.println("═".repeat(45));
         System.out.println("ID\t|\tES\t|\tEF\t|\tLS\t|\tLF\t|\tSlack");
+
+        // Iterate over the activities and print their times
         for (Activity activity : graph.vertices()) {
+            // Skip the pseudo-activities "START" and "END"
             if (Objects.equals(activity.getId(), "START") || Objects.equals(activity.getId(), "END")) {
-                continue; // Skip pseudo-activities "START" and "END"
+                continue;
             }
+
+            // Print activity times with formatted output
             System.out.printf("%s\t|\t%2d\t|\t%2d\t|\t%2d\t|\t%2d\t|\t%2d%n",
                     activity.getId(),
                     activity.getEarliestStart(),
@@ -247,7 +278,9 @@ public class PERTCPMGraph {
                     activity.getLatestFinish(),
                     activity.getSlack());
         }
+
     }
+
 
     /**
      * Recursive helper method for detecting cycles in the graph using Depth-First Search (DFS).
@@ -335,11 +368,14 @@ public class PERTCPMGraph {
                 writer.write(line.append("\n").toString());
             }
 
-            System.out.println("\nSchedule exported successfully to: " + filePath);
+            // Success message for successful export
+            System.out.println("\n\u001B[32m✔️ Schedule exported successfully to:\u001B[0m " + filePath);
 
-        } catch (IOException e) {
-            System.err.println("Error writing schedule to CSV: " + e.getMessage());
-        }
+            // Error message for failure during export
+            } catch (IOException e) {
+            System.err.println("\n\u001B[31m❌ Error writing schedule to CSV:\u001B[0m " + e.getMessage());
+             }
+
     }
 
     /**
@@ -366,11 +402,15 @@ public class PERTCPMGraph {
         // Sort critical path activities by earliest start time
         criticalPath.sort(Comparator.comparingInt(Activity::getEarliestStart));
 
-        // Print critical path activities
-        System.out.println("\nCritical Path Activities:");
-        System.out.println("ID\t|\tES\t|\tEF\t|\tLS\t|\tLF\t|\tSL\t|\tDuration");
+        // Print critical path activities with enhanced visual formatting
+        System.out.println("\n" + "═".repeat(40));
+        System.out.println("\uD83D\uDCCD  \u001B[1mCritical Path Activities\u001B[0m");
+        System.out.println("═".repeat(40));
+        System.out.println("\nID\t|\tES\t|\tEF\t|\tLS\t|\tLF\t|\tSL\t|\tDuration");
+
+        // Displaying the activities in a structured and colorful format
         for (Activity activity : criticalPath) {
-            System.out.printf("%s\t|\t%2d\t|\t%2d\t|\t%2d\t|\t%2d\t|\t%2d\t|\t%d%n",
+            System.out.printf("%s\u001B[0m\t|\t%2d\t|\t%2d\t|\t%2d\t|\t%2d\t|\t%2d\t|\t%d%n",
                     activity.getId(),
                     activity.getEarliestStart(),
                     activity.getEarliestFinish(),
@@ -380,10 +420,11 @@ public class PERTCPMGraph {
                     activity.getDuration());
         }
 
-        System.out.println("\nTotal project duration: " + maxDuration + " weeks\n");
+        System.out.println("\n\u001B[32mTotal project duration: " + maxDuration + " weeks\u001B[0m\n");
 
         return criticalPath;
     }
+
 
     /**
      * Identifies bottleneck activities in the graph.

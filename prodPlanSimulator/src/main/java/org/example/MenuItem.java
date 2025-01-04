@@ -1067,23 +1067,37 @@ public class MenuItem {
 
         Graph<Activity, Integer> graph = pertcpmGraph.getGraph();
 
-        System.out.println("\nGraph built successfully:");
-        System.out.println("Number of Nodes: " + graph.numVertices());
-        System.out.println("Number of edges: " + graph.numEdges());
-        System.out.println("\nNodes:");
+        // Title for Graph Construction
+        System.out.println("\n" + "═".repeat(50));
+        System.out.println("📊 \u001B[1mGraph built successfully\u001B[0m 📊");
+        System.out.println("═".repeat(50));
+
+        // Summary Section
+        System.out.printf("🔹 \u001B[1mNumber of Nodes:\u001B[0m %d%n", graph.numVertices());
+        System.out.printf("🔹 \u001B[1mNumber of Edges:\u001B[0m %d%n", graph.numEdges());
+
+        // Nodes Section
+        System.out.println("\n📍 \u001B[1mNodes:\u001B[0m");
         for (Activity activity : graph.vertices()) {
-            System.out.println(activity);
+            System.out.println("   🔸 " + activity);
         }
 
-        System.out.println("\nEdges:");
+        // Edges Section
+        System.out.println("\n🔗 \u001B[1mEdges:\u001B[0m");
         for (Edge<Activity, Integer> edge : graph.edges()) {
-            System.out.printf("%s -> %s (Duration: %d %s)\n",
+            System.out.printf("   🔹 %s ➡\uFE0F %s (Duration: %d %s)%n",
                     edge.getVOrig(),
                     edge.getVDest(),
                     edge.getWeight(),
                     edge.getVOrig().getDurationUnit());
         }
+
+        // Footer for completion
+        System.out.println("\n" + "═".repeat(50));
+        System.out.println("✅ \u001B[1mGraph construction completed successfully!\u001B[0m");
+        System.out.println("═".repeat(50));
     }
+
 
     /**
      * Validates the PERT-CPM graph for circular dependencies.
@@ -1091,10 +1105,14 @@ public class MenuItem {
      */
     private static void validateNoCircularDependencies() {
         try {
+            // Attempt to validate the graph
             pertcpmGraph.validateNoCircularDependencies();
-            System.out.println("No circular dependencies detected. The project graph is valid.");
+
+            // Success message
+            System.out.println("✅ \u001B[1;32mNo circular dependencies detected.\u001B[0m The project graph is valid.");
         } catch (IllegalStateException e) {
-            System.err.println(e.getMessage());
+            // Error message in case of circular dependencies
+            System.out.println("❌ \u001B[1;31mError:\u001B[0m " + e.getMessage());
         }
     }
 
@@ -1103,9 +1121,7 @@ public class MenuItem {
      * and displays the resulting order.
      */
     private static void performTopologicalSort() {
-        String topologicalOrder = pertcpmGraph.getTopologicalSortAsString();
-        System.out.println("\nTopological Sort Result:");
-        System.out.println(topologicalOrder);
+        pertcpmGraph.getTopologicalSortAsString();
     }
 
     /**
@@ -1113,7 +1129,6 @@ public class MenuItem {
      * for each activity in the PERT-CPM graph and prints the results.
      */
     private static void calculateEarliestAndLatestTimes() {
-        System.out.println("\nEarliest and Latest Start and Finish Times:");
         pertcpmGraph.calculateEarliestAndLatestTimes();
         pertcpmGraph.printActivityTimes();
     }
@@ -1139,10 +1154,24 @@ public class MenuItem {
      */
     private static void identifyBottleneckActivities() {
         List<Activity> bottleneckActivities = pertcpmGraph.identifyBottleneckActivities();
-        System.out.println("\nBottleneck Activities: ");
+        System.out.println("\n" + "═".repeat(40));
+        System.out.println("\uD83D\uDCCC  \u001B[1mBotleneck Activities\u001B[0m");
+        System.out.println("═".repeat(40));
+
+        if (bottleneckActivities.isEmpty()) {
+            System.out.println("No bottleneck activities detected.\n");
+            return;
+        }
+
         for (Activity activity : bottleneckActivities) {
             System.out.printf(
-                    "ID: %s, Name: %s, Duration: %d days, ES: %d, EF: %d, LS: %d, LF: %d\n",
+                    "ID: %s\n" +
+                            "Name: %s\n" +
+                            "Duration: %d days\n" +
+                            "Earliest Start (ES): %d\n" +
+                            "Earliest Finish (EF): %d\n" +
+                            "Latest Start (LS): %d\n" +
+                            "Latest Finish (LF): %d\n",
                     activity.getId(),
                     activity.getDescription(),
                     activity.getDuration(),
@@ -1153,6 +1182,7 @@ public class MenuItem {
             );
         }
     }
+
 
     /**
      * Generates a graph image from a DOT file using GraphViz.
@@ -1262,11 +1292,11 @@ public class MenuItem {
             }
         }
 
-        System.out.print("Enter the new duration for the activity: ");
+        System.out.print("Enter the new duration for the activity (in weeks): ");
         int newDuration = scanner.nextInt();
 
         activity.setDuration(newDuration);
-        System.out.println("Activity duration updated.");
+        System.out.println("\n\u001B[32m✔️ Activity duration updated successfully.\u001B[0m");
 
         // Recalculate the graph
         //pertcpmGraph.buildGraph(activities);

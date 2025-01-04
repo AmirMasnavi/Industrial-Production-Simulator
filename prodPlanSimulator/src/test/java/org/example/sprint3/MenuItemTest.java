@@ -83,10 +83,10 @@ class MenuItemTest {
         assertEquals(6, activityC.getDuration(), "Activity C duration should be updated to 6 days.");
 
         // Verify the recalculated slack times
-        assertEquals(-11, activityC.getSlack(), "Activity C slack should be 0.");
-        assertEquals(3, activityC.getEarliestStart(), "Activity C ES should be 2.");
-        assertEquals(9, activityC.getEarliestFinish(), "Activity C EF should be 8.");
-        assertEquals(-8, activityC.getLatestStart(), "Activity C LS should be 8.");
-        assertEquals(-2, activityC.getLatestFinish(), "Activity C LF should be 14.");
+        assertEquals(0, activityC.getSlack(), "Activity C slack should be 0.");
+        assertEquals(2, activityC.getEarliestStart(), "Activity C ES should be 2.");
+        assertEquals(8, activityC.getEarliestFinish(), "Activity C EF should be 8.");
+        assertEquals(8, activityC.getLatestStart(), "Activity C LS should be 8.");
+        assertEquals(14, activityC.getLatestFinish(), "Activity C LF should be 14.");
     }
 }

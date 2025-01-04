@@ -134,7 +134,7 @@ class PERTCPMGraphTest {
         graph.buildGraph(validActivities);
         String result = graph.getTopologicalSortAsString();
 
-        assertEquals("START -> A -> B -> C -> D -> END", result, "Topological sort string representation should include START and END.");
+        assertEquals("START → A → B → C → D → END", result, "Topological sort string representation should include START and END.");
     }
 
     /**
@@ -146,7 +146,7 @@ class PERTCPMGraphTest {
         graph.buildGraph(emptyActivities);
         String result = graph.getTopologicalSortAsString();
 
-        assertEquals("START -> END", result, "Topological sort string representation should be START -> END for an empty graph.");
+        assertEquals("START → END", result, "Topological sort string representation should be START -> END for an empty graph.");
     }
 
     //TESTS FOR USEI20 -  Calculate Earliest and Latest Start and Finish Times
@@ -194,7 +194,7 @@ class PERTCPMGraphTest {
      * Ensures the file is created and later deleted after the test.
      */
     @Test
-    void exportScheduleToCsv_withValidGraph() throws IOException {
+    void exportScheduleToCsv_withValidGraph(){
         String filePath = "test_schedule.csv";
         graph.buildGraph(validActivities);
         graph.calculateEarliestAndLatestTimes();
@@ -215,7 +215,7 @@ class PERTCPMGraphTest {
      * Ensures the file is created and later deleted after the test.
      */
     @Test
-    void exportScheduleToCsv_withEmptyGraph() throws IOException {
+    void exportScheduleToCsv_withEmptyGraph(){
         String filePath = "empty_schedule.csv";
         graph.buildGraph(emptyActivities);
         graph.calculateEarliestAndLatestTimes();
@@ -236,7 +236,7 @@ class PERTCPMGraphTest {
      * Ensures the file is created and later deleted after the test.
      */
     @Test
-    void exportScheduleToCsv_withSingleActivity() throws IOException {
+    void exportScheduleToCsv_withSingleActivity(){
         String filePath = "single_activity_schedule.csv";
         List<Activity> singleActivity = List.of(new Activity("A", "A", 3, "days", 100, List.of()));
         graph.buildGraph(singleActivity);
@@ -266,7 +266,7 @@ class PERTCPMGraphTest {
         graph.calculateEarliestAndLatestTimes();
         List<Activity> criticalPath = graph.identifyCriticalPath();
 
-        assertEquals(List.of("END"), criticalPath.stream().map(Activity::getId).toList(), "Critical path should only include activities with slack of 0.");
+        assertEquals(List.of("START", "A", "C", "D", "END"), criticalPath.stream().map(Activity::getId).toList(), "Critical path should only include activities with slack of 0.");
     }
 
     /**
