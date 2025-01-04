@@ -1,20 +1,16 @@
-# USEI04 - Calculation of Execution Times by Each Operation
+# USEI20 - Calculate Earliest and Latest Start and Finish Times
 
 ## 1. Requirements Engineering
 
 ### 1.1. User Story Description
-
-As a Product Manager, I want to calculate the execution times taken by each operation.
-
+As a Product Manager, I want to analyze the dependency flow between workstations, showing the number of items processed in descending order, to identify bottlenecks and improve the production flow.
 ### 1.2. Customer Specifications and Clarifications
 
 **From the specifications document:**
 
->Each item undergoes a series of operations (e.g., cutting, drilling) with specific execution times, performed at designated workstations.
+>The system must calculate and display the dependency flow between workstations based on item transitions during production. Each transition should indicate the number of items processed between the source and target workstations.
 
->The system must be capable of identifying and summing up the execution times for each unique operation across all items in the system.
-
->Execution time per operation should be provided in a user-friendly format, with each unique operation type listed alongside its cumulative time.
+>The output should be sorted in descending order by the number of items processed in each flow, enabling users to quickly identify the most active dependencies and potential bottlenecks.
 
 **From the client clarifications:**
 
@@ -25,14 +21,13 @@ As a Product Manager, I want to calculate the execution times taken by each oper
 
 ### 1.3. Acceptance Criteria
 
-* **AC1**: The system must correctly calculate the cumulative execution time for each unique operation across all items.
-* **AC2:** The program must return the total execution time taken by EACH operation.
-
+* **AC1**: The system must correctly calculate the dependency flow between workstations, showing transitions and the number of items processed in each flow.
+* **AC2**: The output must be displayed in descending order based on the number of items processed for each workstation connection
 
 ### 1.4. Found out Dependencies
 
-* **USEI01**-Successful import and structure of data from articles.csv and workstations.csv .
-* **USEI03**-Calculation of total production time for items, as each operation’s time is essential for summing total execution times.
+* **USEI01** Data structures for importing and storing workstation and item data from workstations.csv and articles.csv.
+* **USEI02** Simulated processing of items to establish the flow dependencies between workstations.
 
 ### 1.5 Input and Output Data
 
@@ -42,14 +37,14 @@ As a Product Manager, I want to calculate the execution times taken by each oper
   * workstations.csv
   * articles.csv
 
-
-
 **Output Data:**
 
-* Total execution time of each operation.
+* A list of workstation dependency flows in the format:
+<workstation_A>: [(workstation_B, count_B), (workstation_C, count_C), ...]
+where count_X is the number of items transitioning from workstation_A to workstation_X, ordered by descending item count.
 
 ### 1.6. System Sequence Diagram (SSD)
-![System Sequence Diagram ](svg/USEI04-system-sequence-diagram.svg)
+![System Sequence Diagram ](svg/USEI20-system-sequence-diagram.svg)
 
 ### 1.7 Other Relevant Remarks
 

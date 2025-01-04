@@ -1,21 +1,18 @@
-# USEI03 - Calculation of Total Production Time for Items
+# USEI19 - Topological Sort of Project Activities
 
 
 ## 1. Requirements Engineering
 
 ### 1.1. User Story Description
 
-As a Product Manager, I want to calculate the total production time that all Items take.
-
+As a Product Manager, I want to query and update inventory levels efficiently, ensuring no stock falls below the reserved amount, to maintain proper inventory control.
 ### 1.2. Customer Specifications and Clarifications
 
 **From the specifications document:**
 
->Each item is subject to a series of sequential operations (e.g., cutting, drilling, polishing) which are carried out by specific workstations.
+>The system must ensure that inventory levels are managed effectively. It should allow for deductions from stock only if the remaining quantity does not fall below the reserved amount.
 
->The production time of an item is the sum of the execution times for all operations performed on that item.
-
->Each workstation has an operation it performs (from workstations.csv), and a specific execution time for that operation.
+>Operations attempting to deduct inventory below the reserved level must be rejected with an appropriate notification to the user.performs (from workstations.csv), and a specific execution time for that operation.
 
 **From the client clarifications:**
 
@@ -26,31 +23,29 @@ As a Product Manager, I want to calculate the total production time that all Ite
 
 ### 1.3. Acceptance Criteria
 
-* **AC1:** The total production time must be related to the whole time it took for all the items.
-* **AC2:** The system must correctly handle items that require multiple operations and aggregate the times.
+* **AC1:** The system must prevent stock deduction if the remaining inventory would fall below the reserved amount.
+* **AC2:** The system must provide clear feedback when an inventory deduction fails due to insufficient stock.
+* **AC3:** The system must allow users to query inventory levels for specific materials or components.
 
 ### 1.4. Found out Dependencies
 
-* **USEI01** The data structures are essential for storing item and workstation information
-* **USEI02** depends on the simulator to obtain the production flow of items and, therefore, calculate the total production time.
-
+* **USEI01** Data structures for importing and storing inventory information from materials.csv or other input files.
+* **USEI10** Functionality for efficiently searching inventory data to support stock queries and updates.
 ### 1.5 Input and Output Data
 
 **Input Data:**
 
 * Uploaded File:
-  * workstations.csv
-  * articles.csv
-
-
+  * materials.csv
 
 **Output Data:**
 
-* Total Production Time.
+* Success or failure message for stock deduction requests.
+* Query results showing the current inventory levels of specific materials or components
 
 ### 1.6. System Sequence Diagram (SSD)
 
-![System Sequence Diagram](svg/USEI03-system-sequence-diagram.svg)
+![System Sequence Diagram](svg/USEI19-system-sequence-diagram.svg)
 
 ### 1.7 Other Relevant Remarks
 
