@@ -1,21 +1,18 @@
-# USEI02 - Implementing a Simulator
+# USEI18 - Detect Circular Dependencies
 
 ## 1. Requirements Engineering
 
 ### 1.1. User Story Description
 
-Aa Product Manager I want to implement a simulator that processes all the items.
+As a Production Manager, I want to reserve materials and components needed for specific orders without automatically deducting them from stock, ensuring availability while maintaining accurate inventory records.
 
 ### 1.2. Customer Specifications and Clarifications 
 
 **From the specifications document:**
 
-> The simulator should load data from two input files: articles.csv and workstations.csv.
+>The system must allow for material and component reservations linked to specific orders. Reservations should only be created if the entire order can be fulfilled based on current inventory levels.
 
-> The system should also handle item priority when assigning items to workstations.
-
-> The simulator must create a queue for each operation needed by the articles and assign them to workstations based on availability and processing speed.
-
+>Reserved quantities must be recorded but not automatically deducted from stock until the order is processed
 
 **From the client clarifications:**
 
@@ -29,35 +26,32 @@ Aa Product Manager I want to implement a simulator that processes all the items.
 
 ### 1.3. Acceptance Criteria
 
-* **AC1:** The simulator must create a queue for each operation, containing all items whose next operation is that of the specified queue.
-* **AC2:** The simulator must assign items in the queue to the available machine that can perform the required operation the fastest, in the order of their entry into the queue.
-* **AC3:** The system should calculate the total production time for the items, taking into account the time spent in the queue and the processing time at the workstation.
-* **AC4:** The results should display a list of workstations with the total operation time and the percentage of operation time relative to total execution time, in ascending order.
+* **AC1:** The system must reserve materials and components for specific orders only if the entire order can be fulfilled. 
+* **AC1:** Reserved quantities must be clearly recorded without reducing the current stock.
+* **AC1:** The system must allow users to view a list of all reserved materials and components, including their quantities and associated order IDs.
 
 ### 1.4. Found out Dependencies
 
-* **USEI01** - provides the necessary data structures to store the item and workstation information essential for processing simulation.
-
+* **USEI01** Data structures for importing and storing material and inventory data from materials.csv or similar input files.
+* **USEI17** Dependencies related to order registration and linking materials/components to specific orders.
 
 ### 1.5 Input and Output Data
 
 **Input Data:**
 
 * Uploaded File:
-  * workstations.csv
-  * articles.csv
-
+  * materials.csv
+  * orders.csv
 
 **Output Data:**
 
-* A list of the total time each workstation spent processing items, 
-* A list of the percentage of time each workstation was active relative to the total simulation time
-* A list of the total production time for all the items processed and the sequence of operations each item went through and the time spent in queues
+* Success or failure message for reservation attempts, with a reason if the reservation fails.
+* A list of reserved materials and components, showing:
+<material_id, name, reserved_quantity, associated_order_id>.
 
 ### 1.6. System Sequence Diagram (SSD)
 
-
-![System Sequence Diagram ](svg/USEI02-system-sequence-diagram.svg)
+![System Sequence Diagram ](svg/USEI18-system-sequence-diagram.svg)
 
 ### 1.7 Other Relevant Remarks
 

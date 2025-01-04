@@ -4,4 +4,4 @@
 
 ### 2.1. Relevant Domain Model Excerpt
 
-![Domain Model](svg/usei04-domain-model.svg)
+![Domain Model](svg/usei20-domain-model.svg)

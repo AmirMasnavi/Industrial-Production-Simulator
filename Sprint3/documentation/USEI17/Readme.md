@@ -1,4 +1,4 @@
-# USEI08 - Process Items by Priority
+# USEI17 - Build PERT-CPM Graph
 
 [Requirements Engineering](01.requirements-engineering/Readme.md)
 
