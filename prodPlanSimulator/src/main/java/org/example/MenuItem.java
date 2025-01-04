@@ -578,7 +578,7 @@ public class MenuItem {
         List<Machine> machines = CSVReader.readMachinesFromCSV("./workstations.csv");
         DatabaseConnection dbConnection = new DatabaseConnection();
 
-        simulator = new Simulator(articles, machines, dbConnection);
+        simulator = new Simulator(articles, machines);
         simulator.runSimulation();
         lastSimulationWithPriorities = true;
         System.out.println("\nSimulation with priorities completed.");

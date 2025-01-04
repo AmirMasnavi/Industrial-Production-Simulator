@@ -34,7 +34,7 @@ public class Simulator {
     private final Map<String, Integer> totalTimePerItem; // Total processing time for each item
 
     private final Map<String, Integer> itemWaitingTimes; // Accumulated waiting times for each item
-    private final DatabaseConnection dbConnection; //DB connection
+    private DatabaseConnection dbConnection = null; //DB connection
 
     /**
      * Constructor to initialize the simulator with a list of items and machines.
@@ -46,6 +46,27 @@ public class Simulator {
         this.articles = articles;
         this.machines = machines;
         this.dbConnection = dbConnection;
+        this.taskQueue = new PriorityQueue<>(Comparator.comparingInt(Task::getPriority).reversed());
+        this.busyMachines = new HashMap<>();
+        this.machineOperationTimes = new HashMap<>();
+        this.operationExecutionTimes = new HashMap<>();
+        this.operationWaitingTimes = new HashMap<>();
+        this.operationTaskCounts = new HashMap<>();
+        this.flowDependencyMap = new HashMap<>();
+        this.itemWorkstationHistory = new HashMap<>();
+        this.currentTime = 0;
+        this.totalTimePerItem = new HashMap<>();
+        this.itemWaitingTimes = new HashMap<>();
+
+        for (Machine machine : machines) {
+            machineOperationTimes.put(machine.getIdMachine(), 0);
+        }
+
+        initializeTasks();
+    }
+    public Simulator(List<Article> articles, List<Machine> machines) {
+        this.articles = articles;
+        this.machines = machines;
         this.taskQueue = new PriorityQueue<>(Comparator.comparingInt(Task::getPriority).reversed());
         this.busyMachines = new HashMap<>();
         this.machineOperationTimes = new HashMap<>();
