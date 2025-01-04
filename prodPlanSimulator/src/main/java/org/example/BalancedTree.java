@@ -11,6 +11,7 @@ class BalancedNode {
     Map<String, Double> dependencies; // Map of dependencies with quantities
     BalancedNode leftChild, rightChild; // References to left and right child nodes
     int nodeHeight; // Height of the node in the tree
+    private BalancedNode rootNode;
 
     /**
      * Constructs a new balanced node.
@@ -164,6 +165,43 @@ public class BalancedTree {
 
         for (Map.Entry<String, Double> entry : node.dependencies.entrySet()) {
             System.out.println("  - Component: " + entry.getKey() + " | Quantity: " + entry.getValue());
+        }
+    }
+
+    public void printTree() {
+        printTreeRecursive(rootNode, "", true);
+    }
+
+    // Recursively prints the tree with proper formatting
+    private void printTreeRecursive(BalancedNode node, String prefix, boolean isLast) {
+        if (node == null) {
+            return;
+        }
+
+        // Print the current node
+        System.out.println(prefix + (isLast ? "└── " : "├── ")
+                + (node.operationId != null ? "[" + node.operationId + "]: " : "")
+                + node.partId
+                + " (Item " + node.partId + ") - Quantity: " + node.dependencies.getOrDefault("Quantity", 1.0));
+
+        // Print dependencies or materials
+        if (node.dependencies != null) {
+            for (Map.Entry<String, Double> entry : node.dependencies.entrySet()) {
+                if (!entry.getKey().equals("Quantity")) {
+                    System.out.println(prefix + (isLast ? "    " : "│   ")
+                            + "├─ Material: " + entry.getKey());
+                }
+            }
+        }
+
+        // Recurse for children
+        if (node.leftChild != null || node.rightChild != null) {
+            if (node.leftChild != null) {
+                printTreeRecursive(node.leftChild, prefix + (isLast ? "    " : "│   "), node.rightChild == null);
+            }
+            if (node.rightChild != null) {
+                printTreeRecursive(node.rightChild, prefix + (isLast ? "    " : "│   "), true);
+            }
         }
     }
 }
