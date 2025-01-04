@@ -2,25 +2,14 @@ package org.example;
 
 import com.opencsv.CSVWriter;
 import com.opencsv.CSVWriterBuilder;
-import com.opencsv.exceptions.CsvValidationException;
-import oracle.jdbc.internal.OracleTypes;
-
-import javax.xml.crypto.Data;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.sql.*;
 import java.util.*;
-import java.util.stream.Collectors;
 
-import static org.example.CSVReader.readOrdersFromCSV;
 
 public class USLP06 {
-    private static boolean lastSimulationWithPriorities;  // Flag to track if the last simulation was done with priorities
     static String outputFilePath2;  // Output file path for order articles
-    static String outputFilePath;   // Output file path (currently not used)
 
     /**
      * Method to retrieve articles from orders and write their operations to a CSV file.
@@ -156,7 +145,8 @@ public class USLP06 {
         simulator.runSimulation();
 
         // Set the flag indicating that the simulation was run with priorities
-        lastSimulationWithPriorities = true;
+        // Flag to track if the last simulation was done with priorities
+        boolean lastSimulationWithPriorities = true;
 
         // Output a message indicating the simulation completion
         System.out.println("\nSimulation with priorities completed.");

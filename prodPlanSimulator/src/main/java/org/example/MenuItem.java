@@ -381,6 +381,7 @@ public class MenuItem {
     /**
      * This method builds and prints a balanced tree of orders, where each order contains product subparts.
      * It creates a tree structure to organize the products and their components.
+     *
      * @param orders A list of orders to be processed.
      * @throws SQLException If there is an error in querying the database.
      */
@@ -394,23 +395,24 @@ public class MenuItem {
                 Map<String, Double> subparts = getSubparts(productId, connection);  // Get the subparts for the product
 
                 // Insert the product node into the tree
-                tree.addNode(productId, productId, subparts);
+                tree.addNode(productId, "Product " + productId, subparts);
 
                 // Insert the subparts into the tree
                 for (Map.Entry<String, Double> entry : subparts.entrySet()) {
                     String partId = entry.getKey();  // Get the part ID
-                    double quantity = entry.getValue();  // Get the quantity of the part
-                    tree.addNode(partId, productId, subparts);  // Add the part to the tree
+                    Map<String, Double> material = Map.of("Material: " + partId, entry.getValue());
+                    tree.addNode(partId, "Component " + partId, material);  // Add the part to the tree
                 }
             }
 
-            // Print the entire tree
-            System.out.println("Árvore de Subcomponentes do Produto (Unificada):");
-            tree.traverseInOrder();  // Traverse the tree in order and print its content
+            // Print the entire tree in the hierarchical format
+            System.out.println("Product Component Tree (Hierarchical):");
+            tree.printTree();  // Use the new printTree() method to display the hierarchical structure
         } finally {
             connection.close();  // Ensure the database connection is closed after use
         }
     }
+
 
 
 
@@ -578,7 +580,7 @@ public class MenuItem {
         List<Machine> machines = CSVReader.readMachinesFromCSV("./workstations.csv");
         DatabaseConnection dbConnection = new DatabaseConnection();
 
-        simulator = new Simulator(articles, machines, dbConnection);
+        simulator = new Simulator(articles, machines);
         simulator.runSimulation();
         lastSimulationWithPriorities = true;
         System.out.println("\nSimulation with priorities completed.");
