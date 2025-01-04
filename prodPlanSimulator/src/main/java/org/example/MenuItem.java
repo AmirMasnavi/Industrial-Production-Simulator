@@ -80,31 +80,34 @@ public class MenuItem {
             System.out.println("🔹 3. Run Simulation 🎮");
             System.out.println("🔹 4. Run Simulation With Priorities ⚙️");
             System.out.println("🔹 5. Show Simulation Statistics 📊");
-            System.out.println("🔹 6. Simulator with csv 📂");
 
             System.out.println("\n\u001B[36m🌳 Production Tree\u001B[0m");
-            System.out.println("🔹 7. Build Production Tree 🌳");
-            System.out.println("🔹 8. Search for Operation or Material 🔍");
-            System.out.println("🔹 9. Display Materials by Quantity 📦");
-            System.out.println("🔹 10. Perform Quality Checks by Priority ✅");
-            System.out.println("🔹 11. Update Material Quantity 🛠️");
-            System.out.println("🔹 12. Total Material Quantity 📈");
-            System.out.println("🔹 13. Total Material Quantity.2 📉");
-            System.out.println("🔹 14. Critical Path Operation 🚀");
-            System.out.println("🔹 15. Run Simulation Tree 🧬");
+            System.out.println("🔹 6. Build Production Tree 🌳");
+            System.out.println("🔹 7. Search for Operation or Material 🔍");
+            System.out.println("🔹 8. Display Materials by Quantity 📦");
+            System.out.println("🔹 9. Perform Quality Checks by Priority ✅");
+            System.out.println("🔹 10. Update Material Quantity 🛠️");
+            System.out.println("🔹 11. Total Material Quantity 📈");
+            System.out.println("🔹 12. Total Material Quantity.2 📉");
+            System.out.println("🔹 13. Critical Path Operation 🚀");
+            System.out.println("🔹 14. Run Simulation Tree 🧬");
 
             System.out.println("\n\u001B[36m📦 Product BOM/BOO Management\u001B[0m");
-            System.out.println("🔹 16. List Products and BOM/BOO (LAPR3) 🛒");
+            System.out.println("🔹 15. List Products and BOM/BOO (LAPR3) 🛒");
 
             System.out.println("\n\u001B[31m🚩 Project Management Options\u001B[0m");
-            System.out.println("🔹 17. Build PERT-CPM Graph 🖋️");
-            System.out.println("🔹 18. Detect Circular Dependencies 🔄");
-            System.out.println("🔹 19. Activities Topological Sort 🗺️");
-            System.out.println("🔹 20. Calculate Earliest and Latest Times ⏳");
-            System.out.println("🔹 21. Export Project Schedule to CSV 📤");
-            System.out.println("🔹 22. Identify Critical Path 📍");
-            System.out.println("🔹 23. Identify Bottleneck Activities 📌");
-            System.out.println("🔹 24. Simulate Project Delays ⌛");
+            System.out.println("🔹 16. Build PERT-CPM Graph 🖋️");
+            System.out.println("🔹 17. Detect Circular Dependencies 🔄");
+            System.out.println("🔹 18. Activities Topological Sort 🗺️");
+            System.out.println("🔹 19. Calculate Earliest and Latest Times ⏳");
+            System.out.println("🔹 20. Export Project Schedule to CSV 📤");
+            System.out.println("🔹 21. Identify Critical Path 📍");
+            System.out.println("🔹 22. Identify Bottleneck Activities 📌");
+            System.out.println("🔹 23. Simulate Project Delays ⌛");
+
+            System.out.println("\n\u001B[36m📂 Order Simulation\u001B[0m");
+            System.out.println("🔹 24. Simulate Order from Oracle SGBD 📂");
+
 
 
             System.out.println("\n\u001B[31m0️⃣  Exit\u001B[0m 🚪");
@@ -130,61 +133,61 @@ public class MenuItem {
                     showStatistics();
                     break;
                 case 6:
-                    openNewSimulator();
-                    break;
-                case 7:
                     productionTree();
                     break;
-                case 8:
+                case 7:
                     searchOperationOrMaterial(searcher);
                     break;
-                case 9:
+                case 8:
                     displayMaterialsByQuantity(materialBST);
                     break;
-                case 10:
+                case 9:
                     performQualityChecks(qualityCheckManager);
                     break;
-                case 11:
+                case 10:
                     updateMaterialQuantity(searcher, materialBST);
                     break;
-                case 12:
+                case 11:
                     displayTotalMaterials(rootNode);
                     break;
-                case 13:
+                case 12:
                     displayTotalMaterials2(materialBST);
                     break;
-                case 14:
+                case 13:
                     criticalPathOperations();
                     break;
-                case 15:
+                case 14:
                     runSimulationTree();
                     break;
-                case 16:
+                case 15:
                     listAndShowProducts(visualiser);
                     break;
-                case 17:
+                case 16:
                     buildPertCpmGraph();
                     break;
-                case 18:
+                case 17:
                     validateNoCircularDependencies();
                     break;
-                case 19:
+                case 18:
                     performTopologicalSort();
                     break;
-                case 20:
+                case 19:
                     calculateEarliestAndLatestTimes();
                     break;
-                case 21:
+                case 20:
                     exportScheduleToCsv();
                     break;
-                case 22:
+                case 21:
                     identifyCriticalPath();
                     break;
-                case 23:
+                case 22:
                     identifyBottleneckActivities();
                     break;
-                case 24:
+                case 23:
                     simulateProjectDelaysMenu();
+                    break;
+                case 24:
+                    openNewSimulator();
                     break;
                 case 0:
                     System.out.println("Exiting...");
@@ -378,6 +381,7 @@ public class MenuItem {
     /**
      * This method builds and prints a balanced tree of orders, where each order contains product subparts.
      * It creates a tree structure to organize the products and their components.
+     *
      * @param orders A list of orders to be processed.
      * @throws SQLException If there is an error in querying the database.
      */
@@ -391,23 +395,24 @@ public class MenuItem {
                 Map<String, Double> subparts = getSubparts(productId, connection);  // Get the subparts for the product
 
                 // Insert the product node into the tree
-                tree.addNode(productId, productId, subparts);
+                tree.addNode(productId, "Product " + productId, subparts);
 
                 // Insert the subparts into the tree
                 for (Map.Entry<String, Double> entry : subparts.entrySet()) {
                     String partId = entry.getKey();  // Get the part ID
-                    double quantity = entry.getValue();  // Get the quantity of the part
-                    tree.addNode(partId, productId, subparts);  // Add the part to the tree
+                    Map<String, Double> material = Map.of("Material: " + partId, entry.getValue());
+                    tree.addNode(partId, "Component " + partId, material);  // Add the part to the tree
                 }
             }
 
-            // Print the entire tree
-            System.out.println("Árvore de Subcomponentes do Produto (Unificada):");
-            tree.traverseInOrder();  // Traverse the tree in order and print its content
+            // Print the entire tree in the hierarchical format
+            System.out.println("Product Component Tree (Hierarchical):");
+            tree.printTree();  // Use the new printTree() method to display the hierarchical structure
         } finally {
             connection.close();  // Ensure the database connection is closed after use
         }
     }
+
 
 
 
@@ -575,7 +580,7 @@ public class MenuItem {
         List<Machine> machines = CSVReader.readMachinesFromCSV("./workstations.csv");
         DatabaseConnection dbConnection = new DatabaseConnection();
 
-        simulator = new Simulator(articles, machines, dbConnection);
+        simulator = new Simulator(articles, machines);
         simulator.runSimulation();
         lastSimulationWithPriorities = true;
         System.out.println("\nSimulation with priorities completed.");
@@ -1027,26 +1032,7 @@ public class MenuItem {
         activities = CSVReader.readActivitiesFromCsv(filePath);
 
         // Build the graph
-        pertcpmGraph.buildGraph(activities);
-
-        Graph<Activity, Integer> graph = pertcpmGraph.getGraph();
-
-        System.out.println("\nGraph built successfully:");
-        System.out.println("Number of Nodes: " + graph.numVertices());
-        System.out.println("Number of edges: " + graph.numEdges());
-        System.out.println("\nNodes:");
-        for (Activity activity : graph.vertices()) {
-            System.out.println(activity);
-        }
-
-        System.out.println("\nEdges:");
-        for (Edge<Activity, Integer> edge : graph.edges()) {
-            System.out.printf("%s -> %s (Duration: %d %s)\n",
-                    edge.getVOrig(),
-                    edge.getVDest(),
-                    edge.getWeight(),
-                    edge.getVOrig().getDurationUnit());
-        }
+        buildPertCmpGraphAux();
 
         /*
          * Exports the graph to DOT format for visualization and generates an image
@@ -1068,15 +1054,67 @@ public class MenuItem {
     }
 
     /**
+     * Method to build the PERT-CPM graph based on the activities duration changes.
+     */
+    private static void buildPertCpmGraph2() {
+        buildPertCmpGraphAux();
+    }
+
+    /**
+     * Auxiliary method to build the PERT-CPM graph.
+     * This method was created in order to avoid code repetition.
+     */
+    private static void buildPertCmpGraphAux() {
+        pertcpmGraph.buildGraph(activities);
+
+        Graph<Activity, Integer> graph = pertcpmGraph.getGraph();
+
+        // Title for Graph Construction
+        System.out.println("\n" + "═".repeat(50));
+        System.out.println("📊 \u001B[1mGraph built successfully\u001B[0m 📊");
+        System.out.println("═".repeat(50));
+
+        // Summary Section
+        System.out.printf("🔹 \u001B[1mNumber of Nodes:\u001B[0m %d%n", graph.numVertices());
+        System.out.printf("🔹 \u001B[1mNumber of Edges:\u001B[0m %d%n", graph.numEdges());
+
+        // Nodes Section
+        System.out.println("\n📍 \u001B[1mNodes:\u001B[0m");
+        for (Activity activity : graph.vertices()) {
+            System.out.println("   🔸 " + activity);
+        }
+
+        // Edges Section
+        System.out.println("\n🔗 \u001B[1mEdges:\u001B[0m");
+        for (Edge<Activity, Integer> edge : graph.edges()) {
+            System.out.printf("   🔹 %s ➡\uFE0F %s (Duration: %d %s)%n",
+                    edge.getVOrig(),
+                    edge.getVDest(),
+                    edge.getWeight(),
+                    edge.getVOrig().getDurationUnit());
+        }
+
+        // Footer for completion
+        System.out.println("\n" + "═".repeat(50));
+        System.out.println("✅ \u001B[1mGraph construction completed successfully!\u001B[0m");
+        System.out.println("═".repeat(50));
+    }
+
+
+    /**
      * Validates the PERT-CPM graph for circular dependencies.
      * Throws an exception if cycles are detected in the graph.
      */
     private static void validateNoCircularDependencies() {
         try {
+            // Attempt to validate the graph
             pertcpmGraph.validateNoCircularDependencies();
-            System.out.println("No circular dependencies detected. The project graph is valid.");
+
+            // Success message
+            System.out.println("✅ \u001B[1;32mNo circular dependencies detected.\u001B[0m The project graph is valid.");
         } catch (IllegalStateException e) {
-            System.err.println(e.getMessage());
+            // Error message in case of circular dependencies
+            System.out.println("❌ \u001B[1;31mError:\u001B[0m " + e.getMessage());
         }
     }
 
@@ -1085,9 +1123,7 @@ public class MenuItem {
      * and displays the resulting order.
      */
     private static void performTopologicalSort() {
-        String topologicalOrder = pertcpmGraph.getTopologicalSortAsString();
-        System.out.println("\nTopological Sort Result:");
-        System.out.println(topologicalOrder);
+        pertcpmGraph.getTopologicalSortAsString();
     }
 
     /**
@@ -1095,7 +1131,6 @@ public class MenuItem {
      * for each activity in the PERT-CPM graph and prints the results.
      */
     private static void calculateEarliestAndLatestTimes() {
-        System.out.println("\nEarliest and Latest Start and Finish Times:");
         pertcpmGraph.calculateEarliestAndLatestTimes();
         pertcpmGraph.printActivityTimes();
     }
@@ -1121,10 +1156,24 @@ public class MenuItem {
      */
     private static void identifyBottleneckActivities() {
         List<Activity> bottleneckActivities = pertcpmGraph.identifyBottleneckActivities();
-        System.out.println("\nBottleneck Activities: ");
+        System.out.println("\n" + "═".repeat(40));
+        System.out.println("\uD83D\uDCCC  \u001B[1mBotleneck Activities\u001B[0m");
+        System.out.println("═".repeat(40));
+
+        if (bottleneckActivities.isEmpty()) {
+            System.out.println("No bottleneck activities detected.\n");
+            return;
+        }
+
         for (Activity activity : bottleneckActivities) {
             System.out.printf(
-                    "ID: %s, Name: %s, Duration: %d days, ES: %d, EF: %d, LS: %d, LF: %d\n",
+                    "ID: %s\n" +
+                            "Name: %s\n" +
+                            "Duration: %d days\n" +
+                            "Earliest Start (ES): %d\n" +
+                            "Earliest Finish (EF): %d\n" +
+                            "Latest Start (LS): %d\n" +
+                            "Latest Finish (LF): %d\n",
                     activity.getId(),
                     activity.getDescription(),
                     activity.getDuration(),
@@ -1135,6 +1184,7 @@ public class MenuItem {
             );
         }
     }
+
 
     /**
      * Generates a graph image from a DOT file using GraphViz.
@@ -1166,6 +1216,7 @@ public class MenuItem {
             frame.setVisible(true);
         });
     }
+
 
     /**
      * Displays a menu for simulating project delays and allows
@@ -1199,7 +1250,7 @@ public class MenuItem {
                     changeActivityDuration();
                     break;
                 case 2:
-                    buildPertCpmGraph();
+                    buildPertCpmGraph2();
                     break;
                 case 3:
                     performTopologicalSort();
@@ -1243,14 +1294,14 @@ public class MenuItem {
             }
         }
 
-        System.out.print("Enter the new duration for the activity: ");
+        System.out.print("Enter the new duration for the activity (in weeks): ");
         int newDuration = scanner.nextInt();
 
         activity.setDuration(newDuration);
-        System.out.println("Activity duration updated.");
+        System.out.println("\n\u001B[32m✔️ Activity duration updated successfully.\u001B[0m");
 
         // Recalculate the graph
-        pertcpmGraph.buildGraph(activities);
+        //pertcpmGraph.buildGraph(activities);
         pertcpmGraph.calculateEarliestAndLatestTimes();
     }
 

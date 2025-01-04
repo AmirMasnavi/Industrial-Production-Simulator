@@ -1,41 +1,49 @@
-DROP TABLE BOO CASCADE CONSTRAINTS;
 DROP TABLE BOO_INPUT CASCADE CONSTRAINTS;
 DROP TABLE BOO_OUTPUT CASCADE CONSTRAINTS;
 DROP TABLE Client CASCADE CONSTRAINTS;
-DROP TABLE Components CASCADE CONSTRAINTS;
+DROP TABLE Component CASCADE CONSTRAINTS;
 DROP TABLE Operation CASCADE CONSTRAINTS;
 DROP TABLE Operation_Type CASCADE CONSTRAINTS;
 DROP TABLE Orders CASCADE CONSTRAINTS;
 DROP TABLE Part CASCADE CONSTRAINTS;
+DROP TABLE Part_Supplier CASCADE CONSTRAINTS;
+DROP TABLE PartType CASCADE CONSTRAINTS;
 DROP TABLE Product CASCADE CONSTRAINTS;
 DROP TABLE Product_Family CASCADE CONSTRAINTS;
 DROP TABLE Product_Orders CASCADE CONSTRAINTS;
 DROP TABLE ProductionOrder CASCADE CONSTRAINTS;
-DROP TABLE RawMaterial CASCADE CONSTRAINTS;
+DROP TABLE Raw_Material CASCADE CONSTRAINTS;
+DROP TABLE ReserveList CASCADE CONSTRAINTS;
+DROP TABLE Supplier CASCADE CONSTRAINTS;
+DROP TABLE Supplier_History CASCADE CONSTRAINTS;
 DROP TABLE Workstations CASCADE CONSTRAINTS;
 DROP TABLE Workstations_ProductionOrder CASCADE CONSTRAINTS;
 DROP TABLE WorkstationTypes CASCADE CONSTRAINTS;
 DROP TABLE WorkstationTypes_Operation_Type CASCADE CONSTRAINTS;
+DROP SEQUENCE reservation_seq;
+DROP TABLE Simulation_Average_Production_Time CASCADE CONSTRAINTS;
+DROP TABLE Simulation_Operation_Totals CASCADE CONSTRAINTS;
+DROP TABLE Simulation CASCADE CONSTRAINTS;
 
-CREATE TABLE BOO (
-  ProductID varchar2(255) NOT NULL, 
-  PRIMARY KEY (ProductID));
+
+-- Sequence for ReservationID
+CREATE SEQUENCE reservation_seq START WITH 1;
 
 CREATE TABLE BOO_INPUT (
   PartNumber varchar2(255) NOT NULL, 
   OPID       number(10) NOT NULL, 
   Quantity   number(10) NOT NULL, 
   Unit       varchar2(255) NOT NULL, 
-  PRIMARY KEY (PartNumber, 
-  OPID));
+  CONSTRAINT PK_BOO_INPUT PRIMARY KEY (PartNumber, OPID)
+);
 
 CREATE TABLE BOO_OUTPUT (
   PartNumber varchar2(255) NOT NULL, 
   OPID       number(10) NOT NULL, 
   Quantity   number(10) NOT NULL, 
   Unit       varchar2(255) NOT NULL, 
-  PRIMARY KEY (PartNumber, 
-  OPID));
+  CONSTRAINT PK_BOO_OUTPUT PRIMARY KEY (PartNumber, OPID)
+);
 
 CREATE TABLE Client (
   ClientID varchar2(255) NOT NULL, 
@@ -48,23 +56,30 @@ CREATE TABLE Client (
   Email    varchar2(100) NOT NULL, 
   Phone    number(15) NOT NULL, 
   Status   varchar2(255) NOT NULL, 
-  PRIMARY KEY (ClientID));
+  CONSTRAINT PK_Client PRIMARY KEY (ClientID)
+);
 
-CREATE TABLE Components (
+CREATE TABLE Component (
   PartNumber varchar2(255) NOT NULL, 
-  PRIMARY KEY (PartNumber));
+  Stock      number(10) NOT NULL, 
+  Min_Stock  number(10) NOT NULL, 
+  CONSTRAINT PK_Component PRIMARY KEY (PartNumber)
+);
 
 CREATE TABLE Operation (
-  OPID      number(10) NOT NULL, 
-  ProductID varchar2(255) NOT NULL, 
-  OP_TYPE   number(10) NOT NULL, 
-  Next_OP   number(10), 
-  PRIMARY KEY (OPID));
+  OPID          number(10) NOT NULL, 
+  ProductID     varchar2(255) NOT NULL, 
+  OP_TYPE       number(10) NOT NULL, 
+  ExecutionTime number(10) NOT NULL, 
+  Next_OP       number(10), 
+  CONSTRAINT PK_Operation PRIMARY KEY (OPID)
+);
 
 CREATE TABLE Operation_Type (
   OP_TYPE     number(10) NOT NULL, 
   Description varchar2(255) NOT NULL, 
-  PRIMARY KEY (OP_TYPE));
+  CONSTRAINT PK_Operation_Type PRIMARY KEY (OP_TYPE)
+);
 
 CREATE TABLE Orders (
   OrderID      varchar2(255) NOT NULL, 
@@ -72,32 +87,48 @@ CREATE TABLE Orders (
   DateDelivery date NOT NULL, 
   Status       varchar2(255) NOT NULL, 
   ClientID     varchar2(255) NOT NULL, 
-  PRIMARY KEY (OrderID));
+  CONSTRAINT PK_Orders PRIMARY KEY (OrderID)
+);
 
 CREATE TABLE Part (
   PartNumber  varchar2(255) NOT NULL, 
   Description varchar2(200) NOT NULL, 
-  PRIMARY KEY (PartNumber));
+  PartType    varchar2(255) NOT NULL, 
+  CONSTRAINT PK_Part PRIMARY KEY (PartNumber)
+);
+
+CREATE TABLE Part_Supplier (
+  PartNumber varchar2(255) NOT NULL, 
+  SupplierID number(10) NOT NULL, 
+  CONSTRAINT PK_Part_Supplier PRIMARY KEY (PartNumber, SupplierID)
+);
+
+CREATE TABLE PartType (
+  PartType varchar2(255) NOT NULL, 
+  CONSTRAINT PK_PartType PRIMARY KEY (PartType)
+);
 
 CREATE TABLE Product (
-  ProductID      varchar2(255) NOT NULL, 
-  FamilyID       number(10) NOT NULL, 
-  Name           varchar2(20) NOT NULL, 
-  Description    varchar2(200) NOT NULL, 
-  PartNumber varchar2(255), 
-  PRIMARY KEY (ProductID));
+  ProductID   varchar2(255) NOT NULL, 
+  FamilyID    number(10) NOT NULL, 
+  Name        varchar2(20) NOT NULL, 
+  Description varchar2(200) NOT NULL, 
+  PartNumber  varchar2(255), 
+  CONSTRAINT PK_Product PRIMARY KEY (ProductID)
+);
 
 CREATE TABLE Product_Family (
   FamilyID number(10) NOT NULL, 
   Name     varchar2(20) NOT NULL, 
-  PRIMARY KEY (FamilyID));
+  CONSTRAINT PK_Product_Family PRIMARY KEY (FamilyID)
+);
 
 CREATE TABLE Product_Orders (
   OrderID          varchar2(255) NOT NULL, 
   ProductID        varchar2(255) NOT NULL, 
   QuantityProducts number(10) NOT NULL, 
-  PRIMARY KEY (OrderID, 
-  ProductID));
+  CONSTRAINT PK_Product_Orders PRIMARY KEY (OrderID, ProductID)
+);
 
 CREATE TABLE ProductionOrder (
   PO_ID     nvarchar2(255) NOT NULL, 
@@ -106,57 +137,186 @@ CREATE TABLE ProductionOrder (
   Sequence  varchar2(100) NOT NULL, 
   OrderID   varchar2(255) NOT NULL, 
   ProductID varchar2(255) NOT NULL, 
-  PRIMARY KEY (PO_ID));
+  CONSTRAINT PK_ProductionOrder PRIMARY KEY (PO_ID)
+);
 
-CREATE TABLE RawMaterial (
+CREATE TABLE Raw_Material (
   PartNumber varchar2(255) NOT NULL, 
-  PRIMARY KEY (PartNumber));
+  Stock      number(10) NOT NULL, 
+  Min_Stock  number(10) NOT NULL, 
+  CONSTRAINT PK_Raw_Material PRIMARY KEY (PartNumber)
+);
+
+CREATE TABLE ReserveList (
+  PartNumber varchar2(255) NOT NULL, 
+  Quantity   varchar2(255) NOT NULL,
+  CONSTRAINT PK_ReserveList PRIMARY KEY (PartNumber)
+);
+
+CREATE TABLE Supplier (
+  SupplierID number(10) NOT NULL, 
+  CONSTRAINT PK_Supplier PRIMARY KEY (SupplierID)
+);
+
+CREATE TABLE Supplier_History (
+  SupplierID   number(10) NOT NULL, 
+  PartNumber   varchar2(255) NOT NULL, 
+  StartDate    date NOT NULL, 
+  EndDate      date, 
+  Min_quantity number(10) NOT NULL, 
+  Price        number(10) NOT NULL, 
+  CONSTRAINT PK_Supplier_History PRIMARY KEY (SupplierID, PartNumber, StartDate)
+);
 
 CREATE TABLE Workstations (
   WSID        varchar2(255) NOT NULL, 
   Name        varchar2(20) NOT NULL, 
   Description varchar2(300) NOT NULL, 
   WTID        varchar2(255) NOT NULL, 
-  PRIMARY KEY (WSID));
-COMMENT ON COLUMN Workstations.Name IS 'minutes';
+  CONSTRAINT PK_Workstations PRIMARY KEY (WSID)
+);
 
 CREATE TABLE Workstations_ProductionOrder (
   WSID  varchar2(255) NOT NULL, 
   PO_ID nvarchar2(255) NOT NULL, 
-  PRIMARY KEY (WSID, 
-  PO_ID));
+  CONSTRAINT PK_Workstations_ProductionOrder PRIMARY KEY (WSID, PO_ID)
+);
 
 CREATE TABLE WorkstationTypes (
   WTID varchar2(255) NOT NULL, 
   Name varchar2(100) NOT NULL, 
-  PRIMARY KEY (WTID));
+  CONSTRAINT PK_WorkstationTypes PRIMARY KEY (WTID)
+);
 
 CREATE TABLE WorkstationTypes_Operation_Type (
-  WTID    varchar2(255) NOT NULL, 
-  OP_TYPE number(10) NOT NULL, 
-  PRIMARY KEY (WTID, 
-  OP_TYPE));
+  WTID      varchar2(255) NOT NULL, 
+  OP_TYPE   number(10) NOT NULL, 
+  MaxTime   number(10) NOT NULL, 
+  SetupTime number(10) NOT NULL, 
+  CONSTRAINT PK_WorkstationTypes_Operation_Type PRIMARY KEY (WTID, OP_TYPE)
+);
 
-ALTER TABLE Orders ADD CONSTRAINT FK_Orders_From_Client FOREIGN KEY (ClientID) REFERENCES Client (ClientID);
-ALTER TABLE Product ADD CONSTRAINT FK_Product_From_ProductFamily FOREIGN KEY (FamilyID) REFERENCES Product_Family (FamilyID);
-ALTER TABLE Workstations ADD CONSTRAINT FK_Workstations_From_WorkstationTypes FOREIGN KEY (WTID) REFERENCES WorkstationTypes (WTID);
-ALTER TABLE Product_Orders ADD CONSTRAINT FK_ProductOrders_From_Product FOREIGN KEY (ProductID) REFERENCES Product (ProductID);
-ALTER TABLE Product_Orders ADD CONSTRAINT FK_ProductOrders_From_Orders FOREIGN KEY (OrderID) REFERENCES Orders (OrderID);
-ALTER TABLE RawMaterial ADD CONSTRAINT FK_RawMaterial_From_Part FOREIGN KEY (PartNumber) REFERENCES Part (PartNumber);
-ALTER TABLE Components ADD CONSTRAINT FK_Components_From_Part FOREIGN KEY (PartNumber) REFERENCES Part (PartNumber);
-ALTER TABLE ProductionOrder ADD CONSTRAINT FK_ProductionOrder_From_ProductOrders FOREIGN KEY (OrderID, ProductID) REFERENCES Product_Orders (OrderID, ProductID);
-ALTER TABLE Workstations_ProductionOrder ADD CONSTRAINT FK_WorkstationsProductionOrder_From_Workstations FOREIGN KEY (WSID) REFERENCES Workstations (WSID);
-ALTER TABLE Workstations_ProductionOrder ADD CONSTRAINT FK_WorkstationsProductionOrder_From_ProductionOrder FOREIGN KEY (PO_ID) REFERENCES ProductionOrder (PO_ID);
-ALTER TABLE BOO ADD CONSTRAINT FK_BOO_From_Product FOREIGN KEY (ProductID) REFERENCES Product (ProductID);
-ALTER TABLE WorkstationTypes_Operation_Type ADD CONSTRAINT FK_WorkstationTypesOpType_From_WorkstationTypes FOREIGN KEY (WTID) REFERENCES WorkstationTypes (WTID);
-ALTER TABLE WorkstationTypes_Operation_Type ADD CONSTRAINT FK_WorkstationTypesOpType_From_OperationType FOREIGN KEY (OP_TYPE) REFERENCES Operation_Type (OP_TYPE);
-ALTER TABLE BOO_INPUT ADD CONSTRAINT FK_BOOInput_From_Part FOREIGN KEY (PartNumber) REFERENCES Part (PartNumber);
-ALTER TABLE BOO_OUTPUT ADD CONSTRAINT FK_BOOOutput_From_Part FOREIGN KEY (PartNumber) REFERENCES Part (PartNumber);
-ALTER TABLE BOO_INPUT ADD CONSTRAINT FK_BOOInput_From_Operation FOREIGN KEY (OPID) REFERENCES Operation (OPID);
-ALTER TABLE Operation ADD CONSTRAINT FK_Operation_From_OperationType FOREIGN KEY (OP_TYPE) REFERENCES Operation_Type (OP_TYPE);
-ALTER TABLE Operation ADD CONSTRAINT FK_Operation_From_BOO FOREIGN KEY (ProductID) REFERENCES BOO (ProductID);
-ALTER TABLE Product ADD CONSTRAINT FK_Product_From_Part FOREIGN KEY (PartNumber) REFERENCES Part (PartNumber);
-ALTER TABLE BOO_OUTPUT ADD CONSTRAINT FK_BOOOutput_From_Operation FOREIGN KEY (OPID) REFERENCES Operation (OPID);
+--Lapr
+CREATE TABLE Simulation (
+    SimulationID NUMBER(10) NOT NULL,
+    SimulationDate DATE DEFAULT SYSDATE NOT NULL,
+    Description VARCHAR2(255),
+    CONSTRAINT PK_Simulation PRIMARY KEY (SimulationID)
+);
+
+CREATE TABLE Simulation_Operation_Totals (
+    SimulationID NUMBER(10) NOT NULL,
+    OperationID VARCHAR2(50) NOT NULL,
+    Total_Execution_Time NUMBER(10) NOT NULL,
+    Total_Waiting_Time NUMBER(10) NOT NULL,
+    Task_Count NUMBER(10) NOT NULL,
+    CONSTRAINT PK_Simulation_Operation_Totals PRIMARY KEY (SimulationID, OperationID),
+    CONSTRAINT FK_Simulation_Operation_Totals_Simulation FOREIGN KEY (SimulationID) REFERENCES Simulation(SimulationID)
+);
+
+CREATE TABLE Simulation_Average_Production_Time (
+    SimulationID NUMBER(10),
+    Average_Production_Time NUMBER(10) NOT NULL,
+    CONSTRAINT PK_Simulation_Average_Production_Time PRIMARY KEY (SimulationID)
+);
+
+
+
+-- Foreign Key Constraints
+ALTER TABLE Orders ADD CONSTRAINT FK_Orders_Client FOREIGN KEY (ClientID) REFERENCES Client (ClientID);
+ALTER TABLE Product ADD CONSTRAINT FK_Product_Family FOREIGN KEY (FamilyID) REFERENCES Product_Family (FamilyID);
+ALTER TABLE Workstations ADD CONSTRAINT FK_Workstations_WorkstationTypes FOREIGN KEY (WTID) REFERENCES WorkstationTypes (WTID);
+ALTER TABLE Product_Orders ADD CONSTRAINT FK_Product_Orders_Product FOREIGN KEY (ProductID) REFERENCES Product (ProductID);
+ALTER TABLE Product_Orders ADD CONSTRAINT FK_Product_Orders_Orders FOREIGN KEY (OrderID) REFERENCES Orders (OrderID);
+ALTER TABLE Raw_Material ADD CONSTRAINT FK_Raw_Material_Part FOREIGN KEY (PartNumber) REFERENCES Part (PartNumber);
+ALTER TABLE Component ADD CONSTRAINT FK_Component_Part FOREIGN KEY (PartNumber) REFERENCES Part (PartNumber);
+ALTER TABLE Workstations_ProductionOrder ADD CONSTRAINT FK_Workstations_ProductionOrder_Workstations FOREIGN KEY (WSID) REFERENCES Workstations (WSID);
+ALTER TABLE Workstations_ProductionOrder ADD CONSTRAINT FK_Workstations_ProductionOrder_ProductionOrder FOREIGN KEY (PO_ID) REFERENCES ProductionOrder (PO_ID);
+ALTER TABLE WorkstationTypes_Operation_Type ADD CONSTRAINT FK_WorkstationTypes_Operation_Type_WorkstationTypes FOREIGN KEY (WTID) REFERENCES WorkstationTypes (WTID);
+ALTER TABLE WorkstationTypes_Operation_Type ADD CONSTRAINT FK_WorkstationTypes_Operation_Type_Operation_Type FOREIGN KEY (OP_TYPE) REFERENCES Operation_Type (OP_TYPE);
+ALTER TABLE BOO_INPUT ADD CONSTRAINT FK_BOO_INPUT_Part FOREIGN KEY (PartNumber) REFERENCES Part (PartNumber);
+ALTER TABLE BOO_OUTPUT ADD CONSTRAINT FK_BOO_OUTPUT_Part FOREIGN KEY (PartNumber) REFERENCES Part (PartNumber);
+ALTER TABLE BOO_INPUT ADD CONSTRAINT FK_BOO_INPUT_Operation FOREIGN KEY (OPID) REFERENCES Operation (OPID);
+ALTER TABLE Operation ADD CONSTRAINT FK_Operation_Operation_Type FOREIGN KEY (OP_TYPE) REFERENCES Operation_Type (OP_TYPE);
+ALTER TABLE Product ADD CONSTRAINT FK_Product_Part FOREIGN KEY (PartNumber) REFERENCES Part (PartNumber);
+ALTER TABLE BOO_OUTPUT ADD CONSTRAINT FK_BOO_OUTPUT_Operation FOREIGN KEY (OPID) REFERENCES Operation (OPID);
+ALTER TABLE ProductionOrder ADD CONSTRAINT FK_ProductionOrder_Product_Orders FOREIGN KEY (OrderID, ProductID) REFERENCES Product_Orders (OrderID, ProductID);
+ALTER TABLE Operation ADD CONSTRAINT FK_Operation_Product FOREIGN KEY (ProductID) REFERENCES Product (ProductID);
+ALTER TABLE Supplier_History ADD CONSTRAINT FK_Supplier_History_Supplier FOREIGN KEY (SupplierID) REFERENCES Supplier (SupplierID);
+ALTER TABLE Part ADD CONSTRAINT FK_Part_PartType FOREIGN KEY (PartType) REFERENCES PartType (PartType);
+ALTER TABLE Supplier_History ADD CONSTRAINT FK_Supplier_History_Part FOREIGN KEY (PartNumber) REFERENCES Part (PartNumber);
+ALTER TABLE Part_Supplier ADD CONSTRAINT FK_Part_Supplier_Part FOREIGN KEY (PartNumber) REFERENCES Part (PartNumber);
+ALTER TABLE Part_Supplier ADD CONSTRAINT FK_Part_Supplier_Supplier FOREIGN KEY (SupplierID) REFERENCES Supplier (SupplierID);
+ALTER TABLE ReserveList ADD CONSTRAINT FK_ReserveList_Part FOREIGN KEY (PartNumber) REFERENCES Part (PartNumber);
+
+
+-- US23 - As a Production Manager, I want to make sure that the expected execution time of an operation is not greater than the maximum execution time of every workstation type where it may be run.
+
+CREATE OR REPLACE TRIGGER trgExecutionTimeGreaterMax
+BEFORE INSERT OR UPDATE OF ExecutionTime -- Trigger activates before inserting or updating the ExecutionTime column
+ON Operation -- The trigger is defined on the Operation table
+FOR EACH ROW -- Trigger operates at the row level
+DECLARE
+    v_max_time WorkstationTypes_Operation_Type.MaxTime%TYPE; -- Variable to store the maximum allowed execution time
+    ex_time_exceeded EXCEPTION; -- Custom exception to handle cases where execution time exceeds the maximum allowed
+BEGIN
+    -- Fetch the maximum allowed execution time for the given operation type (OP_TYPE)
+    SELECT MAX(wt.MaxTime)
+    INTO v_max_time
+    FROM WorkstationTypes_Operation_Type wt
+    WHERE wt.OP_TYPE = :NEW.OP_TYPE; -- Match the operation type of the new row being inserted/updated
+
+    -- Check if the new execution time exceeds the maximum allowed time
+    IF :NEW.ExecutionTime > v_max_time THEN
+        RAISE ex_time_exceeded; -- Raise a custom exception if execution time exceeds the limit
+    END IF;
+
+EXCEPTION
+    -- Handle the custom exception when execution time exceeds the maximum allowed
+    WHEN ex_time_exceeded THEN
+        RAISE_APPLICATION_ERROR(
+            -20101, -- Custom error code
+            'Execution time of ' || :NEW.ExecutionTime || -- Error message includes the invalid execution time
+            ' exceeds the maximum allowed time of ' || v_max_time || -- Includes the maximum allowed time
+            ' for operation type ' || :NEW.OP_TYPE || -- Includes the operation type
+            '. Please provide a valid ExecutionTime.' -- Suggests providing a valid execution time
+        );
+END;
+/
+
+
+-- US24 -  As a Production Manager, I don’t want it to be possible to add a product as an input in its own BOO.
+    
+CREATE OR REPLACE TRIGGER add_product_input_in_own_BOO
+BEFORE INSERT OR UPDATE OF PartNumber -- Trigger activates before inserting or updating the PartNumber column
+ON BOO_INPUT -- The trigger is defined on the BOO_INPUT table
+FOR EACH ROW -- Trigger operates at the row level
+DECLARE
+    product_id Operation.ProductID%TYPE; -- Variable to store the ProductID of the product associated with the operation
+    circular_error EXCEPTION; -- Custom exception to handle circular references
+BEGIN
+    -- Fetch the ProductID for the operation being referenced
+    SELECT O.ProductID
+    INTO product_id
+    FROM Operation O
+    WHERE :NEW.OPID = O.OPID; -- Match the operation ID (OPID) of the new row being inserted/updated
+
+    -- Check if the product is being referenced as an input in its own BOO
+    IF product_id = :NEW.PartNumber THEN
+        RAISE circular_error; -- Raise a custom exception for circular reference
+    END IF;
+
+EXCEPTION
+    -- Handle the custom exception for circular references
+    WHEN circular_error THEN
+        RAISE_APPLICATION_ERROR(
+            -20002, -- Custom error code
+            'A product cannot be an input in its own BOO.' -- Error message describing the issue
+        );
+END;
+/
+
+INSERT INTO Simulation (SimulationID, SimulationDate) VALUES (1, SYSDATE);
 
 INSERT INTO Client(ClientID, Name, VATIN, Address, ZIP, Town, Country, Email, Phone, Status) VALUES (456, 'Carvalho & Carvalho, Lda', 'PT501245987', 'Tv. Augusto Lessa 23', '4200-047', 'Porto', 'Portugal', 'idont@care.com', 003518340500, 'activated');
 INSERT INTO Client(ClientID, Name, VATIN, Address, ZIP, Town, Country, Email, Phone, Status) VALUES (785, 'Tudo para a casa, Lda', 'PT501245488', 'R. Dr. Barros 93', '4465-219', 'São Mamede de Infesta', 'Portugal', 'me@neither.com', 003518340500, 'activated');
@@ -181,8 +341,6 @@ INSERT INTO Product(ProductID, Name, Description, FamilyID, PartNumber) VALUES (
 INSERT INTO Product(ProductID, Name, Description, FamilyID, PartNumber) VALUES ('AS12946S20', 'Pro 20 3l pot bottom', '3l 20 cm stainless steel pot bottom', 125, NULL);
 INSERT INTO Product(ProductID, Name, Description, FamilyID, PartNumber) VALUES ('AS12947S20', 'Pro 20 lid', '20 cm stainless steel lid', 145, NULL);
 
-
-
 INSERT INTO Orders(OrderID,ClientID,DateOrder,DateDelivery,Status)VALUES(1,785,TO_DATE('15/09/2024','DD/MM/YYYY'),TO_DATE('23/09/2024','DD/MM/YYYY'),'delivered');
 INSERT INTO Orders(OrderID,ClientID,DateOrder,DateDelivery,Status)VALUES(2,657,TO_DATE('15/09/2024','DD/MM/YYYY'),TO_DATE('26/09/2024','DD/MM/YYYY'),'not delivered');
 INSERT INTO Orders(OrderID,ClientID,DateOrder,DateDelivery,Status)VALUES(3,348,TO_DATE('15/09/2024','DD/MM/YYYY'),TO_DATE('25/09/2024','DD/MM/YYYY'),'not delivered');
@@ -190,6 +348,7 @@ INSERT INTO Orders(OrderID,ClientID,DateOrder,DateDelivery,Status)VALUES(4,785,T
 INSERT INTO Orders(OrderID,ClientID,DateOrder,DateDelivery,Status)VALUES(5,657,TO_DATE('18/09/2024','DD/MM/YYYY'),TO_DATE('25/09/2024','DD/MM/YYYY'),'delivered');
 INSERT INTO Orders(OrderID,ClientID,DateOrder,DateDelivery,Status)VALUES(6,348,TO_DATE('18/09/2024','DD/MM/YYYY'),TO_DATE('26/09/2024','DD/MM/YYYY'),'not delivered');
 INSERT INTO Orders(OrderID,ClientID,DateOrder,DateDelivery,Status)VALUES(7,456,TO_DATE('21/09/2024','DD/MM/YYYY'),TO_DATE('26/09/2024','DD/MM/YYYY'),'delivered');
+INSERT INTO Orders(OrderID,ClientID,DateOrder,DateDelivery,Status)VALUES(8,456,TO_DATE('21/09/2024','DD/MM/YYYY'),TO_DATE('26/09/2024','DD/MM/YYYY'),'not delivered');
 
 INSERT INTO Product_Orders(OrderID, ProductID, QuantityProducts) values (1, 'AS12945S22', 5);
 INSERT INTO Product_Orders(OrderID, ProductID, QuantityProducts) values (1, 'AS12945S20', 15);
@@ -204,7 +363,7 @@ INSERT INTO Product_Orders(OrderID, ProductID, QuantityProducts) values (5, 'AS1
 INSERT INTO Product_Orders(OrderID, ProductID, QuantityProducts) values (6, 'AS12945S17', 8);
 INSERT INTO Product_Orders(OrderID, ProductID, QuantityProducts) values (6, 'AS12945P17', 16);
 INSERT INTO Product_Orders(OrderID, ProductID, QuantityProducts) values (7, 'AS12945S22', 8);
-
+INSERT INTO Product_Orders(OrderID, ProductID, QuantityProducts) values (8, 'AS12946S22', 2);
 
 INSERT INTO WorkstationTypes(WTID, Name) values ('A4578', '600t cold forging stamping press');
 INSERT INTO WorkstationTypes(WTID, Name) values ('A4588', '600t cold forging precision stamping press');
@@ -261,101 +420,88 @@ INSERT INTO Operation_Type (OP_TYPE, Description) VALUES (5683, 'Pan base finish
 INSERT INTO Operation_Type (OP_TYPE, Description) VALUES (5685, 'Handle gluing');
 INSERT INTO Operation_Type (OP_TYPE, Description) VALUES (5688, 'Pan test and packaging');
 
-INSERT INTO WorkstationTypes_Operation_Type (WTID, OP_TYPE) VALUES ('A4578', 5647);
-INSERT INTO WorkstationTypes_Operation_Type (WTID, OP_TYPE) VALUES ('A4588', 5647);
-INSERT INTO WorkstationTypes_Operation_Type (WTID, OP_TYPE) VALUES ('A4598', 5647);
-INSERT INTO WorkstationTypes_Operation_Type (WTID, OP_TYPE) VALUES ('A4588', 5649);
-INSERT INTO WorkstationTypes_Operation_Type (WTID, OP_TYPE) VALUES ('A4598', 5649);
-INSERT INTO WorkstationTypes_Operation_Type (WTID, OP_TYPE) VALUES ('A4598', 5651);
-INSERT INTO WorkstationTypes_Operation_Type (WTID, OP_TYPE) VALUES ('A4588', 5651);
-INSERT INTO WorkstationTypes_Operation_Type (WTID, OP_TYPE) VALUES ('C5637', 5653);
-INSERT INTO WorkstationTypes_Operation_Type (WTID, OP_TYPE) VALUES ('A4588', 5655);
-INSERT INTO WorkstationTypes_Operation_Type (WTID, OP_TYPE) VALUES ('A4598', 5655);
-INSERT INTO WorkstationTypes_Operation_Type (WTID, OP_TYPE) VALUES ('C5637', 5657);
-INSERT INTO WorkstationTypes_Operation_Type (WTID, OP_TYPE) VALUES ('S3271', 5659);
-INSERT INTO WorkstationTypes_Operation_Type (WTID, OP_TYPE) VALUES ('T3452', 5661);
-INSERT INTO WorkstationTypes_Operation_Type (WTID, OP_TYPE) VALUES ('K3675', 5663);
-INSERT INTO WorkstationTypes_Operation_Type (WTID, OP_TYPE) VALUES ('D9123', 5665);
-INSERT INTO WorkstationTypes_Operation_Type (WTID, OP_TYPE) VALUES ('Q3547', 5667);
-INSERT INTO WorkstationTypes_Operation_Type (WTID, OP_TYPE) VALUES ('Q3547', 5669);
-INSERT INTO WorkstationTypes_Operation_Type (WTID, OP_TYPE) VALUES ('Q5478', 5671);
-INSERT INTO WorkstationTypes_Operation_Type (WTID, OP_TYPE) VALUES ('A4588', 5681);
-INSERT INTO WorkstationTypes_Operation_Type (WTID, OP_TYPE) VALUES ('A4598', 5681);
-INSERT INTO WorkstationTypes_Operation_Type (WTID, OP_TYPE) VALUES ('A4588', 5682);
-INSERT INTO WorkstationTypes_Operation_Type (WTID, OP_TYPE) VALUES ('A4598', 5682);
-INSERT INTO WorkstationTypes_Operation_Type (WTID, OP_TYPE) VALUES ('C5637', 5683);
-INSERT INTO WorkstationTypes_Operation_Type (WTID, OP_TYPE) VALUES ('D9123', 5685);
-INSERT INTO WorkstationTypes_Operation_Type (WTID, OP_TYPE) VALUES ('K3675', 5688);
+INSERT INTO WorkstationTypes_Operation_Type (WTID, OP_TYPE, MaxTime, SetupTime) VALUES ('A4578', 5647, 320, 25);
+INSERT INTO WorkstationTypes_Operation_Type (WTID, OP_TYPE, MaxTime, SetupTime) VALUES ('A4588', 5647, 450, 40);  
+INSERT INTO WorkstationTypes_Operation_Type (WTID, OP_TYPE, MaxTime, SetupTime) VALUES ('A4598', 5647, 390, 35);
+INSERT INTO WorkstationTypes_Operation_Type (WTID, OP_TYPE, MaxTime, SetupTime) VALUES ('A4588', 5649, 300, 20);
+INSERT INTO WorkstationTypes_Operation_Type (WTID, OP_TYPE, MaxTime, SetupTime) VALUES ('A4598', 5649, 470, 45);
+INSERT INTO WorkstationTypes_Operation_Type (WTID, OP_TYPE, MaxTime, SetupTime) VALUES ('A4598', 5651, 410, 30);
+INSERT INTO WorkstationTypes_Operation_Type (WTID, OP_TYPE, MaxTime, SetupTime) VALUES ('A4588', 5651, 290, 18);
+INSERT INTO WorkstationTypes_Operation_Type (WTID, OP_TYPE, MaxTime, SetupTime) VALUES ('C5637', 5653, 350, 22);
+INSERT INTO WorkstationTypes_Operation_Type (WTID, OP_TYPE, MaxTime, SetupTime) VALUES ('A4588', 5655, 330, 15);
+INSERT INTO WorkstationTypes_Operation_Type (WTID, OP_TYPE, MaxTime, SetupTime) VALUES ('A4598', 5655, 400, 28);
+INSERT INTO WorkstationTypes_Operation_Type (WTID, OP_TYPE, MaxTime, SetupTime) VALUES ('C5637', 5657, 360, 19);
+INSERT INTO WorkstationTypes_Operation_Type (WTID, OP_TYPE, MaxTime, SetupTime) VALUES ('S3271', 5659, 470, 32);
+INSERT INTO WorkstationTypes_Operation_Type (WTID, OP_TYPE, MaxTime, SetupTime) VALUES ('T3452', 5661, 290, 12);
+INSERT INTO WorkstationTypes_Operation_Type (WTID, OP_TYPE, MaxTime, SetupTime) VALUES ('K3675', 5663, 410, 30);
+INSERT INTO WorkstationTypes_Operation_Type (WTID, OP_TYPE, MaxTime, SetupTime) VALUES ('D9123', 5665, 380, 25);
+INSERT INTO WorkstationTypes_Operation_Type (WTID, OP_TYPE, MaxTime, SetupTime) VALUES ('Q3547', 5667, 440, 40);
+INSERT INTO WorkstationTypes_Operation_Type (WTID, OP_TYPE, MaxTime, SetupTime) VALUES ('Q5478', 5671, 350, 22);
+INSERT INTO WorkstationTypes_Operation_Type (WTID, OP_TYPE, MaxTime, SetupTime) VALUES ('D9123', 5685, 350, 25);
 
-INSERT INTO Part(PartNumber,Description)VALUES('PN12344A21','Screw M6 35 mm');
-INSERT INTO Part(PartNumber,Description)VALUES('PN52384R50','300x300 mm 5 mm stainless steel sheet');
-INSERT INTO Part(PartNumber,Description)VALUES('PN52384R10','300x300 mm 1 mm stainless steel sheet');
-INSERT INTO Part(PartNumber,Description)VALUES('PN18544A21','Rivet 6 mm');
-INSERT INTO Part(PartNumber,Description)VALUES('PN18544C21','Stainless steel handle model U6');
-INSERT INTO Part(PartNumber,Description)VALUES('PN18324C54','Stainless steel handle model R12');
-INSERT INTO Part(PartNumber,Description)VALUES('PN52384R45','250x250 mm 5mm stainless steel sheet');
-INSERT INTO Part(PartNumber,Description)VALUES('PN52384R12','250x250 mm 1mm stainless steel sheet');
-INSERT INTO Part(PartNumber,Description)VALUES('PN18324C91','Stainless steel handle model S26');
-INSERT INTO Part(PartNumber,Description)VALUES('PN18324C51','Stainless steel handle model R11');
-INSERT INTO Part(PartNumber,Description)VALUES('AS12945T22','5l 22 cm aluminium and teflon non stick pot');
-INSERT INTO Part(PartNumber,Description)VALUES('AS12945S22','5l 22 cm stainless steel pot');
-INSERT INTO Part(PartNumber,Description)VALUES('AS12946S22','5l 22 cm stainless steel pot bottom');
-INSERT INTO Part(PartNumber,Description)VALUES('AS12947S22','22 cm stainless steel lid');
-INSERT INTO Part(PartNumber,Description)VALUES('AS12945S20','3l 20 cm stainless steel pot');
-INSERT INTO Part(PartNumber,Description)VALUES('AS12946S20','3l 20 cm stainless steel pot bottom');
-INSERT INTO Part(PartNumber,Description)VALUES('AS12947S20','20 cm stainless steel lid');
-INSERT INTO Part(PartNumber,Description)VALUES('AS12945S17','2l 17 cm stainless steel pot');
-INSERT INTO Part(PartNumber,Description)VALUES('AS12945P17','2l 17 cm stainless steel souce pan');
-INSERT INTO Part(PartNumber,Description)VALUES('AS12945S48','17 cm stainless steel lid');
-INSERT INTO Part(PartNumber,Description)VALUES('AS12945G48','17 cm glass lid');
-INSERT INTO Part(PartNumber,Description)VALUES('IP12945A01','250 mm 5 mm stainless steel disc');
-INSERT INTO Part(PartNumber,Description)VALUES('IP12945A02','220 mm pot base phase 1');
-INSERT INTO Part(PartNumber,Description)VALUES('IP12945A03','220 mm pot base phase 2');
-INSERT INTO Part(PartNumber,Description)VALUES('IP12945A04','220 mm pot base final');
-INSERT INTO Part(PartNumber,Description)VALUES('IP12947A01','250 mm 1 mm stainless steel disc');
-INSERT INTO Part(PartNumber,Description)VALUES('IP12947A02','220 mm lid pressed');
-INSERT INTO Part(PartNumber,Description)VALUES('IP12947A03','220 mm lid polished');
-INSERT INTO Part(PartNumber,Description)VALUES('IP12947A04','220 mm lid with handle');
-INSERT INTO Part(PartNumber,Description)VALUES('IP12945A32','200 mm pot base phase 1');
-INSERT INTO Part(PartNumber,Description)VALUES('IP12945A33','200 mm pot base phase 2');
-INSERT INTO Part(PartNumber,Description)VALUES('IP12945A34','200 mm pot base final');
-INSERT INTO Part(PartNumber,Description)VALUES('IP12947A32','200 mm lid pressed');
-INSERT INTO Part(PartNumber,Description)VALUES('IP12947A33','200 mm lid polished');
-INSERT INTO Part(PartNumber,Description)VALUES('IP12947A34','200 mm lid with handle');
-INSERT INTO Part(PartNumber,Description)VALUES('PN94561L67','Coolube 2210XP');
+INSERT INTO PartType (PartType) VALUES ('Component');
+INSERT INTO PartType (PartType) VALUES ('Product');
+INSERT INTO PartType (PartType) VALUES ('Raw_Material');
 
+INSERT INTO Part (PARTNUMBER, DESCRIPTION, PartType) VALUES ('PN12344A21', 'Screw M6 35 mm', 'Component');
+INSERT INTO Part (PARTNUMBER, DESCRIPTION, PartType) VALUES ('PN52384R50', '300x300 mm 5 mm stainless steel sheet', 'Component');
+INSERT INTO Part (PARTNUMBER, DESCRIPTION, PartType) VALUES ('PN52384R10', '300x300 mm 1 mm stainless steel sheet', 'Component');
+INSERT INTO Part (PARTNUMBER, DESCRIPTION, PartType) VALUES ('PN18544A21', 'Rivet 6 mm', 'Component');
+INSERT INTO Part (PARTNUMBER, DESCRIPTION, PartType) VALUES ('PN18544C21', 'Stainless steel handle model U6', 'Component');
+INSERT INTO Part (PARTNUMBER, DESCRIPTION, PartType) VALUES ('PN18324C54', 'Stainless steel handle model R12', 'Component');
+INSERT INTO Part (PARTNUMBER, DESCRIPTION, PartType) VALUES ('PN52384R45', '250x250 mm 5mm stainless steel sheet', 'Component');
+INSERT INTO Part (PARTNUMBER, DESCRIPTION, PartType) VALUES ('PN52384R12', '250x250 mm 1mm stainless steel sheet', 'Component');
+INSERT INTO Part (PARTNUMBER, DESCRIPTION, PartType) VALUES ('PN18324C91', 'Stainless steel handle model S26', 'Component');
+INSERT INTO Part (PARTNUMBER, DESCRIPTION, PartType) VALUES ('PN18324C51', 'Stainless steel handle model R11', 'Component');
+INSERT INTO Part (PARTNUMBER, DESCRIPTION, PartType) VALUES ('AS12945T22', '5l 22 cm aluminium and teflon non stick pot', 'Product');
+INSERT INTO Part (PARTNUMBER, DESCRIPTION, PartType) VALUES ('AS12945S22', '5l 22 cm stainless steel pot', 'Product');
+INSERT INTO Part (PARTNUMBER, DESCRIPTION, PartType) VALUES ('AS12946S22', '5l 22 cm stainless steel pot bottom', 'Product');
+INSERT INTO Part (PARTNUMBER, DESCRIPTION, PartType) VALUES ('AS12947S22', '22 cm stainless steel lid', 'Product');
+INSERT INTO Part (PARTNUMBER, DESCRIPTION, PartType) VALUES ('AS12945S20', '3l 20 cm stainless steel pot', 'Product');
+INSERT INTO Part (PARTNUMBER, DESCRIPTION, PartType) VALUES ('AS12946S20', '3l 20 cm stainless steel pot bottom', 'Product');
+INSERT INTO Part (PARTNUMBER, DESCRIPTION, PartType) VALUES ('AS12947S20', '20 cm stainless steel lid', 'Product');
+INSERT INTO Part (PARTNUMBER, DESCRIPTION, PartType) VALUES ('AS12945S17', '2l 17 cm stainless steel pot', 'Product');
+INSERT INTO Part (PARTNUMBER, DESCRIPTION, PartType) VALUES ('AS12945P17', '2l 17 cm stainless steel sauce pan', 'Product');
+INSERT INTO Part (PARTNUMBER, DESCRIPTION, PartType) VALUES ('AS12945S48', '17 cm stainless steel lid', 'Product');
+INSERT INTO Part (PARTNUMBER, DESCRIPTION, PartType) VALUES ('AS12945G48', '17 cm glass lid', 'Product');
+INSERT INTO Part (PARTNUMBER, DESCRIPTION, PartType) VALUES ('IP12945A01', '250 mm 5 mm stainless steel disc', 'Component');
+INSERT INTO Part (PARTNUMBER, DESCRIPTION, PartType) VALUES ('IP12945A02', '220 mm pot base phase 1', 'Component');
+INSERT INTO Part (PARTNUMBER, DESCRIPTION, PartType) VALUES ('IP12945A03', '220 mm pot base phase 2', 'Component');
+INSERT INTO Part (PARTNUMBER, DESCRIPTION, PartType) VALUES ('IP12945A04', '220 mm pot base final', 'Component');
+INSERT INTO Part (PARTNUMBER, DESCRIPTION, PartType) VALUES ('IP12947A01', '250 mm 1 mm stainless steel disc', 'Component');
+INSERT INTO Part (PARTNUMBER, DESCRIPTION, PartType) VALUES ('IP12947A02', '220 mm lid pressed', 'Component');
+INSERT INTO Part (PARTNUMBER, DESCRIPTION, PartType) VALUES ('IP12947A03', '220 mm lid polished', 'Component');
+INSERT INTO Part (PARTNUMBER, DESCRIPTION, PartType) VALUES ('IP12947A04', '220 mm lid with handle', 'Component');
+INSERT INTO Part (PARTNUMBER, DESCRIPTION, PartType) VALUES ('IP12945A32', '200 mm pot base phase 1', 'Component');
+INSERT INTO Part (PARTNUMBER, DESCRIPTION, PartType) VALUES ('IP12945A33', '200 mm pot base phase 2', 'Component');
+INSERT INTO Part (PARTNUMBER, DESCRIPTION, PartType) VALUES ('IP12945A34', '200 mm pot base final', 'Component');
+INSERT INTO Part (PARTNUMBER, DESCRIPTION, PartType) VALUES ('IP12947A32', '200 mm lid pressed', 'Component');
+INSERT INTO Part (PARTNUMBER, DESCRIPTION, PartType) VALUES ('IP12947A33', '200 mm lid polished', 'Component');
+INSERT INTO Part (PARTNUMBER, DESCRIPTION, PartType) VALUES ('IP12947A34', '200 mm lid with handle', 'Component');
+INSERT INTO Part (PARTNUMBER, DESCRIPTION, PartType) VALUES ('PN94561L67', 'Coolube 2210XP', 'Raw_Material');
 
-INSERT INTO BOO (ProductID) VALUES ('AS12946S22');
-INSERT INTO BOO (ProductID) VALUES ('AS12947S22');
-INSERT INTO BOO (ProductID) VALUES ('AS12945S22');
-INSERT INTO BOO (ProductID) VALUES ('AS12946S20');
-INSERT INTO BOO (ProductID) VALUES ('AS12947S20');
-INSERT INTO BOO (ProductID) VALUES ('AS12945S20');
-
-
-INSERT INTO Operation (OPID, ProductID, OP_TYPE, Next_OP) VALUES (100, 'AS12946S22', 5647, 103);
-INSERT INTO Operation (OPID, ProductID, OP_TYPE, Next_OP) VALUES (103, 'AS12946S22', 5649, 112);
-INSERT INTO Operation (OPID, ProductID, OP_TYPE, Next_OP) VALUES (112, 'AS12946S22', 5651, 114);
-INSERT INTO Operation (OPID, ProductID, OP_TYPE, Next_OP) VALUES (114, 'AS12946S22', 5653, 115);
-INSERT INTO Operation (OPID, ProductID, OP_TYPE, Next_OP) VALUES (115, 'AS12946S22', 5659, NULL);
-INSERT INTO Operation (OPID, ProductID, OP_TYPE, Next_OP) VALUES (120, 'AS12947S22', 5647, 121);
-INSERT INTO Operation (OPID, ProductID, OP_TYPE, Next_OP) VALUES (121, 'AS12947S22', 5655, 122);
-INSERT INTO Operation (OPID, ProductID, OP_TYPE, Next_OP) VALUES (122, 'AS12947S22', 5657, 123);
-INSERT INTO Operation (OPID, ProductID, OP_TYPE, Next_OP) VALUES (123, 'AS12947S22', 5661, 124);
-INSERT INTO Operation (OPID, ProductID, OP_TYPE, Next_OP) VALUES (124, 'AS12947S22', 5667, NULL);
-INSERT INTO Operation (OPID, ProductID, OP_TYPE, Next_OP) VALUES (130, 'AS12945S22', 5663, NULL);
-INSERT INTO Operation (OPID, ProductID, OP_TYPE, Next_OP) VALUES (150, 'AS12946S20', 5647, 151);
-INSERT INTO Operation (OPID, ProductID, OP_TYPE, Next_OP) VALUES (151, 'AS12946S20', 5649, 152);
-INSERT INTO Operation (OPID, ProductID, OP_TYPE, Next_OP) VALUES (152, 'AS12946S20', 5651, 153);
-INSERT INTO Operation (OPID, ProductID, OP_TYPE, Next_OP) VALUES (153, 'AS12946S20', 5653, 154);
-INSERT INTO Operation (OPID, ProductID, OP_TYPE, Next_OP) VALUES (154, 'AS12946S20', 5659, NULL);
-INSERT INTO Operation (OPID, ProductID, OP_TYPE, Next_OP) VALUES (160, 'AS12947S20', 5647, 161);
-INSERT INTO Operation (OPID, ProductID, OP_TYPE, Next_OP) VALUES (161, 'AS12947S20', 5655, 162);
-INSERT INTO Operation (OPID, ProductID, OP_TYPE, Next_OP) VALUES (162, 'AS12947S20', 5657, 163);
-INSERT INTO Operation (OPID, ProductID, OP_TYPE, Next_OP) VALUES (163, 'AS12947S20', 5661, 164);
-INSERT INTO Operation (OPID, ProductID, OP_TYPE, Next_OP) VALUES (164, 'AS12947S20', 5667, NULL);
-INSERT INTO Operation (OPID, ProductID, OP_TYPE, Next_OP) VALUES (170, 'AS12945S20', 5663, NULL);
-
+INSERT INTO Operation (OPID, ProductID, OP_TYPE, ExecutionTime, Next_OP) VALUES (100, 'AS12946S22', 5647, 120, 103);
+INSERT INTO Operation (OPID, ProductID, OP_TYPE, ExecutionTime, Next_OP) VALUES (103, 'AS12946S22', 5649, 90, 112);
+INSERT INTO Operation (OPID, ProductID, OP_TYPE, ExecutionTime, Next_OP) VALUES (112, 'AS12946S22', 5651, 120, 114);
+INSERT INTO Operation (OPID, ProductID, OP_TYPE, ExecutionTime, Next_OP) VALUES (114, 'AS12946S22', 5653, 300, 115);
+INSERT INTO Operation (OPID, ProductID, OP_TYPE, ExecutionTime, Next_OP) VALUES (115, 'AS12946S22', 5659, 300, NULL);
+INSERT INTO Operation (OPID, ProductID, OP_TYPE, ExecutionTime, Next_OP) VALUES (120, 'AS12947S22', 5647, 105, 121);
+INSERT INTO Operation (OPID, ProductID, OP_TYPE, ExecutionTime, Next_OP) VALUES (121, 'AS12947S22', 5655, 60, 122);
+INSERT INTO Operation (OPID, ProductID, OP_TYPE, ExecutionTime, Next_OP) VALUES (122, 'AS12947S22', 5657, 240, 123);
+INSERT INTO Operation (OPID, ProductID, OP_TYPE, ExecutionTime, Next_OP) VALUES (123, 'AS12947S22', 5661, 150, 124);
+INSERT INTO Operation (OPID, ProductID, OP_TYPE, ExecutionTime, Next_OP) VALUES (124, 'AS12947S22', 5667, 200, NULL);
+INSERT INTO Operation (OPID, ProductID, OP_TYPE, ExecutionTime, Next_OP) VALUES (130, 'AS12945S22', 5663, 240, NULL);
+INSERT INTO Operation (OPID, ProductID, OP_TYPE, ExecutionTime, Next_OP) VALUES (150, 'AS12946S20', 5647, 120, 151);
+INSERT INTO Operation (OPID, ProductID, OP_TYPE, ExecutionTime, Next_OP) VALUES (151, 'AS12946S20', 5649, 90, 152);
+INSERT INTO Operation (OPID, ProductID, OP_TYPE, ExecutionTime, Next_OP) VALUES (152, 'AS12946S20', 5651, 120, 153);
+INSERT INTO Operation (OPID, ProductID, OP_TYPE, ExecutionTime, Next_OP) VALUES (153, 'AS12946S20', 5653, 320, 154);
+INSERT INTO Operation (OPID, ProductID, OP_TYPE, ExecutionTime, Next_OP) VALUES (154, 'AS12946S20', 5659, 300, NULL);
+INSERT INTO Operation (OPID, ProductID, OP_TYPE, ExecutionTime, Next_OP) VALUES (160, 'AS12947S20', 5647, 90, 161);
+INSERT INTO Operation (OPID, ProductID, OP_TYPE, ExecutionTime, Next_OP) VALUES (161, 'AS12947S20', 5655, 60, 162);
+INSERT INTO Operation (OPID, ProductID, OP_TYPE, ExecutionTime, Next_OP) VALUES (162, 'AS12947S20', 5657, 240, 163);
+INSERT INTO Operation (OPID, ProductID, OP_TYPE, ExecutionTime, Next_OP) VALUES (163, 'AS12947S20', 5661, 150, 164);
+INSERT INTO Operation (OPID, ProductID, OP_TYPE, ExecutionTime, Next_OP) VALUES (164, 'AS12947S20', 5667, 200, NULL);
+INSERT INTO Operation (OPID, ProductID, OP_TYPE, ExecutionTime, Next_OP) VALUES (170, 'AS12945S20', 5663, 240, NULL);
 
 INSERT INTO BOO_INPUT(PartNumber,OPID,Quantity,Unit)VALUES('PN52384R50',100,1,'unit');
 INSERT INTO BOO_INPUT(PartNumber,OPID,Quantity,Unit)VALUES('IP12945A01',103,1,'unit');
@@ -415,496 +561,639 @@ INSERT INTO BOO_OUTPUT(PartNumber,OPID,Quantity,Unit)VALUES('IP12947A34',163,1,'
 INSERT INTO BOO_OUTPUT(PartNumber,OPID,Quantity,Unit)VALUES('AS12947S20',164,1,'unit');
 INSERT INTO BOO_OUTPUT(PartNumber,OPID,Quantity,Unit)VALUES('AS12945S20',170,1,'unit');
 
+INSERT INTO Component (PartNumber, Stock, Min_Stock) VALUES ('PN12344A21', 150, 30);
+INSERT INTO Component (PartNumber, Stock, Min_Stock) VALUES ('PN18544A21', 120, 25);
+INSERT INTO Component (PartNumber, Stock, Min_Stock) VALUES ('PN18544C21', 100, 20);
+INSERT INTO Component (PartNumber, Stock, Min_Stock) VALUES ('PN18324C54', 80, 16);
+INSERT INTO Component (PartNumber, Stock, Min_Stock) VALUES ('PN18324C51', 90, 18);
+INSERT INTO Component (PartNumber, Stock, Min_Stock) VALUES ('PN52384R50', 70, 15);
+INSERT INTO Component (PartNumber, Stock, Min_Stock) VALUES ('PN52384R10', 50, 10);
+INSERT INTO Component (PartNumber, Stock, Min_Stock) VALUES ('PN52384R45', 60, 12);
+INSERT INTO Component (PartNumber, Stock, Min_Stock) VALUES ('PN52384R12', 55, 11);
+INSERT INTO Component (PartNumber, Stock, Min_Stock) VALUES ('PN18324C91', 75, 15);
+INSERT INTO Component (PartNumber, Stock, Min_Stock) VALUES ('IP12945A01', 30, 5);
+INSERT INTO Component (PartNumber, Stock, Min_Stock) VALUES ('IP12945A02', 28, 6);
+INSERT INTO Component (PartNumber, Stock, Min_Stock) VALUES ('IP12945A03', 26, 5);
+INSERT INTO Component (PartNumber, Stock, Min_Stock) VALUES ('IP12945A04', 25, 5);
+INSERT INTO Component (PartNumber, Stock, Min_Stock) VALUES ('IP12947A01', 32, 6);
+INSERT INTO Component (PartNumber, Stock, Min_Stock) VALUES ('IP12947A02', 34, 7);
+INSERT INTO Component (PartNumber, Stock, Min_Stock) VALUES ('IP12947A03', 36, 7);
+INSERT INTO Component (PartNumber, Stock, Min_Stock) VALUES ('IP12947A04', 38, 8);
+INSERT INTO Component (PartNumber, Stock, Min_Stock) VALUES ('IP12945A32', 40, 8);
+INSERT INTO Component (PartNumber, Stock, Min_Stock) VALUES ('IP12945A33', 44, 9);
+INSERT INTO Component (PartNumber, Stock, Min_Stock) VALUES ('IP12945A34', 48, 10);
+INSERT INTO Component (PartNumber, Stock, Min_Stock) VALUES ('IP12947A32', 50, 10);
+INSERT INTO Component (PartNumber, Stock, Min_Stock) VALUES ('IP12947A33', 52, 10);
+INSERT INTO Component (PartNumber, Stock, Min_Stock) VALUES ('IP12947A34', 54, 11);
+INSERT INTO Raw_Material (PartNumber, Stock, Min_Stock) VALUES ('PN94561L67', 50, 10);
 
-------- USBD12 -  As a Production Manager, I want to get the list of parts used in a product.
+INSERT INTO Supplier (SupplierID) VALUES (12345);
+INSERT INTO Supplier (SupplierID) VALUES (12298);
 
-CREATE OR REPLACE FUNCTION list_parts_used_product(
-    product_id IN Operation.ProductID%TYPE -- Input product ID
-)
-RETURN SYS_REFCURSOR -- Returns a cursor with the list of parts
+INSERT INTO Part_Supplier (PartNumber, SupplierID) VALUES ('PN18324C54', 12345);
+INSERT INTO Part_Supplier (PartNumber, SupplierID) VALUES ('PN18324C51', 12345);
+INSERT INTO Part_Supplier (PartNumber, SupplierID) VALUES ('PN18544C21', 12345);
+INSERT INTO Part_Supplier (PartNumber, SupplierID) VALUES ('PN18544C21', 12298);
+INSERT INTO Part_Supplier (PartNumber, SupplierID) VALUES ('PN18324C54', 12298);
+INSERT INTO Part_Supplier (PartNumber, SupplierID) VALUES ('PN18324C51', 12298);
+INSERT INTO Part_Supplier (PartNumber, SupplierID) VALUES ('PN12344A21', 12298);
+	
+INSERT INTO Supplier_History(SupplierID,PartNumber,StartDate,EndDate,Min_quantity,Price)VALUES(12345,'PN18544C21',TO_DATE('2023/10/01','YYYY/MM/DD'),NULL,20,1.25);
+INSERT INTO Supplier_History(SupplierID,PartNumber,StartDate,EndDate,Min_quantity,Price)VALUES(12345,'PN18324C54',TO_DATE('2023/10/01','YYYY/MM/DD'),TO_DATE('2024/02/29','YYYY/MM/DD'),10,1.70);
+INSERT INTO Supplier_History(SupplierID,PartNumber,StartDate,EndDate,Min_quantity,Price)VALUES(12345,'PN18324C54',TO_DATE('2024/04/01','YYYY/MM/DD'),NULL,16,1.80);
+INSERT INTO Supplier_History(SupplierID,PartNumber,StartDate,EndDate,Min_quantity,Price)VALUES(12345,'PN18324C51',TO_DATE('2023/07/01','YYYY/MM/DD'),TO_DATE('2024/03/31','YYYY/MM/DD'),30,1.90);
+INSERT INTO Supplier_History(SupplierID,PartNumber,StartDate,EndDate,Min_quantity,Price)VALUES(12345,'PN18324C51',TO_DATE('2024/04/01','YYYY/MM/DD'),NULL,20,1.90);
+INSERT INTO Supplier_History(SupplierID,PartNumber,StartDate,EndDate,Min_quantity,Price)VALUES(12298,'PN18544C21',TO_DATE('2023/09/01','YYYY/MM/DD'),NULL,10,1.35);
+INSERT INTO Supplier_History(SupplierID,PartNumber,StartDate,EndDate,Min_quantity,Price)VALUES(12298,'PN18324C54',TO_DATE('2023/08/01','YYYY/MM/DD'),TO_DATE('2024/01/29','YYYY/MM/DD'),10,1.80);
+INSERT INTO Supplier_History(SupplierID,PartNumber,StartDate,EndDate,Min_quantity,Price)VALUES(12298,'PN18324C54',TO_DATE('2024/02/15','YYYY/MM/DD'),NULL,20,1.75);
+INSERT INTO Supplier_History(SupplierID,PartNumber,StartDate,EndDate,Min_quantity,Price)VALUES(12298,'PN18324C51',TO_DATE('2023/08/01','YYYY/MM/DD'),TO_DATE('2024/05/31','YYYY/MM/DD'),40,1.80);
+INSERT INTO Supplier_History(SupplierID,PartNumber,StartDate,EndDate,Min_quantity,Price)VALUES(12298,'PN12344A21',TO_DATE('2023/07/01','YYYY/MM/DD'),NULL,200,0.65);
+
+
+-- US23 - As a Production Manager, I want to make sure that the expected execution time of an operation is not greater than the maximum execution time of every workstation type where it may be run.
+INSERT INTO Operation (OPID, ProductID, OP_TYPE, ExecutionTime, Next_OP) VALUES (115, 'AS12946S22', 5659, 600, NULL);
+select * from Operation
+
+-- US24 - As a Production Manager, I don’t want it to be possible to add a product as an input in its own BOO.
+INSERT INTO BOO_INPUT(PartNumber,OPID,Quantity,Unit)VALUES('AS12946S22',100,1,'unit');
+select * from BOO_INPUT
+
+-- USB25 - As a Production Manager, I want to get a list of a product’s operations necessary for the production plan module.
+
+-- Function: GetProductIDs
+-- Purpose: Retrieve all product IDs, including subproducts, recursively for a given product ID
+CREATE OR REPLACE FUNCTION GetProductIDs(p_product_id IN Product.ProductID%TYPE)
+RETURN SYS_REFCURSOR
 IS
-    list_parts_cursor SYS_REFCURSOR; -- Cursor to hold the result
+    result_cursor SYS_REFCURSOR; -- Variable to hold the reference cursor
 BEGIN
-    -- Query to list parts directly associated with the product and its subassemblies
-    OPEN list_parts_cursor FOR
-        -- Parts directly associated with the product
-        SELECT BI.PartNumber,
-               SUM(BI.Quantity) AS Quantity
-        FROM BOO_INPUT BI
-        JOIN Operation O ON BI.OPID = O.OPID
-        WHERE O.ProductID = product_id
-        GROUP BY BI.PartNumber
-
-        UNION ALL
-
-        -- Parts associated with subassemblies (recursive case)
-        SELECT BI.PartNumber,
-               SUM(BO.Quantity) AS Quantity
-        FROM BOO_OUTPUT BO
-        JOIN Operation O ON BO.OPID = O.OPID
-        JOIN BOO_INPUT BI ON BI.OPID = BO.OPID
-        WHERE BO.PartNumber NOT LIKE O.ProductID
-          AND O.ProductID IN (
-              SELECT BI.PartNumber
-              FROM BOO_INPUT BI
-              JOIN Operation O ON BI.OPID = O.OPID
-              WHERE O.ProductID = product_id
-              GROUP BY BI.PartNumber
-          )
-        GROUP BY BI.PartNumber;
-
-    -- Return the cursor with the results
-    RETURN list_parts_cursor;
-END;
-/
-
--- Block to test the function
-DECLARE
-    list_parts_cursor   SYS_REFCURSOR; -- Cursor to hold the result
-    part_number         BOO_INPUT.PartNumber%TYPE; -- Variable to store part number
-    quantity            BOO_INPUT.Quantity%TYPE;  -- Variable to store quantity
-    product_id          VARCHAR2(20) := 'AS12946S22'; -- Product ID for testing
-BEGIN
-    -- Display the product ID
-    DBMS_OUTPUT.PUT_LINE('List of parts for product: ' || product_id);
-    
-    -- Call the function to get parts associated with the product
-    list_parts_cursor := list_parts_used_product(product_id);
-    
-    -- Loop through the cursor results
-    LOOP
-        FETCH list_parts_cursor INTO part_number, quantity;
-        EXIT WHEN list_parts_cursor%NOTFOUND;
+    -- Open a cursor to execute the recursive query
+    OPEN result_cursor FOR
+    WITH ProductIDs (ProductID) AS ( -- Recursive Common Table Expression (CTE)
+        -- Base case: Select the given product's operations
+        SELECT o.ProductID
+        FROM Operation o
+        WHERE o.ProductID = p_product_id
         
-        -- Display the part number and quantity
-        DBMS_OUTPUT.PUT_LINE('Part Number: ' || part_number || ', Quantity: ' || quantity);
-    END LOOP;
+        UNION ALL -- Combine results with the recursive part
+        
+        -- Recursive part: Select subproduct IDs referenced in the BOO_INPUT
+        SELECT BI.PartNumber
+        FROM BOO_INPUT BI
+        JOIN Operation O ON O.OPID = BI.OPID -- Join BOO_INPUT with Operation table
+        JOIN ProductIDs pi ON pi.ProductID = O.ProductID -- Recursive join with ProductIDs
+        WHERE BI.PartNumber IN ( -- Filter to ensure valid product IDs
+                SELECT o.ProductID
+                FROM Operation o
+           )
+    )
+    -- Retrieve distinct product IDs from the CTE
+    SELECT DISTINCT ProductID
+    FROM ProductIDs;
     
-    -- Close the cursor after processing
-    CLOSE list_parts_cursor;
-END;
+    RETURN result_cursor; -- Return the cursor with the result set
+END GetProductIDs;
 /
 
-
-------- USBD13 - As a Production Manager, I want to get a list of operations involved in the production of a product, as well as each workstation type.
-
-CREATE OR REPLACE FUNCTION list_operations_and_workstationTypes(
-    product_id IN Product.ProductID%TYPE -- Input parameter for the product ID
-)
-RETURN SYS_REFCURSOR -- Returns a cursor with the list of operations and workstation types
-AS
-    operation_workstationTypes_cursor SYS_REFCURSOR; -- Declare the cursor to store the result
+-- Function: GetProductOperationIDs
+-- Purpose: Retrieve all operation IDs and their execution times for a given product ID
+CREATE OR REPLACE FUNCTION GetProductOperationIDs (p_product_id IN Product.ProductID%TYPE)
+RETURN SYS_REFCURSOR
+IS
+    result_cursor SYS_REFCURSOR; -- Variable to hold the reference cursor
 BEGIN
-    -- Open the cursor to execute the query
-    OPEN operation_workstationTypes_cursor FOR
-        -- First query: Operations directly associated with the product
-        SELECT O.OPID, WtOp.WTID -- Operation ID and Workstation Type ID
-        FROM Operation O
-        JOIN WorkstationTypes_Operation_Type WtOp ON WtOp.OP_TYPE = O.OP_TYPE -- Join to get workstation types based on operation type
-        WHERE O.ProductID = product_id -- Filter for the specified product
-        GROUP BY O.OPID, WtOp.WTID -- Group by operation ID and workstation type ID
-
-        UNION ALL
-
-        -- Second query: Operations related to the product's output parts
-        SELECT O.OPID, WtOp.WTID -- Operation ID and Workstation Type ID
-        FROM Operation O
-        JOIN BOO_OUTPUT BO ON O.OPID = BO.OPID -- Join to get operations linked to output parts
-        JOIN WorkstationTypes_Operation_Type WtOp ON WtOp.OP_TYPE = O.OP_TYPE -- Join to get workstation types
-        WHERE BO.PartNumber IN ( -- Filter for output parts associated with the product
-            SELECT PartNumber
-            FROM BOO_INPUT
-            WHERE OPID IN ( -- Find input operations related to the product
-                SELECT OPID
-                FROM Operation
-                WHERE ProductID = product_id -- Filter by the product ID
-            )
-        )
-        GROUP BY O.OPID, WtOp.WTID; -- Group by operation ID and workstation type ID
-
-    -- Return the cursor with the results
-    RETURN operation_workstationTypes_cursor;
+    -- Open a cursor to execute the query for operation IDs and execution times
+    OPEN result_cursor FOR
+        SELECT o.OPID, o.ExecutionTime -- Select operation ID and execution time
+        FROM Operation o
+        WHERE o.ProductID = p_product_id; -- Filter by the given product ID
+    RETURN result_cursor; -- Return the cursor with the result set
 END;
 /
 
--- Block to test the function
+-- Anonymous PL/SQL Block
+-- Purpose: Retrieve and print product IDs, operations, and their inputs/outputs
 DECLARE
-    operation_workstationTypes_cursor SYS_REFCURSOR; -- Declare cursor to hold the result
-    op Operation.OPID%TYPE; -- Variable to store the operation ID
-    wT WorkstationTypes_Operation_Type.WTID%TYPE; -- Variable to store the workstation type ID
+    operations SYS_REFCURSOR; -- Cursor to hold operations for a product
+    products_ids SYS_REFCURSOR; -- Cursor to hold product IDs
+    op_id  BOO_INPUT.OPID%TYPE; -- Variable to store the operation ID
+    execution_time NUMBER; -- Variable to store the execution time of an operation
+    p_id Product.ProductID%TYPE; -- Variable to store product IDs
+    input_partnumber BOO_INPUT.PartNumber%TYPE; -- Variable to store input part numbers
+    output_partnumber BOO_OUTPUT.PartNumber%TYPE; -- Variable to store output part numbers
 BEGIN
-    -- Call the function with a specific product ID ('AS12945S22') and assign the result to the cursor
-    operation_workstationTypes_cursor := list_operations_and_workstationTypes('AS12945S22');
-
-    -- Loop through the cursor results
+    -- Call the GetProductIDs function with the initial product ID ('AS12946S20')
+    products_ids := GetProductIDs('AS12946S20');
+    
+    -- Loop through the cursor for product IDs
     LOOP
-        FETCH operation_workstationTypes_cursor INTO op, wT; -- Fetch operation ID and workstation type ID
-        EXIT WHEN operation_workstationTypes_cursor%NOTFOUND; -- Exit when no more records are found
+        FETCH products_ids INTO p_id; -- Fetch the next product ID
+        EXIT WHEN products_ids%NOTFOUND; -- Exit loop when no more product IDs
 
-        -- Print the operation and workstation type to the output
-        DBMS_OUTPUT.PUT_LINE('Operation: ' || op || ', Workstation Type: ' || wT);
+        -- Call the GetProductOperationIDs function for the current product ID
+        operations := GetProductOperationIDs(p_id);
+
+        -- Loop through the cursor for operations
+        LOOP
+            FETCH operations INTO op_id, execution_time; -- Fetch operation ID and execution time
+            EXIT WHEN operations%NOTFOUND; -- Exit loop when no more operations
+
+            -- Print the operation ID and execution time
+            DBMS_OUTPUT.PUT_LINE('Operation ID: ' || op_id || ', Execution Time: ' || execution_time);
+
+            -- Retrieve and print inputs related to the operation
+            FOR input IN (
+                SELECT PartNumber -- Select input part numbers
+                FROM BOO_INPUT
+                WHERE OPID = op_id -- Filter by the current operation ID
+            ) LOOP
+                input_partnumber := input.PartNumber; -- Assign the input part number
+                DBMS_OUTPUT.PUT_LINE('Input: ' || input_partnumber); -- Print the input
+            END LOOP;
+
+            -- Retrieve and print outputs related to the operation
+            FOR output IN (
+                SELECT PartNumber -- Select output part numbers
+                FROM BOO_OUTPUT
+                WHERE OPID = op_id -- Filter by the current operation ID
+            ) LOOP
+                output_partnumber := output.PartNumber; -- Assign the output part number
+                DBMS_OUTPUT.PUT_LINE('Output: ' || output_partnumber); -- Print the output
+            END LOOP;
+
+        END LOOP;
+
+        -- Close the cursor for operations
+        CLOSE operations;
     END LOOP;
 
-    -- Close the cursor after processing
-    CLOSE operation_workstationTypes_cursor;
+    -- Close the cursor for product IDs
+    CLOSE products_ids;
 END;
 /
 
-
-
-------- USBD14 - As a Plant Manager, I want to know which product uses all types of machines available in the factory.
-
-CREATE OR REPLACE FUNCTION list_product_haveALL_operations
-RETURN SYS_REFCURSOR -- Returns a cursor with the products using all workstations
-AS
-    product_haveAll_operations_cursor SYS_REFCURSOR; -- Declare cursor to hold the result
-    total_workstations_count INTEGER; -- Variable to hold the total count of distinct workstation types
-BEGIN
-    -- Count the total number of distinct workstation types from the WorkstationTypes table
-    SELECT COUNT(DISTINCT WTID)
-    INTO total_workstations_count
-    FROM WorkstationTypes_Operation_Type;
-
-    -- Open the cursor to return products that use all workstation types
-    OPEN product_haveAll_operations_cursor FOR
-        SELECT P.ProductID -- Return the product ID
-        FROM Product P
-        JOIN Operation O ON P.ProductID = O.ProductID -- Join to link products with operations
-        JOIN WorkstationTypes_Operation_Type WTOT ON O.OP_TYPE = WTOT.OP_TYPE -- Join to match operations to workstation types
-        JOIN WorkstationTypes WT ON WTOT.WTID = WT.WTID -- Join to get the workstation type
-        GROUP BY P.ProductID -- Group by product ID
-        HAVING COUNT(DISTINCT WT.WTID) = total_workstations_count; -- Ensure the product uses all workstation types
-
-    -- Return the cursor with the results
-    RETURN product_haveAll_operations_cursor;
-END;
-/
-
--- Insert test data into the Part, Product, BOO, and Operation tables
-INSERT INTO Part (PartNumber, Description) VALUES ('A99999S99', 'TESTE');
-INSERT INTO Product (ProductID, FamilyID, Name, Description) VALUES ('A99999S99', 130, 'US14', 'Teste');
-INSERT INTO BOO (ProductID) VALUES ('A99999S99');
-
--- Insert operations associated with the product 'A99999S99'
--- Operation for A4578
-INSERT INTO Operation (OPID, ProductID, OP_TYPE, Next_OP) VALUES (25, 'A99999S99', 5647, NULL);
--- Operation for A4588
-INSERT INTO Operation (OPID, ProductID, OP_TYPE, Next_OP) VALUES (26, 'A99999S99', 5649, NULL);
--- Operation for A4598
-INSERT INTO Operation (OPID, ProductID, OP_TYPE, Next_OP) VALUES (27, 'A99999S99', 5651, NULL);
--- Operation for C5637
-INSERT INTO Operation (OPID, ProductID, OP_TYPE, Next_OP) VALUES (28, 'A99999S99', 5653, NULL);
--- Operation for S3271
-INSERT INTO Operation (OPID, ProductID, OP_TYPE, Next_OP) VALUES (29, 'A99999S99', 5659, NULL);
--- Operation for T3452
-INSERT INTO Operation (OPID, ProductID, OP_TYPE, Next_OP) VALUES (30, 'A99999S99', 5661, NULL);
--- Operation for K3675
-INSERT INTO Operation (OPID, ProductID, OP_TYPE, Next_OP) VALUES (31, 'A99999S99', 5663, NULL);
--- Operation for D9123
-INSERT INTO Operation (OPID, ProductID, OP_TYPE, Next_OP) VALUES (32, 'A99999S99', 5665, NULL);
--- Operation for Q3547
-INSERT INTO Operation (OPID, ProductID, OP_TYPE, Next_OP) VALUES (33, 'A99999S99', 5667, NULL);
--- Operation for Q5478
-INSERT INTO Operation (OPID, ProductID, OP_TYPE, Next_OP) VALUES (34, 'A99999S99', 5671, NULL);
-
--- Anonymous block to test the function
-DECLARE
-    cursor_result SYS_REFCURSOR; -- Declare cursor to store the result
-    product_id VARCHAR2(255); -- Variable to store the product ID
-BEGIN
-    -- Call the function to get products that use all workstations
-    cursor_result := list_product_haveALL_operations;
-
-    -- Try to fetch the first product from the cursor
-    FETCH cursor_result INTO product_id;
-
-    -- Check if any product was found
-    IF cursor_result%NOTFOUND THEN
-        DBMS_OUTPUT.PUT_LINE('No products have used all workstations.');
-    ELSE
-        -- If products were found, display the results
-        LOOP
-            DBMS_OUTPUT.PUT_LINE('Product ID: ' || product_id); -- Display product ID
-            FETCH cursor_result INTO product_id; -- Fetch next product
-            EXIT WHEN cursor_result%NOTFOUND; -- Exit when no more products are found
-        END LOOP;
-    END IF;
-
-    -- Close the cursor after processing
-    CLOSE cursor_result;
-END;
-/
-
-
-
-------- USBD15 - As a Plant Floor Manager, I want to register a workstation in the system.
+-- US26 - As a Production Manager, I want to know if we have the necessary materials and components in stock to fulfil a given order.
     
-CREATE OR REPLACE FUNCTION register_workstation (
-    p_ws_id Workstations.WSID%TYPE, -- Matches the type of WS_ID column
-    p_ws_type_id WorkstationTypes.WTID%TYPE, -- Matches the type of WS_TYPE_ID column
-    p_name Workstations.Name%TYPE, -- Matches the type of NAME column
-    p_description Workstations.Description%TYPE -- Matches the type of DESCRIPTION column
-)
-RETURN VARCHAR2
-AS
-    result_message VARCHAR2(255); -- Variable for the result message
-    v_exists NUMBER(1); -- Variable to check if workstation type exists
+-- Function: GetOrderProducts
+-- Purpose: Retrieve the products and their quantities required for a specific order
+CREATE OR REPLACE FUNCTION GetOrderProducts(p_order_id IN NUMBER)
+RETURN SYS_REFCURSOR
+IS
+    result_cursor SYS_REFCURSOR; -- Variable to hold the reference cursor
 BEGIN
-    -- Step 1: Validate if the workstation type exists
-    SELECT COUNT(1) 
-    INTO v_exists
-    FROM WorkstationTypes
-    WHERE WTID = p_ws_type_id;
+    -- Open a cursor to execute the query for products and their quantities in the order
+    OPEN result_cursor FOR
+        SELECT ProductID, QuantityProducts
+        FROM Product_Orders
+        WHERE OrderID = p_order_id; -- Filter by the given order ID
+    RETURN result_cursor; -- Return the cursor with the result set
+END;
+/
 
-    IF v_exists = 0 THEN
-        RETURN 'Error: Workstation Type with ID ' || p_ws_type_id || ' does not exist.';
-    END IF;
+-- Function: GetProductParts
+-- Purpose: Retrieve the parts and their quantities required for a specific operation
+CREATE OR REPLACE FUNCTION GetProductParts(p_operation_id IN Operation.OPID%TYPE)
+RETURN SYS_REFCURSOR
+IS
+    result_cursor SYS_REFCURSOR; -- Variable to hold the reference cursor
+BEGIN
+    -- Open a cursor to execute the query for parts and their quantities for the operation
+    OPEN result_cursor FOR
+        SELECT BI.PartNumber, BI.Quantity
+        FROM BOO_INPUT BI
+        WHERE BI.OPID = p_operation_id; -- Filter by the given operation ID
+    RETURN result_cursor; -- Return the cursor with the result set
+END;
+/
 
-    -- Step 2: Insert the workstation into Work_Station table
+-- Function: CheckStock
+-- Purpose: Verify if there is sufficient stock for a given part and quantity
+CREATE OR REPLACE FUNCTION CheckStock(
+    p_PartNumber IN Part.PartNumber%TYPE, -- Part number to check
+    p_Quantity IN NUMBER -- Quantity required
+)
+RETURN BOOLEAN
+IS
+    v_stock NUMBER; -- Variable to store the stock level
+    v_min_stock NUMBER; -- Variable to store the minimum stock level
+    v_reserved NUMBER := 0; -- Initialize reserved stock to 0
+    v_Part_Type Part.PartType%TYPE; -- Variable to store the part type
+BEGIN
+    -- Retrieve the part type for the given part number
+    SELECT PartType
+    INTO v_Part_Type
+    FROM Part
+    WHERE PartNumber = p_PartNumber;
+
+    -- Retrieve the reserved quantity; default to 0 if not found
     BEGIN
-        INSERT INTO Workstations (WSID, WTID, Name, Description)
-        VALUES (p_ws_id, p_ws_type_id, p_name, p_description);
-
-        -- Step 3: Return success message
-        result_message := 'Success: Workstation with ID ' || p_ws_id || ' registered successfully.';
-        RETURN result_message;
-
+        SELECT NVL(Quantity, 0)
+        INTO v_reserved
+        FROM ReserveList
+        WHERE PartNumber = p_PartNumber;
     EXCEPTION
-        WHEN DUP_VAL_ON_INDEX THEN
-            RETURN 'Error: Workstation with ID ' || p_ws_id || ' already exists.';
+        WHEN NO_DATA_FOUND THEN
+            v_reserved := 0;
+    END;
+
+    -- Check stock levels based on the part type
+    IF v_Part_Type = 'Component' THEN
+        -- Retrieve stock and minimum stock for components
+        SELECT Stock, Min_stock
+        INTO v_stock, v_min_stock
+        FROM Component
+        WHERE PartNumber = p_PartNumber;
+
+        -- Return TRUE if sufficient stock exists, FALSE otherwise
+        RETURN (v_stock - p_Quantity >= (v_reserved + v_min_stock));
+
+    ELSIF v_Part_Type = 'Raw_Material' THEN
+        -- Retrieve stock and minimum stock for raw materials
+        SELECT Stock, Min_stock
+        INTO v_stock, v_min_stock
+        FROM Raw_Material
+        WHERE PartNumber = p_PartNumber;
+
+        -- Return TRUE if sufficient stock exists, FALSE otherwise
+        RETURN (v_stock - p_Quantity >= (v_reserved + v_min_stock));
+    ELSE
+        -- Return FALSE if the part type is invalid
+        RETURN FALSE;
+    END IF;
+END;
+/
+
+-- Anonymous PL/SQL Block
+-- Purpose: Validate if all products in an order can be fulfilled based on stock levels
+DECLARE
+    operations SYS_REFCURSOR; -- Cursor to hold operations for a product
+    part_stock SYS_REFCURSOR; -- Cursor to hold parts for an operation
+    products_ids SYS_REFCURSOR; -- Cursor to hold products in the order
+    p_quantity NUMBER; -- Variable to store product quantities
+    execution_time NUMBER; -- Variable to store execution time of operations
+    op_id BOO_INPUT.OPID%TYPE; -- Variable to store operation IDs
+    p_id Product.ProductID%TYPE; -- Variable to store product IDs
+    part_id Part.PartNumber%TYPE; -- Variable to store part IDs
+    Quantity NUMBER; -- Variable to store quantities of parts
+    v_not_exists NUMBER := 0; -- Flag to track if any part is unavailable
+BEGIN
+    -- Retrieve the products and their quantities for a specific order (Order ID = 8)
+    products_ids := GetOrderProducts(9);
+
+    -- Loop through the cursor for products in the order
+    LOOP
+        FETCH products_ids INTO p_id, p_quantity; -- Fetch product ID and quantity
+        EXIT WHEN products_ids%NOTFOUND; -- Exit loop when no more products
+
+        -- Display product information at the end of the loop
+        DBMS_OUTPUT.PUT_LINE('ProductID: ' || p_id || ', Quantity Ordered: ' || p_quantity);
+
+        -- Retrieve operations for the current product
+        operations := GetProductOperationIDs(p_id);
+
+        -- Loop through the cursor for operations
+        LOOP
+            FETCH operations INTO op_id, execution_time; -- Fetch operation ID and execution time
+            EXIT WHEN operations%NOTFOUND; -- Exit loop when no more operations
+
+            -- Display operation information at the end of the loop
+            DBMS_OUTPUT.PUT_LINE('Operation ID: ' || op_id || ', Execution Time: ' || execution_time);
+
+            -- Retrieve parts and their quantities for the current operation
+            part_stock := GetProductParts(op_id);
+
+            -- Loop through the cursor for parts
+            LOOP
+                FETCH part_stock INTO part_id, Quantity; -- Fetch part ID and quantity
+                EXIT WHEN part_stock%NOTFOUND; -- Exit loop when no more parts
+
+                -- Display part information at the end of the loop
+                DBMS_OUTPUT.PUT_LINE('Part ID: ' || part_id || ', Quantity Needed: ' || Quantity * p_quantity);
+
+                -- Check if stock is sufficient for the required quantity of parts
+                IF NOT CheckStock(part_id, Quantity * p_quantity) THEN
+                    v_not_exists := 1; -- Set flag if stock is insufficient
+                    DBMS_OUTPUT.PUT_LINE('Stock Check Failed for Part: ' || part_id);
+                ELSE
+                    DBMS_OUTPUT.PUT_LINE('Stock Check Passed for Part: ' || part_id);
+                END IF;
+            END LOOP;
+
+            CLOSE part_stock; -- Close the cursor for parts
+        END LOOP;
+
+        CLOSE operations; -- Close the cursor for operations
+    END LOOP;
+
+    CLOSE products_ids; -- Close the cursor for products
+
+    -- Final validation message
+    IF v_not_exists != 0 THEN
+        DBMS_OUTPUT.PUT_LINE('Cannot fulfill the order');
+    ELSE
+        DBMS_OUTPUT.PUT_LINE('Can fulfill the order');
+    END IF;
+END;
+/
+
+select * from Component
+select * from ReservedList
+
+INSERT INTO Orders(OrderID,ClientID,DateOrder,DateDelivery,Status)VALUES(9,456,TO_DATE('21/09/2024','DD/MM/YYYY'),TO_DATE('26/09/2024','DD/MM/YYYY'),'not delivered');
+INSERT INTO Product_Orders(OrderID, ProductID, QuantityProducts) values (9, 'AS12946S22', 40);
+
+
+
+-- US27 -As a Production Manager, I want to reserve the necessary materials and components to fulfil a given order.
+
+-- Function: reserve_order
+-- Purpose: Reserve a specific quantity of a part in the ReserveList table
+CREATE OR REPLACE FUNCTION reserve_order(
+    p_PartNumber IN Part.PartNumber%TYPE, -- Part number to reserve
+    p_Quantity IN NUMBER -- Quantity to reserve
+)
+RETURN BOOLEAN
+IS
+BEGIN
+    -- Attempt to update or insert a reservation in the ReserveList table
+    BEGIN
+        -- Update an existing reservation
+        UPDATE ReserveList
+        SET Quantity = Quantity + p_Quantity -- Add the new quantity to the existing reservation
+        WHERE PartNumber = p_PartNumber;
+
+        -- Check if the update did not affect any rows
+        IF SQL%ROWCOUNT = 0 THEN
+            -- If no rows were updated, insert a new reservation
+            INSERT INTO ReserveList (PartNumber, Quantity)
+            VALUES (p_PartNumber, p_Quantity);
+        END IF;
+
+        RETURN TRUE; -- Reservation successfully created or updated
+    EXCEPTION
         WHEN OTHERS THEN
-            RETURN 'Error: ' || SQLERRM;
+            RETURN FALSE; -- Return FALSE in case of any errors
     END;
 END;
 /
 
---INSERT INTO Workstations(WSID, WTID, Name, Description) values (9875, 'A4578', 'Press 01', '220-630t cold forging press');
-
+-- Anonymous PL/SQL Block
+-- Purpose: Validate stock, reserve necessary parts, and check if an order can be fulfilled
 DECLARE
-    result_message VARCHAR2(255); -- Variable to store the output message
+    operations SYS_REFCURSOR; -- Cursor for operations related to a product
+    part_stock SYS_REFCURSOR; -- Cursor for parts needed for an operation
+    products_ids SYS_REFCURSOR; -- Cursor for products in a specific order
+    p_quantity NUMBER; -- Variable to store the quantity of products ordered
+    execution_time NUMBER; -- Variable to store execution time of operations
+    op_id BOO_INPUT.OPID%TYPE; -- Variable to store operation IDs
+    p_id Product.ProductID%TYPE; -- Variable to store product IDs
+    part_id Part.PartNumber%TYPE; -- Variable to store part IDs
+    Quantity NUMBER; -- Variable to store part quantities
+    v_not_exists NUMBER := 0; -- Flag to track if any part is unavailable or reservation fails
 BEGIN
-	result_message := register_workstation (98754, 'A4578', 'Press 01', '220-630t cold forging press');
-    DBMS_OUTPUT.PUT_LINE(result_message);
+    -- Retrieve the products and their quantities for a specific order (Order ID = 8)
+    products_ids := GetOrderProducts(9);
+
+    -- Loop through all products in the order
+    LOOP
+        FETCH products_ids INTO p_id, p_quantity; -- Fetch product ID and quantity
+        EXIT WHEN products_ids%NOTFOUND; -- Exit the loop when no more products
+
+        -- Retrieve operations for the current product
+        operations := GetProductOperationIDs(p_id);
+
+        -- Loop through all operations for the current product
+        LOOP
+            FETCH operations INTO op_id, execution_time; -- Fetch operation ID and execution time
+            EXIT WHEN operations%NOTFOUND; -- Exit the loop when no more operations
+
+            -- Retrieve parts and their quantities for the current operation
+            part_stock := GetProductParts(op_id);
+
+            -- Loop through all parts required for the current operation
+            LOOP
+                FETCH part_stock INTO part_id, Quantity; -- Fetch part ID and quantity
+                EXIT WHEN part_stock%NOTFOUND; -- Exit the loop when no more parts
+
+                -- Multiply the quantity required by the order factor and check stock
+                IF NOT CheckStock(part_id, Quantity * p_quantity) THEN
+                    v_not_exists := 1; -- Set flag if stock is insufficient
+                    DBMS_OUTPUT.PUT_LINE('Stock Check Failed for Part: ' || part_id);
+                    EXIT; -- Exit the loop for parts
+                ELSE
+                    -- Reserve the part directly after verifying stock
+                    IF reserve_order(part_id, Quantity * p_quantity) THEN
+                        DBMS_OUTPUT.PUT_LINE('Reserved Part: ' || part_id || ', Quantity: ' || Quantity * p_quantity);
+                    ELSE
+                        DBMS_OUTPUT.PUT_LINE('Failed to reserve Part: ' || part_id);
+                        v_not_exists := 1; -- Set flag if reservation fails
+                        EXIT; -- Exit the loop for parts
+                    END IF;
+                END IF;
+            END LOOP;
+
+            -- Exit operation loop if stock or reservation fails
+            IF v_not_exists = 1 THEN
+                EXIT;
+            END IF;
+
+            CLOSE part_stock; -- Close the cursor for parts
+        END LOOP;
+
+        -- Exit product loop if stock or reservation fails
+        IF v_not_exists = 1 THEN
+            EXIT;
+        END IF;
+
+        CLOSE operations; -- Close the cursor for operations
+    END LOOP;
+
+    CLOSE products_ids; -- Close the cursor for products
+
+    -- Final validation message
+    IF v_not_exists != 0 THEN
+        DBMS_OUTPUT.PUT_LINE('Cannot reserve the necessary materials and components to fulfil the order');
+    ELSE
+        DBMS_OUTPUT.PUT_LINE('All necessary materials and components successfully reserved to fulfil the order');
+    END IF;
 END;
 /
 
-SELECT * FROM Workstations;
+select * from ReserveList
 
 
+-- US28 - As a Production Manager, I want to have a list of all reserved materials and components, their quantity and the ID of the supplier.
 
-------- USBD16 - As a Production Manager, I want to register a product in the system.
+-- Query: Retrieve reserved parts with their associated supplier details
+-- Purpose: Fetch all parts with a positive reserved quantity, their suppliers, and the reserved amounts, ordered by supplier ID
+SELECT
+    ps.SupplierID AS Supplier_ID, -- Supplier ID associated with the part
+    rl.PartNumber AS Part_ID, -- Part ID from the reserve list
+    rl.Quantity AS Reserved_Quantity -- Quantity of the part that is reserved
+FROM
+    ReserveList rl -- ReserveList table containing reserved parts
+JOIN
+    Part_Supplier ps ON rl.PartNumber = ps.PartNumber -- Join with Part_Supplier table to get supplier details
+WHERE
+    rl.Quantity > 0 -- Filter to include only parts with a positive reserved quantity
+ORDER BY
+    SUPPLIER_ID -- Order the results by Supplier ID
 
-CREATE OR REPLACE FUNCTION register_product (
-    p_product_id Product.ProductID%TYPE,  -- Product ID
-    p_name Product.Name%TYPE,  -- Product Name
-    p_description Product.Description%TYPE,  -- Product Description
-    p_prod_family_id Product.FamilyID%TYPE,  -- Product Family ID
-    p_partnumber Product.PartNumber%TYPE  -- Product Part Number
+
+INSERT INTO ReserveList (PartNumber, Quantity)
+VALUES ('PN12344A21', 2);
+
+
+-- USBD29 - As a Factory Manager, I want to know the workstation types not used in any BOO.
+
+INSERT INTO WorkstationTypes (WTID, Name) VALUES ('A9999', '600t cold forging stamping press');
+INSERT INTO WorkstationTypes_Operation_Type (WTID, OP_TYPE, MaxTime, SetupTime) VALUES ('A9999', 5647, 120, 20);
+INSERT INTO Operation (OPID, ExecutionTime, ProductID, OP_TYPE, Next_OP) VALUES (999, 120, 'AS12946S20', 5647, NULL);
+
+INSERT INTO WorkstationTypes (WTID, Name)VALUES ('A9998', 'Pan test and packaging');
+INSERT INTO WorkstationTypes_Operation_Type (WTID, OP_TYPE, MaxTime, SetupTime) VALUES ('A9998', 5688, 120, 20);
+
+-- Query: Find workstation types that are not used in any operation
+-- Purpose: Identify workstation types that are not associated with any operation type or operation
+SELECT DISTINCT
+    wt.WTID AS Unused_Workstation_Type -- Workstation Type ID that is not in use
+FROM
+    WorkstationTypes wt -- Table of all workstation types
+LEFT JOIN
+    WorkstationTypes_Operation_Type wtot -- Table mapping workstation types to operation types
+ON
+    wt.WTID = wtot.WTID -- Join condition to match workstation types with their operation types
+LEFT JOIN
+    Operation o -- Table containing operations
+ON
+    wtot.OP_TYPE = o.OP_TYPE -- Join condition to match operation types in workstation-operation mapping with actual operations
+WHERE
+    o.OP_TYPE IS NULL -- Filter for workstation types not associated with any operation
+
+
+-- USBD30 - As a Factory Manager, I want to use/consume a material/component, i.e. to deduct a given amount from the stock.
+
+-- Function: update_stock
+-- Purpose: Updates the stock quantity of a given part (either Component or Raw Material) by reducing the specified amount. Ensures the operation respects the reserved and minimum stock levels.
+CREATE OR REPLACE FUNCTION update_stock (
+    p_PartNumber IN Part.PartNumber%TYPE, -- Input parameter: Part number to update
+    p_Amount IN NUMBER -- Input parameter: Amount to deduct from stock
 )
 RETURN VARCHAR2
 IS
-    v_exists NUMBER(1);  -- Variable to check if the Product Family exists
-    result_message VARCHAR2(255);  -- Variable for the result message
+    v_Part_Type VARCHAR2(50); -- Variable to store the type of the part (Component or Raw Material)
+    v_reserved NUMBER; -- Variable to store the reserved quantity for the part
+    v_stock NUMBER; -- Variable to store the available stock
+    v_min_stock NUMBER; -- Variable to store the minimum stock level
+
+    -- Custom exceptions
+    stock_insuficient EXCEPTION; -- Raised when stock is insufficient
+    not_cm EXCEPTION; -- Raised when the part is neither Component nor Raw Material
+
 BEGIN
-    -- Step 1: Validate if the Product Family ID exists
-    SELECT COUNT(1)
-    INTO v_exists
-    FROM Product_Family
-    WHERE FamilyID = p_prod_family_id;
+    -- Start a transaction savepoint
+    SAVEPOINT start_point;
 
-    IF v_exists = 0 THEN
-        RETURN 'Error: Product Family with ID ' || p_prod_family_id || ' does not exist.';
-    END IF;
-
-    -- Step 2: Insert the product into the Product table
     BEGIN
-        INSERT INTO Product (ProductID, Name, Description, FamilyID, PartNumber)
-        VALUES (p_product_id, p_name, p_description, p_prod_family_id, p_partnumber);
+        -- Fetch the type of the part
+        SELECT PartType
+        INTO v_Part_Type
+        FROM Part
+        WHERE PartNumber = p_PartNumber;
 
-        -- Step 3: Return success message
-        result_message := 'Success: Product with ID ' || p_product_id || ' registered successfully.';
-        RETURN result_message;
+        -- Fetch the reserved quantity for the part
+        BEGIN
+            -- If no reservation exists, treat it as 0
+            SELECT NVL(Quantity, 0)
+            INTO v_reserved
+            FROM ReserveList
+            WHERE PartNumber = p_PartNumber;
+        EXCEPTION
+            WHEN NO_DATA_FOUND THEN
+                -- If no data is found in ReserveList, set v_reserved to 0
+                v_reserved := 0;
+        END;
+
+        -- Check if the part is a Component
+        IF v_Part_Type = 'Component' THEN
+            -- Fetch stock and minimum stock for the Component
+            SELECT Stock, Min_stock
+            INTO v_stock, v_min_stock
+            FROM Component
+            WHERE PartNumber = p_PartNumber;
+
+            -- Verify if stock is sufficient
+            IF v_stock - p_Amount >= (v_reserved + v_min_stock) THEN
+                -- Update the stock for the Component
+                UPDATE Component
+                SET Stock = Stock - p_Amount
+                WHERE PartNumber = p_PartNumber;
+            ELSE
+                RAISE stock_insuficient; -- Raise exception for insufficient stock
+            END IF;
+
+        -- Check if the part is a Raw Material
+        ELSIF v_Part_Type = 'Raw_Material' THEN
+            -- Fetch stock and minimum stock for the Raw Material
+            SELECT Stock, Min_stock
+            INTO v_stock, v_min_stock
+            FROM Raw_Material
+            WHERE PartNumber = p_PartNumber;
+
+            -- Verify if stock is sufficient
+            IF v_stock - p_Amount >= (v_reserved + v_min_stock) THEN
+                -- Update the stock for the Raw Material
+                UPDATE Raw_Material
+                SET Stock = Stock - p_Amount
+                WHERE PartNumber = p_PartNumber;
+            ELSE
+                RAISE stock_insuficient; -- Raise exception for insufficient stock
+            END IF;
+
+        ELSE
+            -- Raise exception if the part is neither Component nor Raw Material
+            RAISE not_cm;
+        END IF;
+
+        -- Commit the transaction
+        COMMIT;
+
+        -- Return a success message
+        RETURN 'Stock update successful';
 
     EXCEPTION
-        WHEN DUP_VAL_ON_INDEX THEN
-            RETURN 'Error: Product with ID ' || p_product_id || ' already exists.';
+        -- Handle insufficient stock exception
+        WHEN stock_insuficient THEN
+            ROLLBACK TO start_point; -- Rollback to the savepoint
+            RAISE_APPLICATION_ERROR(-20001, 'Insufficient stock to complete the operation.');
+
+        -- Handle invalid part type exception
+        WHEN not_cm THEN
+            ROLLBACK TO start_point; -- Rollback to the savepoint
+            RAISE_APPLICATION_ERROR(-20002, 'The part is neither a Component nor Raw Material.');
+
+        -- Handle any other exceptions
         WHEN OTHERS THEN
-            RETURN 'Error: ' || SQLERRM;
+            ROLLBACK TO start_point; -- Rollback to the savepoint
+            RETURN 'Error: ' || SQLERRM; -- Return the error message
     END;
+
 END;
 /
 
---INSERT INTO Product(ProductID, Name, Description, FamilyID, PartNumber) VALUES ('AS12945T22', 'La Belle 22 5l pot', '5l 22 cm aluminium and teflon non stick pot', 130, NULL);
 
+-- Test Block
+-- Purpose: Test the update_stock function with a specific part and amount
 DECLARE
-    result_message VARCHAR2(255);
+    result VARCHAR2(100); -- Variable to store the result of the function
 BEGIN
-    result_message := register_product('AS12945T2209', 'La Belle 22 5l pot', '5l 22 cm aluminium and teflon non stick pot', 130, NULL);
-    DBMS_OUTPUT.PUT_LINE(result_message);  -- Output the result message
+    result := update_stock('PN12344A21', 20); -- Call the function with PartNumber 'PN18544A21' and amount 20
+    DBMS_OUTPUT.PUT_LINE(result); -- Display the result
 END;
-/
 
-SELECT * FROM Product;
+select * from Component
+select * from Raw_Material
 
-
-
-------- USBD17 - As a Production Manager, I want to register an order in the system.
-
-CREATE OR REPLACE FUNCTION register_order (
-    p_order_id Orders.OrderID%TYPE,  -- Order ID type from Orders table
-    p_client_id Orders.ClientID%TYPE,  -- Client ID type from Orders table
-    p_order_date Orders.DateOrder%TYPE,  -- Order date type from Orders table
-    p_delivery_date Orders.DateDelivery%TYPE,  -- Delivery date type from Orders table
-    p_status Orders.Status%TYPE,  -- Status type from Orders table
-    p_product_id Product_Orders.ProductID%TYPE,  -- Product ID type from Product_Orders table
-    p_quantity Product_Orders.QuantityProducts%TYPE  -- Quantity type from Product_Orders table
-)
-RETURN VARCHAR2  -- Returns a message indicating success or error
-IS
-    v_exists NUMBER(1);  -- Variable to check if the client is active
-    v_exists_p NUMBER(1);  -- Variable to check if the product exists
-    result_message VARCHAR2(255);  -- Variable to store the result message
-BEGIN
-    -- Check if the client is active
-    SELECT COUNT(*)
-    INTO v_exists
-    FROM Client
-    WHERE ClientID = p_client_id AND Status = 'activated';
-
-    IF v_exists = 0 THEN
-        RETURN 'Error: Client with ID ' || p_client_id || ' is not active or does not exist.';
-    END IF;
-
-    -- Check if the product exists
-    SELECT COUNT(*)
-    INTO v_exists_p
-    FROM Product
-    WHERE ProductID = p_product_id;
-
-    IF v_exists_p = 0 THEN
-        RETURN 'Error: Product with ID ' || p_product_id || ' does not exist.';
-    END IF;
-
-    -- Check if the order date is valid (must be in the future)
-    IF p_order_date < SYSDATE THEN
-        RETURN 'Error: The order date (OrderDate) must be in the future.';
-    END IF;
-
-    -- Check if the delivery date is valid (must be after the order date)
-    IF p_delivery_date <= p_order_date THEN
-        RETURN 'Error: The delivery date (DeliveryDate) must be after the order date (OrderDate).';
-    END IF;
-
-    -- Insert the order and related products
-    BEGIN
-        INSERT INTO Orders (OrderID, ClientID, DateOrder, DateDelivery, Status)
-        VALUES (p_order_id, p_client_id, p_order_date, p_delivery_date, p_status);
-
-        INSERT INTO Product_Orders (OrderID, ProductID, QuantityProducts)
-        VALUES (p_order_id, p_product_id, p_quantity);
-
-        -- Return success message
-        result_message := 'Success: Order with ID ' || p_order_id || ' registered successfully.';
-        RETURN result_message;
-
-    EXCEPTION
-        -- Handle duplicate order ID error
-        WHEN DUP_VAL_ON_INDEX THEN
-            RETURN 'Error: Order with ID ' || p_order_id || ' already exists.';
-        -- Catch all other errors
-        WHEN OTHERS THEN
-            RETURN 'Unexpected error: ' || SQLERRM;
-    END;
-END;
-/
-
---INSERT INTO Orders(OrderID,ClientID,DateOrder,DateDelivery,Status)VALUES(2,657,TO_DATE('15/09/2024','DD/MM/YYYY'),TO_DATE('26/09/2024','DD/MM/YYYY'),'not delivered');
---INSERT INTO Product_Orders(OrderID, ProductID, QuantityProducts) values (1, 'AS12945S22', 5);
-
-DECLARE
-    result_message VARCHAR2(255);
-BEGIN
-    result_message := register_order(17, 657, TO_DATE('27/11/2024', 'DD/MM/YYYY'), TO_DATE('30/11/2024', 'DD/MM/YYYY'), 'not delivered', 'AS12945S22', 5);
-    DBMS_OUTPUT.PUT_LINE(result_message);  -- Display the result message
-END;
-/
-
-SELECT * FROM Orders;
-SELECT * FROM Product_Orders;
-
-
-
-------- USBD18 -  As a Production Manager, I want to deactivate a customer from the system. 
-
-CREATE OR REPLACE FUNCTION deactivate_customer(p_client_id Client.ClientID%TYPE)
-RETURN VARCHAR2
-IS
-    v_exists NUMBER(1);  -- Variable to check if the customer exists and is active
-    result_message VARCHAR2(255);
-BEGIN
-    -- Check if the customer exists and is active
-    SELECT COUNT(1)
-    INTO v_exists
-    FROM Client C
-    WHERE C.ClientID = p_client_id AND C.Status = 'activated';
-
-    IF v_exists = 0 THEN
-        RETURN 'Error: Customer with ID ' || p_client_id || ' does not exist or is not active.';
-    END IF;
-
-    -- Check if there are any active orders that are not delivered
-    SELECT COUNT(1)
-    INTO v_exists
-    FROM Orders O
-    WHERE O.ClientID = p_client_id AND O.Status = 'delivered';
-
-    IF v_exists = 0 THEN
-        RETURN 'Error: Customer with ID ' || p_client_id || ' has orders that have not yet been delivered.';
-    END IF;
-
-    -- Update the status of the customer to 'deactivated'
-    UPDATE Client
-    SET Status = 'deactivated'
-    WHERE ClientID = p_client_id;
-
-    -- Success message
-    result_message := 'Success: Customer with ID ' || p_client_id || ' deactivated successfully.';
-    RETURN result_message;
-
-EXCEPTION
-    WHEN OTHERS THEN
-        -- Handle errors and return the error message
-        RETURN 'Error: ' || SQLERRM;
-END;
-/
-
---INSERT INTO Client(ClientID, Name, VATIN, Address, ZIP, Town, Country, Email, Phone, Status) VALUES (348, 'U Fleku', 'CZ6451237810', 'Křemencova 11', '110 00', 'Nové Město', 'Czechia', 'some.random@email.cz', 004201234567, 'activated');
-
-DECLARE
-    v_result VARCHAR2(255);
-BEGIN
-    v_result := deactivate_customer(785); 
-    DBMS_OUTPUT.PUT_LINE(v_result);
-END;
-/
-
-SELECT * FROM Client;
-
-
-------- USBD19 -  As a Production Manager, I want to know which product has more operations in its BOO.
-
-SELECT B.ProductID,  -- ProductID from BOO table
-       COUNT(O.OPID) AS operation_count  -- Count the number of operations per ProductID
-FROM BOO B
-JOIN Operation O ON B.ProductID = O.ProductID  -- Join BOO with Operation based on ProductID
-GROUP BY B.ProductID  -- Group by ProductID from BOO table
-HAVING COUNT(O.OPID) = (  -- Filter for ProductID with the highest number of operations
-    SELECT MAX(operation_count)  -- Find the maximum count of operations across all ProductIDs
-    FROM (
-        SELECT COUNT(OPID) AS operation_count  -- Count operations per ProductID in the subquery
-        FROM Operation  -- Table representing operations in the subquery
-        GROUP BY ProductID  -- Group by ProductID from the Operation table
-    ) operation_counts  -- The result of the subquery, representing the operation counts
-);
-
-
+select * from ReserveList
+select * from PartType
+select * from Part
