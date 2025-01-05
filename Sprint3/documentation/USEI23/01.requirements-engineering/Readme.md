@@ -23,33 +23,13 @@ Rank activities based on their bottleneck impact.
 **From the client clarifications:**
 
 > **Question:**
-Good afternoon, on US7 the following is mentioned:
-The listing should be sorted in descending order of processed items."
-My question is in relation to the example given:
-"a: m1 -> m5
-b: m1 -> m2 -> m4 -> m5
-c: m1 -> m2 -> m3 -> m5
-d: m1 -> m4 -> m3
-e: m1 -> m3 -> m5
-After the complete processing of these items, the following listing should be produced:
-m1 : [(m2,2),(m5,1),(m3,1),(m4,1)]
-m2 : [(m4,1),(m3,1)]
-m3 : [(m5,2)]
-m4 : [(m5,1),(m3,1)]"
-In this example, is the list already sorted in descending order of processed items?
-If the answer is yes, then I really don't understand the grading criteria
+>Are we supposed to present all activities and their respective "degree" of dependence / number of successors, or just present some of them, those with the highest "degree" of dependence / number of successors?
 >
-> **Answer:** In this example,
-m1 : [(m2,2),(m5,1),(m3,1),(m4,1)]
-m2 : [(m4,1),(m3,1)]
-m3 : [(m5,2)]
-m4 : [(m5,1),(m3,1)]
-the number of items processed is:
-5
-2
-2
-2
-so, I believe it is sorted.
+>
+
+
+
+
 
 ### 1.3. Acceptance Criteria
 

@@ -14,7 +14,12 @@ As a Production Manager, I want to register customer orders in the system, ensur
 
 **From the client clarifications:**
 
-> No questions for now as this US is quite clear.
+> Good afternoon,
+In the activities.csv file structure we have the fields duration and cost. For each activity, what do these fields mean? What is the difference between them?
+Thank you.
+> 
+> Good morning, 
+Duration of the activity and its cost.
 
 ### 1.3. Acceptance Criteria
 

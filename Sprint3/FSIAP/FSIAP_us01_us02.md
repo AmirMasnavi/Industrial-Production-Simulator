@@ -2,165 +2,150 @@
 
 ## Mounted sensor
 
-![Mounted sensor](png/imagenssensor.png)
+![Mounted sensor](png/sensor.png)
 
-## USFA01
-* Using Arduino, we created a code that would allow us to monitor temperatures and humidity, and the behavior of the respective LEDs.
+## USFA03
+* Implement the functionality to simulate, analyze, and manage the behavior of industrial systems, focusing on data processing, operation sequences, and resource optimization as outlined in the user stories for Sprint 3.
 
 `````java
-    #include <DHT.h> // Include the DHT library for sensor functionality
+#include <MQSpaceData.h>
+#include <DHT.h>
+#include <math.h>
 
-// Define pins for the DHT sensor and LEDs
-        #define DHTPIN 15     // Pin where the DHT sensor is connected
-        #define DHTTYPE DHT11 // Type of the DHT sensor (DHT11 or DHT22)
-        #define TEMP_LED 14   // Pin for the temperature LED
-        #define HUM_LED 16    // Pin for the humidity LED
+#define ADC_RESOLUTION_BITS  (10)
+#define ANALOG_INPUT_PIN     (A0)
+#define LOAD_RESISTANCE      10.0
+        #define CLEAN_AIR_RS_RO      60.0
+        #define RED_FAN_PIN          11
+        #define YELLOW_FAN_PIN       12
+        #define DHT_SENSOR_PIN       26
+        #define DHT_SENSOR_TYPE      DHT11
 
-        DHT dht(DHTPIN, DHTTYPE); // Create a DHT object with the specified pin and type
+DHT dhtSensor(DHT_SENSOR_PIN, DHT_SENSOR_TYPE);
 
-// Variables to store initial temperature and humidity readings
-        float initialTemperature = 0;
-        float initialHumidity = 0;
+MQSpaceData mqSensor(ADC_RESOLUTION_BITS, ANALOG_INPUT_PIN);
 
-        void setup() {
-        Serial.begin(9600); // Start serial communication at 9600 baud
-        dht.begin(); // Initialize the DHT sensor
+float baselineRsRo = 0.0;
+bool areFansOn = false;
+float baselineHumidity = 0.0;
+bool isHumidityAlerted = false;
+float baselineTemperature = 0.0;
+bool isTemperatureAlerted = false;
 
-        pinMode(TEMP_LED, OUTPUT); // Set the temperature LED pin as output
-        pinMode(HUM_LED, OUTPUT);  // Set the humidity LED pin as output
+void setup() {
+    Serial.begin(115200);
 
-        // Read initial values from the sensor
-        initialTemperature = dht.readTemperature();
-        initialHumidity = dht.readHumidity();
+    pinMode(RED_FAN_PIN, OUTPUT);
+    pinMode(YELLOW_FAN_PIN, OUTPUT);
+    digitalWrite(RED_FAN_PIN, LOW);
+    digitalWrite(YELLOW_FAN_PIN, LOW);
 
-        // Check for sensor reading errors
-        if (isnan(initialTemperature) || isnan(initialHumidity)) {
-        Serial.println("Error reading sensor. Check the connection!");
-        while (true); // Halt the program if the sensor has issues
+    mqSensor.begin();
+    dhtSensor.begin();
+    Serial.println("Initializing MQ-2 and DHT sensors...");
+    delay(5000);
+
+    baselineHumidity = dhtSensor.readHumidity();
+    baselineTemperature = dhtSensor.readTemperature();
+    Serial.print("Initial Humidity: ");
+    Serial.println(baselineHumidity);
+    Serial.print("Initial Temperature: ");
+    Serial.println(baselineTemperature);
+    Serial.println("Sensors ready to measure gases and humidity/temperature!");
+}
+
+void loop() {
+    float rawSensorValue = analogRead(ANALOG_INPUT_PIN);
+    float sensorVoltage = (rawSensorValue / 1023.0) * 5.0;
+
+    float sensorResistance = (5.0 - sensorVoltage) / sensorVoltage * LOAD_RESISTANCE;
+
+    float rsRoRatio = sensorResistance / CLEAN_AIR_RS_RO;
+
+    // Fórmula ajustada para o MQ-2
+    float gasConcentration = 1000 * pow(rsRoRatio, -2.3);  // Exemplo para gás combustível
+
+    static float filteredGasConcentration = gasConcentration;
+    filteredGasConcentration = 0.9 * filteredGasConcentration + 0.1 * gasConcentration;
+
+    Serial.print("Rs/Ro Ratio: ");
+    Serial.print(rsRoRatio, 2);
+    Serial.print(" | Gas Concentration (ppm): ");
+    Serial.println(filteredGasConcentration, 2);
+
+    // Lógica de umidade e temperatura permanece inalterada
+    float currentHumidity = dhtSensor.readHumidity();
+    if (isnan(currentHumidity)) {
+        Serial.println("Failed to read humidity!");
+        return;
+    }
+
+    Serial.print("Current Humidity: ");
+    Serial.println(currentHumidity);
+
+    if (baselineHumidity == 0.0) {
+        baselineHumidity = currentHumidity;
+    } else {
+        float humidityChangePercent = (currentHumidity - baselineHumidity) / baselineHumidity * 100.0;
+
+        if (humidityChangePercent >= 10.0 && !isHumidityAlerted) {
+            digitalWrite(RED_FAN_PIN, HIGH);
+            delay(10000);
+            digitalWrite(RED_FAN_PIN, LOW);
+
+            digitalWrite(YELLOW_FAN_PIN, HIGH);
+            delay(10000);
+            digitalWrite(YELLOW_FAN_PIN, LOW);
+
+            isHumidityAlerted = true;
         }
+    }
 
-        // Print initial readings to the serial monitor
-        Serial.print("Initial Temperature: ");
-        Serial.print(initialTemperature);
-        Serial.println(" °C");
-        Serial.print("Initial Humidity: ");
-        Serial.print(initialHumidity);
-        Serial.println(" %");
-        }
+    float currentTemperature = dhtSensor.readTemperature();
+    if (isnan(currentTemperature)) {
+        Serial.println("Failed to read temperature!");
+        return;
+    }
 
-        void loop() {
-        // Read current temperature and humidity
-        float currentTemperature = dht.readTemperature();
-        float currentHumidity = dht.readHumidity();
+    Serial.print("Current Temperature: ");
+    Serial.println(currentTemperature);
 
-        // Check for reading errors
-        if (isnan(currentTemperature) || isnan(currentHumidity)) {
-        Serial.println("Error reading sensor. Skipping this cycle...");
-        return; // Skip the rest of the loop if there's an error
-        }
+    if (baselineTemperature == 0.0) {
+        baselineTemperature = currentTemperature;
+    } else {
+        float temperatureChange = currentTemperature - baselineTemperature;
 
-        // Print current readings to the serial monitor
-        Serial.print("Current Temperature: ");
-        Serial.print(currentTemperature);
-        Serial.println(" °C");
-        Serial.print("Current Humidity: ");
-        Serial.print(currentHumidity);
-        Serial.println(" %");
+        if (temperatureChange >= 5.0 && !isTemperatureAlerted) {
+            digitalWrite(YELLOW_FAN_PIN, HIGH);
+            delay(5000);
+            digitalWrite(YELLOW_FAN_PIN, LOW);
 
-        // Control the temperature LED
-        if (currentTemperature >= initialTemperature + 5) { // If temperature increases by 5°C
-        if (digitalRead(TEMP_LED) == LOW) { // Check if the LED is off
-        Serial.println("LED_TEMP_ON"); // Log the event
-        }
-        digitalWrite(TEMP_LED, HIGH); // Turn the LED on
-        } else {
-        if (digitalRead(TEMP_LED) == HIGH) { // Check if the LED is on
-        Serial.println("LED_TEMP_OFF"); // Log the event
-        }
-        digitalWrite(TEMP_LED, LOW); // Turn the LED off
-        }
+            digitalWrite(RED_FAN_PIN, HIGH);
+            delay(5000);
+            digitalWrite(RED_FAN_PIN, LOW);
 
-        // Control the humidity LED
-        if (currentHumidity >= initialHumidity + 5) { // If humidity increases by 5%
-        if (digitalRead(HUM_LED) == LOW) { // Check if the LED is off
-        Serial.println("LED_HUM_ON"); // Log the event
+            isTemperatureAlerted = true;
         }
-        digitalWrite(HUM_LED, HIGH); // Turn the LED on
-        } else {
-        if (digitalRead(HUM_LED) == HIGH) { // Check if the LED is on
-        Serial.println("LED_HUM_OFF"); // Log the event
-        }
-        digitalWrite(HUM_LED, LOW); // Turn the LED off
-        }
+    }
 
-        delay(2000); // Wait 2 seconds before the next loop iteration
-        }
+    if (baselineRsRo == 0.0) {
+        baselineRsRo = rsRoRatio;
+    } else {
+        float rsRoChangePercent = abs(rsRoRatio - baselineRsRo) / baselineRsRo * 100.0;
 
+        if (rsRoChangePercent >= 10.0 && !areFansOn) {
+            digitalWrite(RED_FAN_PIN, HIGH);
+            digitalWrite(YELLOW_FAN_PIN, HIGH);
+            areFansOn = true;
+
+            delay(10000);
+
+            digitalWrite(RED_FAN_PIN, LOW);
+            digitalWrite(YELLOW_FAN_PIN, LOW);
+        }
+    }
+
+    delay(1000);
+}
 ````````
 
-## USFA02
-* In order for the file to be created, we used a code that we made in python and associated it with the arduino.
-
-``````java
-import serial
-import time
-from datetime import datetime
-
-PORT = "COM5"  
-        BAUD_RATE = 9600
-        LOG_FILE = "sensor_logs.txt"
-
-        def main():
-        try:
-        with serial.Serial(PORT, BAUD_RATE, timeout=5) as ser:
-        print(f"Connected to Arduino on {PORT}.")
-        print(f"Logging data to {LOG_FILE}...")
-
-        with open(LOG_FILE, "a") as log_file:
-        log_file.write("Timestamp,Temperature (°C),Humidity (%),Event\n")
-
-        temp = None
-        hum = None
-
-        while True:
-        line = ser.readline().decode('utf-8').strip()
-
-        if line:
-        print(f"Received: {line}")
-        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
-        if "Temperatura atual:" in line:
-        temp = line.split(":")[1].strip(" °C")
-        elif "Humidade atual:" in line:
-        hum = line.split(":")[1].strip(" %")
-        elif "LED_TEMP_ON" in line:
-        log_file.write(f"{timestamp},,,LED de temperatura ligado\n")
-        print(f"Event logged: LED de temperatura ligado")
-        elif "LED_TEMP_OFF" in line:
-        log_file.write(f"{timestamp},,,LED de temperatura desligado\n")
-        print(f"Event logged: LED de temperatura desligado")
-        elif "LED_HUM_ON" in line:
-        log_file.write(f"{timestamp},,,LED de humidade ligado\n")
-        print(f"Event logged: LED de humidade ligado")
-        elif "LED_HUM_OFF" in line:
-        log_file.write(f"{timestamp},,,LED de humidade desligado\n")
-        print(f"Event logged: LED de humidade desligado")
-
-        if temp is not None and hum is not None:
-        log_file.write(f"{timestamp},{temp},{hum},\n")
-        print(f"Logged: {timestamp}, Temp: {temp}°C, Hum: {hum}%")
-        temp, hum = None, None
-        except serial.SerialException as e:
-        print(f"Error connecting to serial port: {e}")
-        except KeyboardInterrupt:
-        print("\nLogging stopped by user.")
-        except Exception as e:
-        print(f"An unexpected error occurred: {e}")
-
-        if __name__ == "__main__":
-        main()
-
-``````
-**Output USFA02:**
-
-sensor_logs.txt
