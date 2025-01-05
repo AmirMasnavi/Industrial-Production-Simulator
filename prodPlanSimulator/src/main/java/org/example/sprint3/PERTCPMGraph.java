@@ -188,7 +188,7 @@ public class PERTCPMGraph {
         for (int i = 0; i < sortedActivities.size(); i++) {
             result.append(sortedActivities.get(i).getId());
             if (i < sortedActivities.size() - 1) {
-                result.append(" \u2192 "); // Use a right arrow for a clearer representation
+                result.append(" → "); // Use a right arrow for a clearer representation
             }
         }
 
@@ -196,7 +196,7 @@ public class PERTCPMGraph {
         System.out.println("\n" + "═".repeat(50));
         System.out.println("🔹 \u001B[1mTopological Sort Result\u001B[0m 🔹");
         System.out.println("═".repeat(50));
-        System.out.println(result.toString());  // Print the topological sort as a string
+        System.out.println(result);  // Print the topological sort as a string
 
         return result.toString();
     }

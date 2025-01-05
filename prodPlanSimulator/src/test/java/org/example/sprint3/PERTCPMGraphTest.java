@@ -9,7 +9,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -299,7 +298,7 @@ class PERTCPMGraphTest {
         List<Activity> bottleneckActivities = graph.identifyBottleneckActivities();
 
         assertEquals(1, bottleneckActivities.size(), "There should be one bottleneck activity.");
-        assertEquals("D", bottleneckActivities.get(0).getId(), "Activity D should be identified as a bottleneck.");
+        assertEquals("D", bottleneckActivities.getFirst().getId(), "Activity D should be identified as a bottleneck.");
     }
 
     /**

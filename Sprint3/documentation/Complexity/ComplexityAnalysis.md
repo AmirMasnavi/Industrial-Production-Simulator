@@ -566,3 +566,92 @@ public void printActivityTimes() {
   - V = number of vertices (activities).
   - E = number of edges (dependencies).
 - **Overall complexity:** O(V + E).
+
+
+
+### USEI24
+> **findActivityById**
+
+```java  
+public static Activity findActivityById(List<Activity> activities, String id) {  
+    return activities.stream().filter(a -> a.getId().equals(id)).findFirst().orElse(null);  
+}  
+```  
+
+***Complexity Analysis:***
+
+**Iterating through activities:**
+- The `stream().filter()` operation iterates through the list of activities, applying the filter condition (`a.getId().equals(id)`) to each element.
+- In the worst case, it checks all elements if the activity with the matching ID is not found earlier.
+
+**Finding the first match:**
+- The `findFirst()` operation stops once a match is found, or it continues until the end of the list if no match exists.
+
+**Total Complexity:**
+- Let:
+  - n = number of activities in the list.
+- **Overall complexity:** O(n).  
+
+
+> **setDuration**
+
+```java  
+public void setDuration(int duration) {  
+    this.duration = duration;  
+}  
+```  
+
+***Complexity Analysis:***
+
+**Setting a field value:**
+- This method performs a single assignment operation, updating the `duration` field of the object.
+
+**Total Complexity:**
+- **Overall complexity:** O(1).  
+
+> **changeActivityDuration**
+
+```java  
+private static void changeActivityDuration() {  
+    Scanner scanner = new Scanner(System.in);  
+    Activity activity = null;  
+
+    while (activity == null) {  
+        System.out.print("Enter the ID of the activity to change: ");  
+        String activityId = scanner.next();  
+        activity = findActivityById(activities, activityId);  
+
+        if (activity == null) {  
+            System.out.println("Activity ID not found. Please try again.");  
+        }  
+    }  
+
+    System.out.print("Enter the new duration for the activity (in weeks): ");  
+    int newDuration = scanner.nextInt();  
+
+    activity.setDuration(newDuration);  
+    System.out.println("\n\u001B[32m✔️ Activity duration updated successfully.\u001B[0m");  
+
+    // Recalculate the graph  
+    pertcpmGraph.calculateEarliestAndLatestTimes();  
+}  
+```  
+
+***Complexity Analysis:***
+
+**Finding the activity by ID:**
+- Uses `findActivityById`, which has a complexity of O(n), where n is the number of activities in the list.
+- In the worst case, the `while` loop repeatedly calls this method until a valid ID is entered. However, since the user input governs the loop, the complexity depends on the user's input, so it remains O(n) per call.
+
+**Setting the new duration:**
+- Calls `setDuration`, which has a complexity of O(1).
+
+**Recalculating the graph:**
+- Calls `calculateEarliestAndLatestTimes`, whose complexity depends on the graph's size and structure. Assuming the complexity of this method is O(V + E), where V is the number of vertices (activities) and E is the number of edges (dependencies).
+
+**Total Complexity:**
+- Let:
+  - n = number of activities in the list.
+  - V = number of vertices in the graph.
+  - E = number of edges in the graph.
+- **Overall complexity:** O(n + V + E).  

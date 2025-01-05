@@ -1,18 +1,15 @@
 package org.example;
 
-import com.opencsv.CSVWriter;
+
 import oracle.jdbc.internal.OracleTypes;
 import org.example.sprint3.*;
-
 import javax.swing.*;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.CallableStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
 
 import static org.example.Article.Priority.*;
 import static org.example.sprint3.Activity.findActivityById;
@@ -256,7 +253,7 @@ public class MenuItem {
                 System.out.println("🔹 3. Low");
                 System.out.println("\n\u001B[1mChoose a priority number:\u001B[0m");
                 int priorityOption = sc.nextInt();  // Read the priority choice from the user
-                Article.Priority priority = null;
+                Article.Priority priority;
 
                 // Set the priority based on the user's choice
                 switch(priorityOption){
@@ -302,10 +299,8 @@ public class MenuItem {
                     }
                 } else if (numOfOper < 1) {
                     System.out.println("\u001B[31m⚠️ Invalid number! Operations must be greater than 1.\u001B[0m");
-                } else if (numOfOper > 6) {
-                    System.out.println("\u001B[31m⚠️ The maximum number of operations is 6.\u001B[0m");
                 } else {
-                    System.out.println("\u001B[31m⚠️ Please enter a valid number between 1 and 6.\u001B[0m");
+                    System.out.println("\u001B[31m⚠️ The maximum number of operations is 6.\u001B[0m");
                 }
 
                 // Ask the user for the quantity of products
@@ -1087,7 +1082,7 @@ public class MenuItem {
         // Edges Section
         System.out.println("\n🔗 \u001B[1mEdges:\u001B[0m");
         for (Edge<Activity, Integer> edge : graph.edges()) {
-            System.out.printf("   🔹 %s ➡\uFE0F %s (Duration: %d %s)%n",
+            System.out.printf("   🔹 %s ➡️ %s (Duration: %d %s)%n",
                     edge.getVOrig(),
                     edge.getVDest(),
                     edge.getWeight(),
@@ -1301,7 +1296,6 @@ public class MenuItem {
         System.out.println("\n\u001B[32m✔️ Activity duration updated successfully.\u001B[0m");
 
         // Recalculate the graph
-        //pertcpmGraph.buildGraph(activities);
         pertcpmGraph.calculateEarliestAndLatestTimes();
     }
 
