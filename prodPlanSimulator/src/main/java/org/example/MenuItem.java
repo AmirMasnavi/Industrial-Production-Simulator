@@ -1179,7 +1179,6 @@ public class MenuItem {
         }
     }
 
-
     /**
      * Generates a graph image from a DOT file using GraphViz.
      * @param dotFilePath Path to the DOT file.
