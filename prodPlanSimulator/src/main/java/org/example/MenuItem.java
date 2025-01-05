@@ -1029,23 +1029,6 @@ public class MenuItem {
         // Build the graph
         buildPertCmpGraphAux();
 
-        /*
-         * Exports the graph to DOT format for visualization and generates an image
-         * if uncommented. These operations are currently disabled.
-         *
-         * String dotFilePath = "./trash/pert_cpm_graph.dot";
-         * GraphVizExporter.exportToDot(graph, dotFilePath);
-         * System.out.println("\nDOT file created: " + dotFilePath);
-         *
-         * String outputImagePath = "./trash/pert_cpm_graph.svg";
-         * try {
-         *     generateGraphImage(dotFilePath, outputImagePath);
-         *     System.out.println("SVG image generated: " + outputImagePath);
-         * } catch (IOException | InterruptedException e) {
-         *     e.printStackTrace();
-         *     System.err.println("Error generating the graph image.");
-         * }
-         */
     }
 
     /**
@@ -1087,6 +1070,22 @@ public class MenuItem {
                     edge.getVDest(),
                     edge.getWeight(),
                     edge.getVOrig().getDurationUnit());
+        }
+
+        //          Exports the graph to DOT format for visualization and generates an image
+        //          if uncommented. These operations are currently disabled.
+
+        String dotFilePath = "./pert_cpm_graph.dot";
+        GraphVizExporter.exportToDot(graph, dotFilePath);
+        System.out.println("\nDOT file created: " + dotFilePath);
+
+        String outputImagePath = "./pert_cpm_graph.svg";
+        try {
+            generateGraphImage(dotFilePath, outputImagePath);
+            System.out.println("SVG image generated: " + outputImagePath);
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+            System.err.println("Error generating the graph image.");
         }
 
         // Footer for completion
