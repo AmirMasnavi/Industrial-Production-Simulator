@@ -1,0 +1,83 @@
+#include "DHT.h"
+
+
+#define DHTPIN 17
+#define DHTTYPE DHT11
+
+DHT dht(DHTPIN, DHTTYPE);
+
+
+
+// Defina os pinos para os LEDs
+const int ledPins[] = {11, 12, 13, 14, 15}; // Pinos digitais conectados aos LEDs
+const int numLeds = 5; // Número total de LEDs, especificado diretamente
+
+void setup() {
+  // Configura todos os pinos dos LEDs como saídas
+  dht.begin();
+   Serial.begin(9600); // opens serial port, sets data rate to 9600 bps
+
+  for (int i = 0; i < numLeds; i++) {
+    pinMode(ledPins[i], OUTPUT);
+
+  }
+  pinMode(LED_BUILTIN,OUTPUT);
+  digitalWrite(LED_BUILTIN,HIGH);
+  delay(500);
+  digitalWrite(LED_BUILTIN,LOW);
+
+
+  // Acende os LEDs um por um
+  for (int i = 0; i < numLeds; i++) {
+    digitalWrite(ledPins[i], HIGH); // Acende o LED
+    delay(500);                    // Espera 500ms
+    digitalWrite(ledPins[i], LOW);  // Apaga o LED
+  }
+}
+
+void loop() {
+  // Loop vazio, nenhuma ação adicional necessária
+   if (Serial.available() > 0) {
+      String state = Serial.readStringUntil(',');
+      int i;
+      int myNumbers[6] = {0};
+      for (int i = 0; i < 5; i++) {
+        int num = Serial.parseInt();
+        myNumbers[i] = num;
+      }
+       for (int i = 0; i < 5; i++) {
+        digitalWrite(ledPins[i], myNumbers[i]);
+      }
+      if (state.equalsIgnoreCase("on")) {
+        digitalWrite(LED_BUILTIN,HIGH);
+        delay(2000);
+      }
+
+      else if (state.equalsIgnoreCase("off")) {
+      digitalWrite(LED_BUILTIN,LOW);
+      delay(2000);
+
+      }
+      else if (state.equalsIgnoreCase("op")) {
+      digitalWrite(LED_BUILTIN,HIGH);
+      delay(500);
+      digitalWrite(LED_BUILTIN,LOW);
+      delay(500);
+      digitalWrite(LED_BUILTIN,HIGH);
+      delay(500);
+      digitalWrite(LED_BUILTIN,LOW);
+      delay(500);
+      }
+
+
+       for (int i = 0; i < 5; i++) {
+        digitalWrite(ledPins[i], LOW);
+
+
+      }
+      digitalWrite(LED_BUILTIN,LOW);
+      float temperature = dht.readTemperature();
+      float humidity = dht.readHumidity();
+      Serial.printf("TEMP&unit:celsius&value:%.2f#HUM&unit:percentage&value:%.2f\n", temperature, humidity);
+  }
+}
